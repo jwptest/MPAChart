@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="170dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="投资金额"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_13"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp_5"
+        android:paddingRight="@dimen/dp_5">
+
+        <ImageView
+            android:id="@+id/ivMoneyReduce"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_47"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/home_money_fall_button"/>
+
+        <ImageView
+            android:id="@+id/ivEditBg"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_47"
+            android:layout_marginLeft="@dimen/dp_2"
+            android:layout_marginRight="@dimen/dp_2"
+            android:layout_toRightOf="@+id/ivMoneyReduce"
+            android:src="@drawable/money_edit_bg"/>
+
+        <TextView
+            android:id="@+id/tvInvestmentMoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp_2"
+            android:layout_marginRight="@dimen/dp_2"
+            android:layout_toRightOf="@+id/ivMoneyReduce"
+            android:gravity="center"
+            android:text="￥100"
+            android:textColor="@color/red"
+            android:textSize="@dimen/sp_13"/>
+
+        <ImageView
+            android:id="@+id/ivMoneyAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_47"
+            android:layout_toRightOf="@+id/tvInvestmentMoney"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/home_money_add_button"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp"
+        android:text="预期收益"
+        android:textColor="@color/white"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tvProfit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="￥900"
+        android:textColor="@color/red"
+        android:textSize="18sp"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/fengexian"/>
+
+    <TextView
+        android:id="@+id/tvInterestRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="收益率80%"
+        android:textColor="@color/white"
+        android:textSize="12sp"/>
+
+    <ImageView
+        android:id="@+id/ivRise"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/dp_5"
+        android:paddingRight="@dimen/dp_5"
+        android:scaleType="centerInside"
+        android:src="@drawable/home_add_button"/>
+
+    <ImageView
+        android:id="@+id/ivFall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/dp_5"
+        android:paddingRight="@dimen/dp_5"
+        android:scaleType="centerInside"
+        android:src="@drawable/home_fall_button"/>
+
+
+    <!--<LinearLayout-->
+    <!--android:id="@+id/llRise"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="60dp"-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_marginRight="10dp"-->
+    <!--android:background="@drawable/home_add_button"-->
+    <!--android:clickable="true"-->
+    <!--android:gravity="center"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="20dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="40dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginRight="7dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:scaleType="centerInside"/>&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginLeft="7dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:text="看涨"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:textColor="@color/white"/>&ndash;&gt;-->
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+    <!--android:id="@+id/llFall"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="60dp"-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_marginRight="10dp"-->
+    <!--android:background="@drawable/home_fall_button"-->
+    <!--android:clickable="true"-->
+    <!--android:gravity="center"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="20dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="40dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginRight="7dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:scaleType="centerInside"/>&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginLeft="7dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:text="看跌"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:textColor="@color/white"/>&ndash;&gt;-->
+    <!--</LinearLayout>-->
+
+</LinearLayout>

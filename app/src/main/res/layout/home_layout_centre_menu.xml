@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/home_centre_hight"
+    android:orientation="horizontal">
+
+    <com.finance.widget.roundview.RoundLinearLayout
+        android:id="@+id/rllUZST"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:layout_marginBottom="@dimen/dp_m_1"
+        app:rv_backgroundColor="@color/centre_menu_bg_color"
+        app:rv_cornerRadius="@dimen/dp_5"
+        app:rv_strokeColor="@color/centre_menu_from_color"
+        app:rv_strokeWidth="@dimen/dp_0.6">
+
+        <ImageView
+            android:id="@+id/ivZST"
+            style="@style/centreMenuButton"
+            android:src="@drawable/xiala"/>
+
+        <View style="@style/centreMenuLine"/>
+
+        <ImageView
+            android:id="@+id/ivZXT"
+            style="@style/centreMenuButton"
+            android:src="@drawable/xiala"/>
+
+        <View style="@style/centreMenuLine"/>
+
+        <ImageView
+            android:id="@+id/ivKXT"
+            style="@style/centreMenuButton"
+            android:src="@drawable/xiala"/>
+
+        <View style="@style/centreMenuLine"/>
+
+        <ImageView
+            android:id="@+id/ivOther"
+            style="@style/centreMenuButton"
+            android:src="@drawable/xiala"/>
+
+    </com.finance.widget.roundview.RoundLinearLayout>
+
+    <com.finance.widget.roundview.RoundTextView
+        android:id="@+id/rtvTip"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:gravity="bottom"
+        android:paddingLeft="@dimen/dp_15"
+        android:paddingRight="@dimen/dp_15"
+        android:layout_marginBottom="@dimen/dp_m_1"
+        android:paddingBottom="@dimen/dp_3"
+        android:text="刚刚xx获利￥500"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_12"
+        app:rv_backgroundColor="@color/centre_menu_bg_color"
+        app:rv_cornerRadius="@dimen/dp_5"
+        app:rv_strokeColor="@color/centre_menu_from_color"
+        app:rv_strokeWidth="@dimen/dp_0.6"/>
+
+    <!--<com.finance.widget.roundview.RoundLinearLayout-->
+    <!--android:id="@+id/rllZoom"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--app:rv_backgroundColor="@color/centre_menu_bg_color"-->
+    <!--app:rv_cornerRadius="@dimen/dp_5"-->
+    <!--app:rv_strokeColor="@color/centre_menu_from_color"-->
+    <!--app:rv_strokeWidth="@dimen/dp_0.6">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/ivShrink"-->
+    <!--style="@style/centreMenuButton"-->
+    <!--android:src="@drawable/xiala"/>-->
+
+    <!--<View style="@style/centreMenuLine"/>-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/ivEnlarge"-->
+    <!--style="@style/centreMenuButton"-->
+    <!--android:src="@drawable/xiala"/>-->
+
+    <!--</com.finance.widget.roundview.RoundLinearLayout>-->
+
+</RelativeLayout>

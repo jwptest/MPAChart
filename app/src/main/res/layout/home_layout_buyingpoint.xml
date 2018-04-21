@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/home_puy_item_hight"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0.6"
+        android:layout_centerVertical="true"
+        tools:tooltipText="水平线"/>
+
+    <TextView
+        android:id="@+id/tvBuyingMoney"
+        android:layout_width="@dimen/home_puy_item_text_width"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/home_end_money_paddLeft"
+        android:text="100"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_11"/>
+
+    <ImageView
+        android:id="@+id/ivZD"
+        android:layout_width="@dimen/home_puy_item_icon_width"
+        android:layout_height="@dimen/home_puy_item_icon_width"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/home_puy_item_icon_left"
+        android:scaleType="fitXY"
+        tools:tooltipText="涨跌图标"/>
+    <!--android:src="@drawable/fall_icon"-->
+
+
+</RelativeLayout>

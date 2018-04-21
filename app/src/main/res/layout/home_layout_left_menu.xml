@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="80dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/vItemBg"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/home_left_menu_item_bg"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/ivTransaction"
+        style="@style/leftMenuImage"
+        android:src="@drawable/jiaoyi_icon"
+        android:tooltipText="交易"/>
+
+    <TextView
+        android:id="@+id/tvTransaction"
+        style="@style/leftMenuText"
+        android:layout_below="@+id/ivTransaction"
+        android:text="交易"
+        android:textColor="@color/white"/>
+
+    <ImageView
+        android:id="@+id/ivOrder"
+        style="@style/leftMenuImage"
+        android:layout_below="@+id/tvTransaction"
+        android:src="@drawable/dingdan_icon"
+        android:tooltipText="订单"/>
+
+    <TextView
+        android:id="@+id/tvOrder"
+        style="@style/leftMenuText"
+        android:layout_below="@+id/ivOrder"
+        android:text="订单"/>
+
+    <ImageView
+        android:id="@+id/ivDynamic"
+        style="@style/leftMenuImage"
+        android:layout_below="@+id/tvOrder"
+        android:src="@drawable/dongtai_icon"
+        android:tooltipText="动态"/>
+
+    <TextView
+        android:id="@+id/tvDynamic"
+        style="@style/leftMenuText"
+        android:layout_below="@+id/ivDynamic"
+        android:text="动态"/>
+
+</RelativeLayout>
