@@ -6,11 +6,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 /**
- * ===============================
- * 描    述：画图控件的父控件
- * 作    者：pjw
- * 创建日期：2018/4/20 11:54
- * ===============================
+ * 画图控件的父控件
  */
 public class MLineChartParentView extends RelativeLayout {
 

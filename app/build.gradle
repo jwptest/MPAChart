@@ -43,10 +43,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile(rootProject.ext.dependencies["support-v7"]) {
-        exclude module: 'guava'
-    }
-//    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile rootProject.ext.dependencies["support-v7"]
+    compile rootProject.ext.dependencies["recyclerview"]
 
     compile rootProject.ext.dependencies["glide"]
 

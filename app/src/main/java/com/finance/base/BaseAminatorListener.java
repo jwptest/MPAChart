@@ -4,11 +4,7 @@ import android.animation.Animator;
 import android.view.animation.Animation;
 
 /**
- * ===============================
- * 描    述：
- * 作    者：pjw
- * 创建日期：2018/4/19 17:08
- * ===============================
+ *
  */
 public class BaseAminatorListener implements Animator.AnimatorListener {
 

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <com.finance.widget.CompletedView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cvProgressBar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_35"
+        android:layout_weight="1"
+        app:circleColor="@color/transparent"
+        app:progress="30"
+        app:radius="@dimen/dp_2"
+        app:ringBgColor="@color/transparent"
+        app:ringColor="#0000ff"
+        app:strokeWidth="@dimen/dp_2"/>
+
+    <LinearLayout
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_weight="3"
+        android:orientation="vertical"
+        android:paddingRight="@dimen/dp_10">
+
+        <LinearLayout
+            android:id="@+id/llOne"
+            style="@style/orderItemLL"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:layout_marginTop="@dimen/dp_5">
+
+            <TextView
+                android:id="@+id/tvTimer"
+                style="@style/orderItemText"
+                android:text="11:00"/>
+
+            <TextView
+                android:id="@+id/tvName"
+                style="@style/orderItemText"
+                android:text="欧元/美元(场外)"/>
+
+            <TextView
+                android:id="@+id/tvPurchase"
+                style="@style/orderItemText"
+                android:text="1.785634"/>
+
+            <TextView
+                android:id="@+id/tvMoney"
+                style="@style/orderItemText"
+                android:text="$78.30"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTwo"
+            style="@style/orderItemLL">
+
+            <TextView
+                android:id="@+id/tvDate"
+                style="@style/orderItemText2"
+                android:text="11:00"/>
+
+            <LinearLayout
+                style="@style/orderItemText"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivRiseFall"
+                    android:layout_width="@dimen/dp_10"
+                    android:layout_height="@dimen/dp_10"
+                    android:scaleType="centerInside"/>
+
+                <TextView
+                    android:id="@+id/tvExplain"
+                    style="@style/orderItemText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPurchase2"
+                style="@style/orderItemText2"
+                android:text="1.785634"/>
+
+            <TextView
+                android:id="@+id/tvMoney2"
+                style="@style/orderItemText2"
+                android:text="$78.30"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0.6"
+            android:layout_marginTop="@dimen/dp_5"
+            android:background="#777777"/>
+
+    </LinearLayout>
+
+</LinearLayout>

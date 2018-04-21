@@ -1,11 +1,7 @@
 package com.finance.base;
 
 /**
- * ===============================
- * 描    述：
- * 作    者：pjw
- * 创建日期：2018/4/19 10:50
- * ===============================
+ *
  */
 public class BasePresenter<V extends IBaseView> implements IBasePresenter<V> {
 
