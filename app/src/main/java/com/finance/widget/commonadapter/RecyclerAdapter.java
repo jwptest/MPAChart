@@ -6,7 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zimadai.cd.appbase.widget.commonadapter.viewholders.RecyclerViewHolder;
+
+import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

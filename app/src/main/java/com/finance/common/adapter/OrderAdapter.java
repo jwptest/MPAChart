@@ -76,8 +76,8 @@ public class OrderAdapter extends CDInvestmentBaseAdapter<OrderEntity.ItemEntity
 
     @Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cd_item_contact_header, parent, false);
-        return new RecyclerView.ViewHolder(view) {
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cd_item_contact_header, parent, false);
+        return new RecyclerView.ViewHolder(null) {
         };
     }
 

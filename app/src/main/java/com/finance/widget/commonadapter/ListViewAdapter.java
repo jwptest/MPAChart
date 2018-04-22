@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.zimadai.cd.appbase.widget.commonadapter.viewholders.GodViewHolder;
+import com.finance.widget.commonadapter.viewholders.GodViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
