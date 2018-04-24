@@ -8,9 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.finance.R;
-import com.finance.ben.PurchaseViewEntity;
+import com.finance.model.ben.PurchaseViewEntity;
 import com.github.mikephil.charting.charts.BarLineChartBase;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.MPPointD;
 
 /**
@@ -25,7 +25,7 @@ public class ViewUtil {
     }
 
     //将点转换为实际坐标
-    public static MPPointD getMPPointD(BarLineChartBase chart, ILineDataSet dataSet, float x, float y) {
+    public static MPPointD getMPPointD(BarLineChartBase chart, IDataSet dataSet, float x, float y) {
         return chart.getTransformer(
                 dataSet.getAxisDependency()).getPixelForValues(x, y);
     }

@@ -5,7 +5,10 @@ package com.finance.common;
  */
 public class Constants {
 
-    public static final int XANIMATION = 2000;//x轴动画时间
-    public static final int YANIMATION = 0;//y轴动画时间
+    public static final int XANIMATION = 500;//x轴动画时间
+
+    public static final String CHART_LINEFILL = "CHART_LINEFILL";//填充折线图
+    public static final String CHART_LINE = "CHART_LINE";//非填充折线图
+    public static final String CHART_CANDLE = "CHART_CANDLE";//蜡烛图
 
 }

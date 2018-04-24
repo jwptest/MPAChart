@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.graphics.Color;
 
 import com.finance.R;
-import com.finance.interfaces.ILineChartSetting;
-import com.finance.widget.linechart.MLineChart;
+import com.finance.common.Constants;
+import com.finance.interfaces.IChartSetting;
+import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -14,16 +15,16 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 /**
  * MLineChart配置
  */
-public class LineChartSetting implements ILineChartSetting {
+public class LineChartSetting implements IChartSetting {
 
     private Activity mActivity;
-    private MLineChart mChart;
+    private MCombinedChart mChart;
     private YAxis leftAxis, rightAxis;
     private XAxis xAxis;
     private IAxisValueFormatter mXIAxisValueFormatter;//X轴标签显示格式化
     private IAxisValueFormatter mRightIAxisValueFormatter;//右边轴标签显示格式化
 
-    public LineChartSetting(Activity activity, MLineChart lineChart) {
+    public LineChartSetting(Activity activity, MCombinedChart lineChart) {
         this.mActivity = activity;
         this.mChart = lineChart;
     }
@@ -63,7 +64,8 @@ public class LineChartSetting implements ILineChartSetting {
 //        mChart.setVisibleXRangeMaximum(100);
         mChart.setMaxVisibleValueCount(5);
 
-        mChart.animateX(2500);//X轴显示动画
+        mChart.animateX(Constants.XANIMATION);//X轴显示动画
+        mChart.animateY(0);
         // get the legend (only possible after setting data)
         Legend l = mChart.getLegend();
         //设置折线的描述的样式

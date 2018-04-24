@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.finance.base.BaseAminatorListener;
-import com.finance.ben.PurchaseViewEntity;
+import com.finance.model.ben.PurchaseViewEntity;
 
 /**
  * 购买点显示和隐藏的动画

@@ -13,18 +13,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.finance.R;
-import com.finance.ben.PurchaseViewEntity;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
-import com.finance.interfaces.ILineChartListener;
+import com.finance.interfaces.IChartListener;
 import com.finance.linechartview.BaseAxisValueFormatter;
+import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.ui.main.PurchaseViewAnimation;
 import com.finance.utils.ViewUtil;
-import com.finance.widget.linechart.MLineChart;
-import com.finance.widget.linechart.MLineChartRenderer;
+import com.finance.widget.combinedchart.MCombinedChart;
+import com.finance.widget.combinedchart.OnDrawCompletion;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
@@ -38,10 +38,10 @@ import java.util.ArrayList;
  * Created by Administrator on 2018/4/15.
  * MLineChart 事件处理
  */
-public class LineChartListener implements ILineChartListener, MLineChartRenderer.OnDrawCompletion {
+public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     private Activity mActivity;
-    private MLineChart mChart;
+    private MCombinedChart mChart;
 
     private ImageView ivIcon;
     private View vEndLine;//截止线
@@ -64,9 +64,9 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
     //当前点的坐标
     private int currentX, currentY;
     //当前点的值
-    private Entry currentEntry;
+    private Entry currentEntry = new Entry();
     //显示数据
-    private ILineDataSet currentDataSet;
+    private IDataSet currentDataSet;
     //是否刷新子控件坐标
     private boolean isRefresh = false;
 
@@ -82,7 +82,7 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
     //当前购买的点的实体集合
     private ArrayList<PurchaseViewEntity> mPurchaseViewEntities;
 
-    public LineChartListener(Activity activity, MLineChart lineChart) {
+    public LineChartListener(Activity activity, MCombinedChart lineChart) {
         this.mActivity = activity;
         this.mChart = lineChart;
         mParent = (ViewGroup) mChart.getParent();
@@ -160,7 +160,7 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
                 //手势滑动
             }
         });
-        mChart.getMLineChartRenderer().setOnCompletion(this);
+        mChart.setOnDrawCompletion(this);
         return this;
     }
 
@@ -386,6 +386,30 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
         }
     }
 
+    /**
+     * 隐藏图标
+     */
+    private void hideView() {
+        if (ivIcon != null) {
+            ViewUtil.setViewVisibility(ivIcon, View.GONE);
+            ivIcon.setImageResource(0);
+        }
+        if (vEndLine != null && tvEndLineDes != null && ivEndLineIcon != null) {//截止
+            ViewUtil.setViewVisibility(vEndLine, View.GONE);
+            ViewUtil.setViewVisibility(tvEndLineDes, View.GONE);
+            ViewUtil.setViewVisibility(ivEndLineIcon, View.GONE);
+        }
+        if (vTransverseContrast != null && tvTransverseContrastDes != null) {//横向对比
+            ViewUtil.setViewVisibility(vTransverseContrast, View.GONE);
+            ViewUtil.setViewVisibility(tvTransverseContrastDes, View.GONE);
+        }
+        if (vSettlementLine != null && tvSettlementDes != null || ivSettlementIcon != null) {//结算
+            ViewUtil.setViewVisibility(vSettlementLine, View.GONE);
+            ViewUtil.setViewVisibility(tvSettlementDes, View.GONE);
+            ViewUtil.setViewVisibility(ivSettlementIcon, View.GONE);
+        }
+    }
+
     private void initViewHight() {
         //设置横向对比线的宽度
         tranConParams.width = chartWidth - 10;//横线对比线
@@ -412,22 +436,25 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
         isRefresh = event.isRefresh();
         if (isRefresh) {//走势图动画执行完成，初始化控件
             initView();
+        } else {
+            hideView();
         }
     }
 
     @Override
-    public void completion(Entry last, ILineDataSet dataSet) {
+    public void completion(float X, float Y, IDataSet dataSet) {
         if (!isRefresh) return;
-        currentEntry = last;
+        currentEntry.setX(X);
+        currentEntry.setY(Y);
         currentDataSet = dataSet;
-        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, last.getX(), last.getY());
+        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, X, Y);
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;
-        refreshLocation(last, dataSet);
+        refreshLocation(currentEntry, dataSet);
     }
 
     //设置当前点Icon坐标
-    private void refreshLocation(Entry last, ILineDataSet dataSet) {
+    private void refreshLocation(Entry last, IDataSet dataSet) {
         if (iconParams != null) {
             iconParams.leftMargin = currentX + startX - iconWidth;
             iconParams.topMargin = currentY - iconHight;
@@ -474,7 +501,7 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
     }
 
     //刷新所有购买点的位置
-    private void refreshPurchaseViews(ILineDataSet dataSet) {
+    private void refreshPurchaseViews(IDataSet dataSet) {
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             refreshPurchaseView(entity, dataSet);
@@ -482,7 +509,7 @@ public class LineChartListener implements ILineChartListener, MLineChartRenderer
     }
 
     //刷新购买点的位置
-    private void refreshPurchaseView(PurchaseViewEntity entity, ILineDataSet dataSet) {
+    private void refreshPurchaseView(PurchaseViewEntity entity, IDataSet dataSet) {
         if (!entity.isDisplay())
             return;
         ViewGroup.LayoutParams layoutParams;

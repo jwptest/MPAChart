@@ -3,6 +3,7 @@ package com.finance.ui.main;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -13,19 +14,21 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.finance.R;
 import com.finance.base.BaseActivity;
-import com.finance.ben.PurchaseViewEntity;
-import com.finance.interfaces.ILineChartDataSetting;
-import com.finance.interfaces.ILineChartListener;
+import com.finance.common.Constants;
+import com.finance.interfaces.IChartData;
+import com.finance.interfaces.IChartListener;
 import com.finance.interfaces.IViewHandler;
-import com.finance.linechartdata.LineChartDataSetting;
+import com.finance.linechartdata.CandleChartData;
+import com.finance.linechartdata.LineChartData;
 import com.finance.linechartview.BaseAxisValueFormatter;
 import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.listener.LineChartListener;
+import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
 import com.finance.utils.ViewUtil;
-import com.finance.widget.linechart.MLineChart;
+import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.data.Entry;
 
 import butterknife.BindView;
@@ -33,7 +36,7 @@ import butterknife.BindView;
 /**
  * 首页
  */
-public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu {
+public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu, ICentreMenu {
 
     @BindView(R.id.rlTitleBar)
     View rlTitleBar;
@@ -46,7 +49,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @BindView(R.id.rlZst)
     View rlZst;
     @BindView(R.id.lineChart)
-    MLineChart lineChart;
+    MCombinedChart lineChart;
     @BindView(R.id.ivIcon)
     ImageView ivIcon;
     @BindView(R.id.vEndLine)
@@ -109,9 +112,17 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //    LinearLayout llFall;
 
     //    private ILineChartSetting chartSetting;
-    private ILineChartListener chartListener;
-    private ILineChartDataSetting dataSetting;
+    private IChartListener chartListener;
     private IViewHandler leftMenu, rightMenu, centreMenu;
+
+    private boolean isResume;
+
+    //数据处理接口
+    private IChartData dataSetting;
+    //数据处理
+    private LineChartData mLineChartData;//折线图
+    private CandleChartData mCandleData;//蜡烛图
+    private String chartType;//当前显示图像类型
 
     @Override
     protected int getLayoutId() {
@@ -128,7 +139,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Override
     protected void onResume() {
         super.onResume();
-        if (dataSetting != null) dataSetting.onResume();
+        isResume = true;
+        if (dataSetting != null) dataSetting.onResume(chartType);
     }
 
     @Override
@@ -154,7 +166,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             rlTitleBar.setPadding(rlTitleBar.getLeft(), rlTitleBar.getPaddingTop() + statusBarHigh,
                     rlTitleBar.getPaddingRight(), rlTitleBar.getPaddingBottom());
             //设置titleBar的高度
-            rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_hight);
+            rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_height);
         }
         //右边轴value显示格式类
         BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter();
@@ -164,8 +176,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setRightIAxisValueFormatter(mRightAxisValue)
                 .setXIAxisValueFormatter(mXAxisValue)
                 .initLineChart();
-        dataSetting = new LineChartDataSetting(this, lineChart)
-                .onInit();
         chartListener = new LineChartListener(this, lineChart)
                 .initListener()
                 .setIvIcon(ivIcon)
@@ -181,7 +191,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setXAxisValueFormatter(mXAxisValue);
         leftMenu = new LeftMenu(this).onInit(llLeftMenu);
         rightMenu = new RightMenu(this).onInit(llRightMenu);
-        centreMenu = new CentreMenu().onInit(llCentreMenu);
+        centreMenu = new CentreMenu(this).onInit(llCentreMenu);
+        //设置数据处理
+        checkedChart(Constants.CHART_LINEFILL);//当前显示的走势图类型
         //设置背景图片
         setBackground(rlTitleBar, R.drawable.title_bg);
         setBackground(llRightMenu, R.drawable.right_bg);
@@ -189,6 +201,28 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         setBackground(rlZst, R.drawable.zst_bg);
 
         initLayoutParam();
+    }
+
+    //获取数据处理类
+    private IChartData getChartData(String type) {
+        IChartData dataSetting = null;
+        if (TextUtils.equals(type, Constants.CHART_LINEFILL) || TextUtils.equals(type, Constants.CHART_LINE)) {
+            if (mLineChartData == null) {
+                mLineChartData = new LineChartData(this, lineChart)
+                        .onInit();
+            }
+            dataSetting = mLineChartData;
+        } else if (TextUtils.equals(type, Constants.CHART_CANDLE)) {
+            //蜡烛图
+            if (mCandleData == null) {
+                mCandleData = new CandleChartData(this, lineChart)
+                        .onInit();
+            }
+            dataSetting = mCandleData;
+        }
+        if (isResume && dataSetting != null)
+            dataSetting.onResume(type);
+        return dataSetting;
     }
 
     private void initLayoutParam() {
@@ -255,6 +289,18 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         viewEntity.setyValue(y);
         viewEntity.setMoney(money);
         chartListener.addPurchaseView(viewEntity);
+    }
+
+    @Override
+    public void checkedChart(String chartType) {
+        if (TextUtils.equals(this.chartType, chartType)) {
+            return;
+        }
+        if (dataSetting != null) {
+            dataSetting.onStop();
+        }
+        this.chartType = chartType;
+        dataSetting = getChartData(chartType);
     }
 
 

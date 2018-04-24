@@ -22,8 +22,10 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = this;
-        setContentView(getLayoutId());
-        mUnbinder = ButterKnife.bind(this);
+        if (getLayoutId() != 0) {
+            setContentView(getLayoutId());
+            mUnbinder = ButterKnife.bind(this);
+        }
         if (isEvent()) {
             registerEvent();
         }

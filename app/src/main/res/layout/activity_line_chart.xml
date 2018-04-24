@@ -27,7 +27,7 @@
             android:layout_toRightOf="@+id/llLeftMenu"
             android:layout_weight="7.6">
 
-            <com.finance.widget.linechart.MLineChart
+            <com.finance.widget.combinedchart.MCombinedChart
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
@@ -125,7 +125,7 @@
             android:id="@+id/llCentreMenu"
             layout="@layout/home_layout_centre_menu"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/home_centre_hight"
+            android:layout_height="@dimen/home_centre_height"
             android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>

@@ -9,7 +9,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/MPChartLib" />
+            <option value="$PROJECT_DIR$/SignalA" />
+            <option value="$PROJECT_DIR$/SignalA.LongPolling" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/parallel-basic-http-client" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
 import com.finance.base.BaseViewHandle;
+import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.utils.BtnClickUtil;
 
 import butterknife.BindView;
@@ -83,7 +84,7 @@ public class LeftMenu extends BaseViewHandle {
 
     @OnClick({R.id.ivTransaction, R.id.tvTransaction, R.id.ivOrder, R.id.tvOrder, R.id.ivDynamic, R.id.tvDynamic})
     public void onViewClicked(View view) {
-        if (BtnClickUtil.isFastDoubleClick()) {
+        if (BtnClickUtil.isFastDoubleClick(view.getId())) {
             //防止双击
             return;
         }
@@ -116,10 +117,10 @@ public class LeftMenu extends BaseViewHandle {
         int from = hight * item;
         int to = hight * toItem;
         vItemBg.setTag(toItem);
-        getValueAnimator(from, to, textView).start();
+        getValueAnimator(from, to, toItem, textView).start();
     }
 
-    private ValueAnimator getValueAnimator(int from, int to, TextView textView) {
+    private ValueAnimator getValueAnimator(int from, int to, int tag, TextView textView) {
         if (anim == null) {
             anim = ValueAnimator.ofInt();
             anim.setDuration(200);
@@ -136,28 +137,44 @@ public class LeftMenu extends BaseViewHandle {
         }
         anim.setIntValues(from, to);
         mListener.setToTextView(textView);
+        mListener.setTag(tag);
         return anim;
     }
 
-    private void setSelectText(TextView textView) {
+    private void setSelectText(TextView textView, int tag) {
         if (currentSelect != null)
             currentSelect.setTextColor(Color.parseColor("#333333"));
         textView.setTextColor(Color.parseColor("#FFFFFF"));
         currentSelect = textView;
+
+        if (tag == 0) {
+            //交易
+        } else if (tag == 1) {
+            //订单
+//            OrderPopupWindow
+        } else if (tag == 2) {
+            //动态
+
+        }
     }
 
 
     private class MBaseAminatorListener extends BaseAminatorListener {
 
         private TextView toTextView;
+        private int tag;
 
         public void setToTextView(TextView toTextView) {
             this.toTextView = toTextView;
         }
 
+        public void setTag(int tag) {
+            this.tag = tag;
+        }
+
         @Override
         public void onAnimationEnd(Animator animation) {
-            setSelectText(toTextView);
+            setSelectText(toTextView, tag);
         }
 
     }

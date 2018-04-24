@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
+import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 
 import java.util.Locale;
@@ -93,6 +94,10 @@ public class RightMenu extends BaseViewHandle {
 
     @OnClick({R.id.ivMoneyAdd, R.id.ivMoneyReduce, R.id.ivRise, R.id.ivFall})
     public void onViewClicked(View view) {
+        if (BtnClickUtil.isFastDoubleClick(view.getId())) {
+            //防止双击
+            return;
+        }
         switch (view.getId()) {
             case R.id.ivMoneyAdd://金额加
                 deliveryUpdate(sept);
