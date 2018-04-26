@@ -55,6 +55,10 @@ dependencies {
     //图标框架
     compile project(':MPChartLib')
     //网络请求框架
-    compile project(':SignalA.LongPolling')
+//    compile project(':SignalA.LongPolling')
+    compile rootProject.ext.dependencies["okhttp"]
+    compile rootProject.ext.dependencies["okhttp-mockwebserver"]
+
+    compile 'org.java-websocket:Java-WebSocket:1.3.0'
 
 }

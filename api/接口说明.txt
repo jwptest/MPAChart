@@ -1,0 +1,10 @@
+
+获取指数：
+是三个参数:T:number=0(固定),Token:String=(用户的TOKEN,如果没有,传undefined),D:string=(你选中的产品id)
+
+
+服务器地址：
+ host: 'https://i.api789.top',
+                port: 8080,
+
+

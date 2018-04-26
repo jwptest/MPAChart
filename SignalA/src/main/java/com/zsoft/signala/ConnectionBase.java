@@ -17,7 +17,7 @@ public abstract class ConnectionBase {
     private String mUrl = "";
 	private String mConnectionId = null;
 	private String mConnectionToken = null;
-	private Context mContext;
+//	private Context mContext;
 	private String mMessageId = null;
 	private ITransport mTransport;
 	private String mGroupsToken = null;
@@ -32,7 +32,7 @@ public abstract class ConnectionBase {
 	
 	public ConnectionBase(String url, Context context, ITransport transport)
     {
-    	mContext = context;
+//    	mContext = context;
     	mTransport = transport;
         mCurrentState = mTransport.CreateInitialState(this);
         setUrl(url);
@@ -66,9 +66,9 @@ public abstract class ConnectionBase {
 		mUrl = url;
 	}
 
-	public Context getContext() {
-		return mContext;
-	}
+//	public Context getContext() {
+//		return mContext;
+//	}
 
     private void setQueryString(String queryString) {
 		mQueryString = queryString;
