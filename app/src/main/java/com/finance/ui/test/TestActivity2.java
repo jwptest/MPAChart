@@ -89,5 +89,4 @@ public class TestActivity2 extends BaseActivity {
         conn.Start();
     }
 
-
 }

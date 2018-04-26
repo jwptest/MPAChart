@@ -17,6 +17,7 @@ public class OrderEntity {
         mArrayList = arrayList;
     }
 
-    public static class ItemEntity{}
+    public static class ItemEntity {
+    }
 
 }

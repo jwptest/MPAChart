@@ -11,4 +11,7 @@ public class Constants {
     public static final String CHART_LINE = "CHART_LINE";//非填充折线图
     public static final String CHART_CANDLE = "CHART_CANDLE";//蜡烛图
 
+    public static final String DEVICETYPE = "2";//设备类型
+
+
 }

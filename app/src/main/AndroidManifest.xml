@@ -13,11 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-<<<<<<< HEAD
             android:name=".ui.test.NetworkActivity"
-=======
-            android:name=".ui.test.TestActivity2"
->>>>>>> origin/master
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
