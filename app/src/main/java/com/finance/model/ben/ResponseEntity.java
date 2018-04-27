@@ -10,8 +10,8 @@ public class ResponseEntity {
     private String MessageId;//String 获取或设置消息ID
     private String RunTime;//String 获取或设置消息处理时长
     private String Sign;//String 获取或设置加密认证密钥
-    private String SourceCode;//Int32 获取或设置请求类型
-    private String Status;//Status 获取或设置消息处理状态
+    private int SourceCode;//Int32 获取或设置请求类型
+    private int Status;//Status 获取或设置消息处理状态
     private String Url;// 临时订单的处理地址
 
     public String getCurrDateTime() {
@@ -54,19 +54,19 @@ public class ResponseEntity {
         Sign = sign;
     }
 
-    public String getSourceCode() {
-        return (SourceCode != null) ? SourceCode : "";
+    public int getSourceCode() {
+        return SourceCode;
     }
 
-    public void setSourceCode(String sourceCode) {
+    public void setSourceCode(int sourceCode) {
         SourceCode = sourceCode;
     }
 
-    public String getStatus() {
-        return (Status != null) ? Status : "";
+    public int getStatus() {
+        return Status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         Status = status;
     }
 

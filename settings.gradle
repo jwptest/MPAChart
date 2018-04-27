@@ -1,3 +1,3 @@
-include  ':SignalA', ':parallel-basic-http-client', ':SignalA.LongPolling'
+//include  ':SignalA', ':parallel-basic-http-client', ':SignalA.LongPolling'
 include ':app'
 include 'MPChartLib'

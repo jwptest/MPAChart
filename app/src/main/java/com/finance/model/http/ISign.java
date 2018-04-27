@@ -11,8 +11,8 @@ public interface ISign {
      * 获取签名后的参数集合
      *
      * @param params 所有参数
-     * @return 设置签名后的参数
+     * @return 设置签名后的参数Json
      */
-    HashMap<String, String> getSign(HashMap<String, String> params);
+    String getSign(HashMap<String, Object> params);
 
 }
