@@ -7,6 +7,10 @@ public class BasePresenter<V extends IBaseView> implements IBasePresenter<V> {
 
     protected V mView;
 
+    public BasePresenter(V view) {
+        mView = view;
+    }
+
     @Override
     public void start() {
 

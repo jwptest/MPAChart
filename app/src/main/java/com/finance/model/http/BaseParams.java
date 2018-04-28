@@ -5,6 +5,7 @@ package com.finance.model.http;
  */
 
 import com.finance.common.Constants;
+import com.finance.common.UserShell;
 
 import java.util.HashMap;
 
@@ -22,9 +23,13 @@ public class BaseParams {
         params.put("Device", Constants.DEVICETYPE);
         params.put("PlatformId", Constants.PLATFORMID);
 //        params.put("OperationIP", "1");
-//        params.put("Source", 1);
+        params.put("Token", UserShell.getInstance().getUserToken());
         params.put("MessageId", "3fc6bf1a-a7d1-4136-9ca5-5b304799b03c");//默认为1，可以根据业务更改
         params.put("T", 200);
+    }
+
+    public String getToken() {
+        return params.get("Token") + "";
     }
 
     public BaseParams addParam(String key, String value) {

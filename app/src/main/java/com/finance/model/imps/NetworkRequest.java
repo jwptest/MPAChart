@@ -29,7 +29,9 @@ public class NetworkRequest {
     }
 
     public HttpConnection getHttpConnection() {
-        return new HttpConnection(Constants.HTTPURL).setISign(sSignImp)
+        return new HttpConnection(Constants.HTTPURL)
+                .setISign(sSignImp)
+                .setT(200)
                 .setChangedCallback(sChangedCallback);
     }
 

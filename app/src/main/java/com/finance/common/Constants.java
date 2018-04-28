@@ -17,6 +17,6 @@ public class Constants {
     public static final int PLATFORMID = 9;//设备类型
 
     public static final int SUCCESSCODE = 0;//请求成功code
-
+    public static final int DEFAULTCODE = -1;//请求成功code
 
 }

@@ -46,7 +46,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="欧元/美元"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_14"/>
 
@@ -61,7 +60,6 @@
             android:gravity="center"
             android:paddingLeft="@dimen/dp_5"
             android:paddingRight="@dimen/dp_5"
-            android:text="80%"
             android:textColor="@color/white"
             android:textSize="@dimen/dp_11"/>
 
@@ -98,7 +96,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:gravity="center"
-            android:text="15:05"
             android:textColor="@color/white"
             android:textSize="@dimen/dp_13"/>
         <!--xiala 未选中图标-->

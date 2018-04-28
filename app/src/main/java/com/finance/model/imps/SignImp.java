@@ -16,22 +16,25 @@ import java.util.Set;
 public class SignImp implements ISign {
 
     private HashMap<String, Object> mHashMap;
+    private HashMap<String, Object> sendHasMap;
     private StringBuilder mStringBuilder;
     private Comparator<String> mComparator = new MyComparator();
+    private Gson mGson = new Gson();
 
     @Override
-    public String getSign(HashMap<String, Object> params) {
+    public String getSign(HashMap<String, Object> params, int T, String Token) {
         ArrayList<String> keys = getKeys(params);
         String signJson = getSignJson(keys, mHashMap);
         params.put("Sign", getSignMd5(signJson));
-
-        HashMap<String, Object> baseparams = new HashMap<>(3);
-        baseparams.put("D", new Gson().toJson(params));
-        baseparams.put("T", 200);
-        baseparams.put("Token", "");
+        HashMap<String, Object> baseparams = getSendHasMap();
+        baseparams.put("D", mGson.toJson(params));
+        baseparams.put("T", T);
+        baseparams.put("Token", Token);
+        String json = mGson.toJson(baseparams);
         getHashMap();
         getStringBuilder();
-        return new Gson().toJson(baseparams);
+        getSendHasMap();
+        return json;
     }
 
     private ArrayList<String> getKeys(HashMap<String, Object> params) {
@@ -105,6 +108,12 @@ public class SignImp implements ISign {
         if (mHashMap == null) mHashMap = new HashMap<>(5);
         else mHashMap.clear();
         return mHashMap;
+    }
+
+    private HashMap<String, Object> getSendHasMap() {
+        if (sendHasMap == null) sendHasMap = new HashMap<>(3);
+        else sendHasMap.clear();
+        return sendHasMap;
     }
 
     private static class MyComparator implements Comparator<String> {

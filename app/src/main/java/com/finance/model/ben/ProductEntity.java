@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 /**
  * 产品信息
+ * 310
  */
-public class ProductEntity extends ResponseEntity {
+public class ProductEntity {
 
     private String BgColor;// String 背景颜色
     private int CopyIndexMarkPID;// UInt32 设置为测试产品时使用的产品指数
@@ -19,7 +20,7 @@ public class ProductEntity extends ResponseEntity {
     private int Index;// Int32 排序
     private String IndexMark;//  String 当前指数HEX
     private ArrayList<IssueTypeEntity> IssueTypeNames;//  IssueType[] 拥有期号类型
-    private int IssueTypes;// UInt32[] 拥有期号类型
+    private  ArrayList<Integer> IssueTypes;// UInt32[] 拥有期号类型
     private boolean IsTest;// Boolean 是否为测试产品
     //    private String Logo;// LogoContract Logo
     private double MaxIndexMark;//  Decimal 今日最高指数
@@ -28,6 +29,7 @@ public class ProductEntity extends ResponseEntity {
     private String ProductName;// String 产品名称
     private String ProgressColor;// String 进度条颜色
     private String TitleColor;//  String Title颜色
+
 
     public String getBgColor() {
         return (BgColor != null) ? BgColor : "";
@@ -125,11 +127,11 @@ public class ProductEntity extends ResponseEntity {
         IssueTypeNames = issueTypeNames;
     }
 
-    public int getIssueTypes() {
+    public ArrayList<Integer> getIssueTypes() {
         return IssueTypes;
     }
 
-    public void setIssueTypes(int issueTypes) {
+    public void setIssueTypes(ArrayList<Integer> issueTypes) {
         IssueTypes = issueTypes;
     }
 
@@ -157,12 +159,12 @@ public class ProductEntity extends ResponseEntity {
         MinIndexMark = minIndexMark;
     }
 
-    public int getProductId() {
-        return ProductId;
-    }
-
     public void setProductId(int productId) {
         ProductId = productId;
+    }
+
+    public int getProductId() {
+        return ProductId;
     }
 
     public String getProductName() {

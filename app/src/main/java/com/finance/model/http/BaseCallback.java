@@ -3,11 +3,13 @@ package com.finance.model.http;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
+import com.finance.BuildConfig;
 import com.finance.common.Constants;
 import com.finance.model.ben.ResponseEntity;
 import com.finance.utils.HandlerUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.orhanobut.logger.Logger;
 
 import java.lang.reflect.Type;
 
@@ -16,7 +18,7 @@ import microsoft.aspnet.signalr.client.MessageReceivedHandler;
 /**
  * 网络回调
  */
-public abstract class BaseCallback<T extends ResponseEntity> implements MessageReceivedHandler {
+public abstract class BaseCallback<T> implements MessageReceivedHandler {
 
     private Object tag;
     private Class<T> clazz;
@@ -45,27 +47,44 @@ public abstract class BaseCallback<T extends ResponseEntity> implements MessageR
             }
         });
         String data = jsonElement.toString();
-//        if (clazz == String.class) t = (T) data;
-        if (clazz != null) t = new Gson().fromJson(data, clazz);
-        else if (type != null) new Gson().fromJson(data, type);
-        else t = null;
+        if (BuildConfig.DEBUG) {
+            Logger.d("返回数据：" + data);
+        }
+        try {
+            if (clazz == String.class) t = (T) data;
+            else if (clazz != null) t = new Gson().fromJson(data, clazz);
+            else if (type != null) new Gson().fromJson(data, type);
+            else t = null;
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace();
+            }
+            t = null;
+        }
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (t == null) {
-                    failed(0, "数据解析错误", false);
+//                    failed(0, "数据解析错误", false);
                     return;
                 }
-                if (t.getStatus() != Constants.SUCCESSCODE) {
-                    failed(t.getSourceCode(), t.getMessage(), false);
+                if (t instanceof ResponseEntity) {
+                    ResponseEntity entity = (ResponseEntity) t;
+                    if (entity.getStatus() == Constants.DEFAULTCODE) return;
+                    if (entity.getStatus() != Constants.SUCCESSCODE) {
+                        failed(entity.getSourceCode(), entity.getMessage(), false);
+                        return;
+                    }
+                    //成功
+                    successed(entity.getSourceCode(), entity.getMessage(), false, t);
                     return;
                 }
-                //成功
-                successed(t.getSourceCode(), t.getMessage(), false, t);
+                successed(0, "请求成功", false, t);
             }
         });
     }
 
+    //设置tag
     void setTag(Object tag) {
         this.tag = tag;
     }

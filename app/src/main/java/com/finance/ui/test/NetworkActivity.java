@@ -6,12 +6,10 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.BaseActivity;
-import com.finance.model.ben.ResponseEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.BaseParams;
 import com.finance.model.http.HttpConnection;
 import com.finance.model.imps.NetworkRequest;
-import com.finance.model.imps.SignImp;
 import com.google.gson.JsonElement;
 
 import butterknife.BindView;
@@ -54,10 +52,10 @@ public class NetworkActivity extends BaseActivity {
     @OnClick(R.id.tvSend)
     public void onViewClicked() {
         BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 102);
+        baseParams.addParam("SourceCode", 101);
 //        baseParams.addParam("NickName", "123456");
-        baseParams.addParam("Password", "123456");
-        baseParams.addParam("UserName", "tt1234567");
+//        baseParams.addParam("Password", "123456");
+//        baseParams.addParam("UserName", "tt1234567");
 //        HttpConnection.network(new MessageReceivedHandler() {
 //            @Override
 //            public void onMessageReceived(JsonElement jsonElement) {
@@ -68,10 +66,11 @@ public class NetworkActivity extends BaseActivity {
         NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(this)
+                .setT(1101)
                 .setParams(baseParams)
-                .execute(new BaseCallback() {
+                .execute(new BaseCallback<String>(String.class) {
                     @Override
-                    public void onSuccessed(int code, String msg, boolean isFromCache, ResponseEntity result) {
+                    public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
 
                     }
 

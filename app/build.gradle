@@ -62,5 +62,7 @@ dependencies {
     //json处理
     compile rootProject.ext.dependencies["gson"]
 
+    //other
+    compile rootProject.ext.dependencies["logger"]
 
 }

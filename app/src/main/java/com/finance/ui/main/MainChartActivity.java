@@ -10,11 +10,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.finance.R;
 import com.finance.base.BaseActivity;
 import com.finance.common.Constants;
+import com.finance.common.UserShell;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
 import com.finance.interfaces.IViewHandler;
@@ -24,12 +26,17 @@ import com.finance.linechartview.BaseAxisValueFormatter;
 import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.listener.LineChartListener;
+import com.finance.model.ben.IssueEntity;
+import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
+import com.finance.model.ben.UserInfoEntity;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.data.Entry;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 
@@ -78,6 +85,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     View llTimer;
     @BindView(R.id.ivRefresh)
     ImageView ivRefresh;
+    @BindView(R.id.tvMoneyType)
+    TextView tvMoneyType;
+    @BindView(R.id.tvBFB)
+    TextView tvBFB;
+    @BindView(R.id.tvJZTimer)
+    TextView tvJZTimer;
+
     @BindView(R.id.tvMoney)
     TextView tvMoney;
     @BindView(R.id.tvUName)
@@ -115,6 +129,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private IChartListener chartListener;
     private IViewHandler leftMenu, rightMenu, centreMenu;
 
+    private MainPresenter mMainPresenter;
+
     private boolean isResume;
 
     //数据处理接口
@@ -123,6 +139,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private LineChartData mLineChartData;//折线图
     private CandleChartData mCandleData;//蜡烛图
     private String chartType;//当前显示图像类型
+
+    private ArrayList<ProductEntity> mProductEntities;
+    private ArrayList<IssueEntity> mIssueEntities;
+
+    private ProductEntity currentProduct;
+    private ArrayList<IssueEntity> currentIssues;
+    private IssueEntity currentIssue;
 
     @Override
     protected int getLayoutId() {
@@ -134,6 +157,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         initView();
         //初始化参数
         PurchaseViewEntity.initValue(this);
+        mMainPresenter = new MainPresenter(mActivity, this);
+        mMainPresenter.getProduct();//获取产品信息
     }
 
     @Override
@@ -303,5 +328,56 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         dataSetting = getChartData(chartType);
     }
 
+    private void initViewUser() {
+        UserInfoEntity entity = UserShell.getInstance().getUserInfo();
+        Glide.with(mActivity)
+                .load(entity.getLogo())
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivUHead);
+        tvUName.setText(entity.getUserName());
+        tvMoney.setText("￥" + UserShell.getInstance().getUserMoneyStr());
+    }
+
+    private void initViewProduct() {
+        ProductEntity entity = mProductEntities.get(0);
+        tvMoneyType.setText(entity.getProductName());
+        tvBFB.setText(entity.getExpects() + "%");
+        currentProduct = entity;
+        if (mIssueEntities == null) {
+            mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
+        } else {
+            initViewIssue();
+        }
+    }
+
+    private void initViewIssue() {
+        IssueEntity entity = currentIssues.get(0);
+        tvJZTimer.setText(entity.getIssueName());
+        currentIssue = entity;
+    }
+
+    @Override
+    public void product(ArrayList<ProductEntity> Products, String msg) {
+        if (Products == null || Products.isEmpty()) {
+            showErrorMsg(msg);
+            return;
+        }
+        mProductEntities = Products;
+        initViewProduct();
+    }
+
+    @Override
+    public void issue(ArrayList<IssueEntity> issues, String msg) {
+        if (issues == null || issues.isEmpty()) {
+            showErrorMsg(msg);
+            return;
+        }
+        mIssueEntities = issues;
+        ArrayList<IssueEntity> issueEntities = mMainPresenter.getProductIssue(currentProduct.getProductId(), issues);
+        if (issueEntities == null || issueEntities.isEmpty()) return;
+        currentIssues = issueEntities;
+        initViewIssue();
+    }
 
 }
