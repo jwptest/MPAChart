@@ -65,6 +65,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private int currentX, currentY;
     //当前点的值
     private Entry currentEntry = new Entry();
+    //开奖点和购买点
+    private Entry openEntry, endEntry;
     //显示数据
     private IDataSet currentDataSet;
     //是否刷新子控件坐标
@@ -442,45 +444,63 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     }
 
     @Override
-    public void completion(float X, float Y, IDataSet dataSet) {
+    public void completion(Entry lastEntry, IDataSet dataSet) {
         if (!isRefresh) return;
-        currentEntry.setX(X);
-        currentEntry.setY(Y);
+        currentEntry = lastEntry;
         currentDataSet = dataSet;
-        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, X, Y);
+        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;
+        //开奖
+        refreshOpen(openEntry, dataSet);
+        //截止购买
+        refreshEnd(endEntry, dataSet);
+        //其他线
         refreshLocation(currentEntry, dataSet);
+        //刷新购买点的位置
+        refreshPurchaseViews(dataSet);
+        //刷新位置
+        mParent.requestLayout();
     }
 
-    //设置当前点Icon坐标
-    private void refreshLocation(Entry last, IDataSet dataSet) {
-        if (iconParams != null) {
-            iconParams.leftMargin = currentX + startX - iconWidth;
-            iconParams.topMargin = currentY - iconHight;
+    //刷新开奖点
+    private void refreshOpen(Entry openEntry, IDataSet dataSet) {
+        if (settParams != null && settDesParams != null && openEntry != null) {
+            MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, openEntry.getX() + 100, openEntry.getY());
+            //结算线
+            settParams.leftMargin = (int) (pointD.x + settDesWidth / 2);
+            //结算线描述
+            settDesParams.leftMargin = settParams.leftMargin - settDesHight * 2 - settDesParams.rightMargin;
+            //图标
+            settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
         }
-        //        tvEndLineDes.setLayoutParams();
-        if (endParams != null && endDesParams != null) {
+    }
+
+    //刷新截止点
+    private void refreshEnd(Entry endEntry, IDataSet dataSet) {
+        if (endParams != null && endDesParams != null && endEntry != null) {
+            MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, endEntry.getX(), endEntry.getY());
             //截止线
-            endParams.leftMargin = currentX + startX + endDesHight;
+            endParams.leftMargin = (int) (pointD.x + startX + endDesHight);
             //截止线描述
             endDesParams.leftMargin = endParams.leftMargin - endDesHight * 2 - endDesParams.rightMargin;
             //图标
             endIconParams.leftMargin = endParams.leftMargin - endIconWidth / 2;
+        }
+    }
+
+    //设置当前点Icon坐标
+    private void refreshLocation(Entry last, IDataSet dataSet) {
+        //当前点
+        if (iconParams != null) {
+            iconParams.leftMargin = currentX + startX - iconWidth;
+            iconParams.topMargin = currentY - iconHight;
         }
         if (tranConDesParams != null && tranConParams != null) {
             //横向描述线
             tranConParams.topMargin = currentY;
             //横向描线描述
             tranConDesParams.topMargin = currentY - tranConDesHight / 2;
-        }
-        if (settParams != null && settDesParams != null) {
-            //结算线
-            settParams.leftMargin = endParams.leftMargin + settDesWidth / 2;
-            //结算线描述
-            settDesParams.leftMargin = settParams.leftMargin - settDesHight * 2 - settDesParams.rightMargin;
-            //图标
-            settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
         }
         if (mRightAxisValueFormatter != null) {
             //右边轴标签显示偏移值
@@ -494,10 +514,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 2));
 ////            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 6));
 //        }
-        //刷新购买点的位置
-        refreshPurchaseViews(dataSet);
-        //刷新位置
-        mParent.requestLayout();
+
     }
 
     //刷新所有购买点的位置

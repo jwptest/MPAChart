@@ -226,6 +226,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         setBackground(rlZst, R.drawable.zst_bg);
 
         initLayoutParam();
+        initViewUser();
     }
 
     //获取数据处理类

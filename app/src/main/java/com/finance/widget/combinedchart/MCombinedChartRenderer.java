@@ -133,9 +133,11 @@ public class MCombinedChartRenderer extends DataRenderer {
             iDataSet = ((ScatterData) data).getDataSets().get(0);
         }
         if (iDataSet == null) return;
-        Entry entry = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 1);
-        if (entry == null) return;
-        completion.completion(entry.getX(), entry.getY(), iDataSet);
+        Entry entry1 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 1);//开奖点
+//        Entry entry2 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 2);//截止购买点
+//        Entry entry3 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 3);//绘制的最后一个点
+        if (entry1 == null) return;
+        completion.completion(entry1, iDataSet);
     }
 
     protected List<Highlight> mHighlightBuffer = new ArrayList<Highlight>();

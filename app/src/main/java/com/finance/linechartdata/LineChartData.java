@@ -61,7 +61,6 @@ public class LineChartData implements IChartData {
         if (TextUtils.equals(type, Constants.CHART_LINEFILL)) {
             dataSet.setDrawFilled(true);
             dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-            dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         } else if (TextUtils.equals(type, Constants.CHART_LINE)) {
             dataSet.setDrawFilled(false);
             dataSet.setMode(LineDataSet.Mode.LINEAR);
@@ -210,6 +209,10 @@ public class LineChartData implements IChartData {
         for (int i = 0; i < size; i++) {
             entries.add(getEntry(i));
         }
+
+//        entries.add(new Entry(entries.size() - 100, 0));//开奖线
+//        entries.add(new Entry(entries.size() - 200, 0));//截止购买线
+
         LineDataSet dataSet = createSet(entries);
         LineData data = new LineData(dataSet);
         return data;

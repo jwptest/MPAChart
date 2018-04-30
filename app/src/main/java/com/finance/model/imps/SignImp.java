@@ -5,10 +5,12 @@ import com.finance.utils.MD5Util;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * 生成签名
@@ -23,8 +25,9 @@ public class SignImp implements ISign {
 
     @Override
     public String getSign(HashMap<String, Object> params, int T, String Token) {
-        ArrayList<String> keys = getKeys(params);
-        String signJson = getSignJson(keys, mHashMap);
+//        ArrayList<String> keys = getKeys(params);
+        TreeMap<String, Object> treeMap = getKeys(params);
+        String signJson = mGson.toJson(treeMap);//getSignJson(keys, mHashMap);
         params.put("Sign", getSignMd5(signJson));
         HashMap<String, Object> baseparams = getSendHasMap();
         baseparams.put("D", mGson.toJson(params));
@@ -37,7 +40,7 @@ public class SignImp implements ISign {
         return json;
     }
 
-    private ArrayList<String> getKeys(HashMap<String, Object> params) {
+    private TreeMap<String, Object> getKeys(HashMap<String, Object> params) {
         HashMap<String, Object> mHashMap = getHashMap();//new HashMap<>(params.size());
         mHashMap.putAll(params);
         //移除不参与签名的字段
@@ -57,19 +60,24 @@ public class SignImp implements ISign {
             else if (params.get(key).equals("false"))
                 params.put(key, "0");
         }
-        Object value;
+
+        TreeMap<String, Object> treeMap = new TreeMap<String, Object>();
+
+//        Object value;
         //key大写转小写
         for (String key : arrayList) {
-            value = mHashMap.get(key);
-            mHashMap.remove(key);
-            mHashMap.put(key.toLowerCase(), value);
+            treeMap.put(key.toLowerCase(), mHashMap.get(key));
+//            value = mHashMap.get(key);
+//            mHashMap.remove(key);
+//            mHashMap.put(key.toLowerCase(), value);
         }
-        //排序
-        keys = mHashMap.keySet();
-        arrayList.clear();
-        arrayList.addAll(keys);
-        Collections.sort(arrayList, mComparator);
-        return arrayList;
+        return treeMap;
+//        //排序
+//        keys = mHashMap.keySet();
+//        arrayList.clear();
+//        arrayList.addAll(keys);
+//        Collections.sort(arrayList, mComparator);
+//        return arrayList;
     }
 
     private String getSignJson(ArrayList<String> keys, HashMap<String, Object> mHashMap) {
@@ -86,12 +94,25 @@ public class SignImp implements ISign {
             stringBuilder.append(":");
             if (value instanceof String) {
                 stringBuilder.append("\"" + value + "\"");
+            } else if (value instanceof Collection) {
+                getValue((Collection) value, stringBuilder);
             } else {
                 stringBuilder.append(value);
             }
         }
         stringBuilder.append("}");
         return stringBuilder.toString();
+    }
+
+    private void getValue(Collection value, StringBuilder stringBuilder) {
+        stringBuilder.append("[");
+        int i = 0;
+        for (Object object : value) {
+            if (i > 0) stringBuilder.append(",");
+            stringBuilder.append(object);
+            i++;
+        }
+        stringBuilder.append("]");
     }
 
     private String getSignMd5(String signStr) {
