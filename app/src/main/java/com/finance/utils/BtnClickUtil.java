@@ -7,7 +7,7 @@ public class BtnClickUtil {
 
     private static long lastClickTime = 0;
 
-    private static long DIFF = 500;
+    private static long DIFF = 300;
 
     private static int lastButtonId = -1;
 

@@ -92,7 +92,6 @@
                 android:id="@+id/tvMoney2"
                 style="@style/orderItemText2"
                 android:text="$78.30"/>
-
         </LinearLayout>
 
         <View

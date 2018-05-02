@@ -6,11 +6,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
 import com.finance.R;
 import com.finance.model.ben.ItemEntity;
-import com.finance.model.ben.ProductEntity;
 import com.finance.widget.commonadapter.RecyclerAdapter;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 
@@ -26,15 +26,22 @@ public abstract class RecyclerPopupWindow<D> extends PopupWindow implements Recy
     protected int selectIndex = -1;//当前选中下标
     protected int selColorBG, unSelColorBg;//选中未选中背景颜色
     protected RecyclerAdapter<ItemEntity<D>> mAdapter;
+    protected OnItemClicklistener<D> mOnItemClicklistener;
 
     public RecyclerPopupWindow(Context context, ArrayList<ItemEntity<D>> mArrayList) {
-        View rootView = LayoutInflater.from(context).inflate(R.layout.popupwindow_recycler, null);
+        super(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        View rootView = LayoutInflater.from(context).inflate(getLayoutId(), null);
         setContentView(rootView);
         rvList = rootView.findViewById(R.id.rvList);
         this.mArrayList = mArrayList;
         rvList.setLayoutManager(getLayoutManager(context));
         mAdapter = getRecyclerAdapter(mArrayList);
         rvList.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(this);
+        setTouchable(true);
+        setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
+        selColorBG = Color.parseColor("#50141312");
+        unSelColorBg = Color.parseColor("#00000000");
     }
 
     public void onItemClick(int position) {
@@ -42,6 +49,8 @@ public abstract class RecyclerPopupWindow<D> extends PopupWindow implements Recy
         ItemEntity<D> entity = mArrayList.get(position);
         onItemClick(position, entity);
         mAdapter.notifyDataSetChanged();
+        if (mOnItemClicklistener != null)
+            mOnItemClicklistener.onClickListener(position, entity);
     }
 
     protected RecyclerView.LayoutManager getLayoutManager(Context context) {
@@ -58,13 +67,33 @@ public abstract class RecyclerPopupWindow<D> extends PopupWindow implements Recy
         };
     }
 
-    protected abstract void onItemClick(int position, ItemEntity<D> entity);
-
     protected abstract void onBindData(RecyclerViewHolder viewHolder, int position, ItemEntity<D> item);
 
+    protected abstract void onItemClick(int position, ItemEntity<D> entity);
+
+    protected abstract int getLayoutId();
+
     protected abstract int getItemLayoutId();
+
+    public void setOnItemClicklistener(OnItemClicklistener<D> onItemClicklistener) {
+        mOnItemClicklistener = onItemClicklistener;
+    }
+
+    public void setData(ArrayList<ItemEntity<D>> entities) {
+        if (mAdapter != null) {
+            mAdapter.clear();
+            mAdapter.addItems(entities);
+        }
+        mArrayList = entities;
+    }
+
+    public void setSelectIndex(int selectIndex) {
+        this.selectIndex = selectIndex;
+    }
 
     public interface OnItemClicklistener<D> {
         void onClickListener(int privation, ItemEntity<D> dItemEntity);
     }
+
+
 }

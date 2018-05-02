@@ -1,7 +1,9 @@
 package com.finance.ui.popupwindow;
 
 import android.content.Context;
+import android.view.View;
 
+import com.finance.R;
 import com.finance.model.ben.ItemEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
@@ -9,17 +11,18 @@ import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import java.util.ArrayList;
 
 /**
- * ===============================
- * 描    述：
- * 作    者：pjw
- * 创建日期：2018/5/1 15:02
- * ===============================
+ *
  */
 public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
 
-
     public ProductPopupWindow(Context context, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
         super(context, mArrayList);
+    }
+
+    @Override
+    protected void onBindData(RecyclerViewHolder viewHolder, int position, ItemEntity<ProductEntity> item) {
+        viewHolder.setText(R.id.tvTitle, item.getTitle());
+        viewHolder.setText(R.id.tvBFB, item.getMessage());
     }
 
     @Override
@@ -28,12 +31,18 @@ public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
     }
 
     @Override
-    protected void onBindData(RecyclerViewHolder viewHolder, int position, ItemEntity<ProductEntity> item) {
-
+    protected int getLayoutId() {
+        return R.layout.popupwindow_recycler;
     }
 
     @Override
     protected int getItemLayoutId() {
-        return 0;
+        return R.layout.layout_product_recy_item;
     }
+
+    public void showBottom(View parent) {
+        showAsDropDown(parent);
+    }
+
+
 }

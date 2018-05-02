@@ -30,24 +30,30 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.StickyBaseAdapter;
 import com.finance.model.ben.OrderEntity;
+import com.finance.model.ben.OrdersEntity;
+import com.finance.widget.CompletedView;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.finance.R.id.tvName;
 
 /**
  * 订单适配器
  */
-public class OrderAdapter extends StickyBaseAdapter<OrderEntity.ItemEntity> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
+public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
 
-    //当前显示数据实体
-    private OrderEntity entity;
+    private long serviceTimer;//服务器时间
 
-    public OrderAdapter(List<OrderEntity.ItemEntity> mlist) {
+    public OrderAdapter(ArrayList<OrderEntity> mlist) {
         addAll(mlist);
     }
 
@@ -57,50 +63,89 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity.ItemEntity> impl
         return new ItemHolder(view);
     }
 
-    //"investProductReservationId": 0,
-//        09-05 14:20:29.648 10441-20910/com.zimadai D/PRETTYLOGGER: ║           "reservationIncreaseInterestRate": 0,
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        OrderEntity.ItemEntity entity = getItem(position);
         ItemHolder itemHolder = (ItemHolder) holder;
+        OrderEntity entity = getItem(position);
+        if (isOpen(entity)) {//开奖完成
+            itemHolder.cvProgressBar.setVisibility(View.GONE);
+            itemHolder.tvTimer.setText(entity.getCreateTime());
+            itemHolder.tvDate.setText(entity.getCreateTime());
+        } else {//交易中
+            itemHolder.cvProgressBar.setVisibility(View.VISIBLE);
+            itemHolder.tvTimer.setVisibility(View.GONE);
+            itemHolder.tvDate.setVisibility(View.GONE);
+            //计算进度
+        }
+
+        if (entity.isResult()) {//涨
+            itemHolder.ivRiseFall.setImageResource(R.drawable.rise_icon);
+            itemHolder.tvExplain.setText("看涨");
+        } else {//跌
+            itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon);
+            itemHolder.tvExplain.setText("看跌");
+        }
+
+        itemHolder.tvName.setText(entity.getProductTxt());
+        itemHolder.tvPurchase.setText(entity.getBonusHexIndexMark());
+        itemHolder.tvMoney.setText(entity.getBonusMoney() + "");
+        itemHolder.tvPurchase2.setText("指数");
+        itemHolder.tvName.setText(entity.getMoney() + "");
     }
 
     @Override
     public long getHeaderId(int position) {
-//        CDInvestRecordsBean.InvestRecordsListEntity entity = getItem(position);
-//        return entity.getCreateIndex();
-        return position;
+        OrderEntity entity = getItem(position);
+        if (isOpen(entity)) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_order_recy_head, parent, false);
-        return new RecyclerView.ViewHolder(null) {
+        return new RecyclerView.ViewHolder(view) {
         };
     }
 
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ImageView icon = holder.itemView.findViewById(R.id.ivStateIcon);//.setimage
+        TextView textView = holder.itemView.findViewById(R.id.tvTransaction);
+        OrderEntity entity = getItem(position);
+        if (isOpen(entity)) {
+            icon.setImageResource(R.drawable.rise_icon);
+            textView.setText("交易完成订单");
+        } else {
+            textView.setText("交易中订单");
+            icon.setImageResource(R.drawable.fall_icon);
+        }
+    }
 
+    private boolean isOpen(OrderEntity entity) {
+        if (serviceTimer > entity.getOpenTimer()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void setServiceTimer(long serviceTimer) {
+        this.serviceTimer = serviceTimer;
     }
 
     public class ItemHolder extends RecyclerViewHolder {
-//        TextView rtv_interest;
-//        TextView tv_title;
-//        TextView tv_describe;
-//        TextView tv_investment_amount;
-//        TextView tv_investment_amount_desc;
-//        TextView tv_timer;
-//        TextView tv_state;
-//        TextView tv_increase_interest;
-//        RoundTextView rtv_confirm;
-//        View iv_state_icon;
-//        TextView tv_income_amount;
-//        TextView tv_income_amount_desc;
-//        View ll_icon;
-//        TextView tv_days_remaining;
-//        TextView tv_days_remaining_desc;
-//        View vDev;
+        CompletedView cvProgressBar;
+        TextView tvTimer;
+        TextView tvName;
+        TextView tvPurchase;
+        TextView tvMoney;
+        TextView tvDate;
+        ImageView ivRiseFall;
+        TextView tvExplain;
+        TextView tvPurchase2;
+        TextView tvMoney2;
 
         /**
          * 子项RecyclerView.ViewHolderNew
@@ -109,24 +154,17 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity.ItemEntity> impl
          */
         public ItemHolder(View itemView) {
             super(itemView);
-//            rtv_interest = findViewById(R.id.cd_rtv_interest);
-//            tv_title = findViewById(R.id.cd_tv_title);
-//            tv_describe = findViewById(R.id.cd_tv_describe);
-//            tv_investment_amount = findViewById(R.id.cd_tv_investment_amount);
-//            tv_investment_amount_desc = findViewById(R.id.cd_tv_investment_amount_desc);
-//            tv_timer = findViewById(R.id.cd_tv_timer);
-//            tv_state = findViewById(R.id.cd_tv_state);
-//            tv_increase_interest = findViewById(R.id.cd_tv_increase_interest);
-//            rtv_confirm = findViewById(R.id.cd_rtv_confirm);
-//            iv_state_icon = findViewById(R.id.cd_iv_state_icon);
-//            tv_income_amount = findViewById(R.id.cd_tv_income_amount);
-//            tv_income_amount_desc = findViewById(R.id.cd_tv_income_amount_desc);
-//            ll_icon = findViewById(R.id.cd_ll_icon);
-//            tv_days_remaining = findViewById(R.id.cd_tv_days_remaining);
-//            tv_days_remaining_desc = findViewById(R.id.cd_tv_days_remaining_desc);
-//            vDev = findViewById(R.id.cd_v_dev);
+            cvProgressBar = findViewById(R.id.cvProgressBar);
+            tvTimer = findViewById(R.id.tvTimer);
+            tvName = findViewById(R.id.tvName);
+            tvPurchase = findViewById(R.id.tvPurchase);
+            tvMoney = findViewById(R.id.tvMoney);
+            tvDate = findViewById(R.id.tvDate);
+            ivRiseFall = findViewById(R.id.ivRiseFall);
+            tvExplain = findViewById(R.id.tvExplain);
+            tvPurchase2 = findViewById(R.id.tvPurchase2);
+            tvMoney2 = findViewById(R.id.tvMoney2);
         }
-
     }
 
 

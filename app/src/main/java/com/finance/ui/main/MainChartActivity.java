@@ -30,6 +30,7 @@ import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
 import com.finance.utils.ViewUtil;
@@ -39,6 +40,7 @@ import com.github.mikephil.charting.data.Entry;
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * 首页
@@ -129,7 +131,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private IChartListener chartListener;
     private IViewHandler leftMenu, rightMenu, centreMenu;
 
-    private MainPresenter mMainPresenter;
+    private MainContract.Presenter mMainPresenter;
 
     private boolean isResume;
 
@@ -146,6 +148,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private ProductEntity currentProduct;
     private ArrayList<IssueEntity> currentIssues;
     private IssueEntity currentIssue;
+    private int issuesSelectIndex = -1;
 
     @Override
     protected int getLayoutId() {
@@ -340,21 +343,21 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         tvMoney.setText("￥" + UserShell.getInstance().getUserMoneyStr());
     }
 
-    private void initViewProduct() {
-        ProductEntity entity = mProductEntities.get(0);
+    private void initViewProduct(ProductEntity entity) {
         tvMoneyType.setText(entity.getProductName());
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
         if (mIssueEntities == null) {
             mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
         } else {
-            initViewIssue();
+            initViewIssue(0);
         }
     }
 
-    private void initViewIssue() {
-        IssueEntity entity = currentIssues.get(0);
-        tvJZTimer.setText(entity.getIssueName());
+    private void initViewIssue(int selIndex) {
+        IssueEntity entity = mIssueEntities.get(selIndex);
+        issuesSelectIndex = selIndex;
+        tvJZTimer.setText(mMainPresenter.issueNameFormat(entity.getIssueName(), new StringBuilder()));
         currentIssue = entity;
     }
 
@@ -365,7 +368,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             return;
         }
         mProductEntities = Products;
-        initViewProduct();
+        initViewProduct(mProductEntities.get(0));
     }
 
     @Override
@@ -378,7 +381,41 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         ArrayList<IssueEntity> issueEntities = mMainPresenter.getProductIssue(currentProduct.getProductId(), issues);
         if (issueEntities == null || issueEntities.isEmpty()) return;
         currentIssues = issueEntities;
-        initViewIssue();
+        initViewIssue(0);
     }
+
+    @Override
+    public void setProduct(ProductEntity product) {
+        if (product == null) return;
+        initViewProduct(product);
+    }
+
+    @Override
+    public void setIssue(IssueEntity issue, int index) {
+        if (issue == null) return;
+        initViewIssue(index);
+    }
+
+    @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
+    public void onClickListener(View view) {
+        if (BtnClickUtil.isFastDoubleClick(view.getId())) {
+            //防止双击
+            return;
+        }
+        switch (view.getId()) {
+            case R.id.ivExitLogin:
+                break;
+            case R.id.llMoney:
+                mMainPresenter.showProductPopWindow(llMoney, mProductEntities);
+                break;
+            case R.id.llTimer:
+                mMainPresenter.showIssuePopWindow(llTimer, currentIssues, issuesSelectIndex);
+                break;
+            case R.id.ivRefresh:
+                break;
+        }
+
+    }
+
 
 }

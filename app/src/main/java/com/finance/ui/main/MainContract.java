@@ -1,6 +1,8 @@
 package com.finance.ui.main;
 
 
+import android.view.View;
+
 import com.finance.base.IBasePresenter;
 import com.finance.base.IBaseView;
 import com.finance.model.ben.IssueEntity;
@@ -19,18 +21,26 @@ public interface MainContract {
         void product(ArrayList<ProductEntity> Products, String msg);
 
         void issue(ArrayList<IssueEntity> issues, String msg);
+
+        void setProduct(ProductEntity product);
+
+        void setIssue(IssueEntity issue, int issueSelIndex);
     }
 
     interface Presenter extends IBasePresenter<View> {
         int[] getProductIds(ArrayList<ProductEntity> products);
 
-        ArrayList<IssueEntity> getProductIssue(int productId,ArrayList<IssueEntity> issues);
+        ArrayList<IssueEntity> getProductIssue(int productId, ArrayList<IssueEntity> issues);
 
         void getProduct();
 
         void getProductIssue(int[] productIds);
 
+        String issueNameFormat(String issueName, StringBuilder sb);
 
+        void showProductPopWindow(android.view.View view, ArrayList<ProductEntity> entities);
+
+        void showIssuePopWindow(android.view.View view, ArrayList<IssueEntity> entities, int selIndex);
     }
 
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_115"
+    android:layout_height="@dimen/dp_50"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/dp_10"
+    android:paddingRight="@dimen/dp_10"
+    android:paddingTop="@dimen/dp_10">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="产品名称"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_14"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0.6"
+        android:layout_alignParentBottom="true"
+        android:background="#aaaaaa"/>
+
+</RelativeLayout>

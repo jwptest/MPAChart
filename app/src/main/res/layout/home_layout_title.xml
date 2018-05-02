@@ -29,17 +29,17 @@
         android:layout_width="@dimen/dp_60"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_20"
-        android:layout_marginRight="@dimen/dp_20"
         android:scaleType="centerInside"
         android:src="@drawable/km_icon"
         tools:tooltipText="KM"/>
 
     <RelativeLayout
         android:id="@+id/llMoney"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/dp_180"
         android:layout_height="match_parent"
         android:layout_toRightOf="@+id/ivKM"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp_20">
 
         <TextView
             android:id="@+id/tvMoneyType"
@@ -78,12 +78,11 @@
     <View
         android:layout_width="@dimen/dp_0.6"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/dp_10"
         android:background="#35000000"/>
 
     <RelativeLayout
         android:id="@+id/llTimer"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/dp_115"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -94,8 +93,10 @@
             android:id="@+id/tvJZTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:gravity="center"
+            android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="@dimen/dp_13"/>
         <!--xiala 未选中图标-->
