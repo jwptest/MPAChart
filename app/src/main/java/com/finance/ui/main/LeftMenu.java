@@ -40,6 +40,7 @@ public class LeftMenu extends BaseViewHandle {
     TextView tvDynamic;
 
     private Activity mActivity;
+    private MainContract.Presenter mPresenter;
 
     private RelativeLayout.LayoutParams mLayoutParams;
 
@@ -48,8 +49,9 @@ public class LeftMenu extends BaseViewHandle {
 
     private TextView currentSelect;
 
-    public LeftMenu(Activity activity) {
+    public LeftMenu(Activity activity, MainContract.Presenter presenter) {
         this.mActivity = activity;
+        mPresenter = presenter;
     }
 
     @Override
@@ -96,10 +98,12 @@ public class LeftMenu extends BaseViewHandle {
             case R.id.ivOrder://订单
             case R.id.tvOrder:
                 startAnimation(1, tvOrder);
+                mPresenter.showOrderPopWindow(tvOrder, null, vItemBg.getHeight() * 2, -vItemBg.getWidth());
                 break;
             case R.id.ivDynamic://动态
             case R.id.tvDynamic:
                 startAnimation(2, tvDynamic);
+
                 break;
         }
     }

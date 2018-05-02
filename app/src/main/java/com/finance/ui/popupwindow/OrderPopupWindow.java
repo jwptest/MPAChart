@@ -12,11 +12,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.finance.R;
-import com.finance.model.ben.OrderEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.ui.adapters.OrderAdapter;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

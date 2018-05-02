@@ -36,15 +36,11 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.StickyBaseAdapter;
 import com.finance.model.ben.OrderEntity;
-import com.finance.model.ben.OrdersEntity;
 import com.finance.widget.CompletedView;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import static com.finance.R.id.tvName;
 
 /**
  * 订单适配器
@@ -76,6 +72,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
             itemHolder.tvTimer.setVisibility(View.GONE);
             itemHolder.tvDate.setVisibility(View.GONE);
             //计算进度
+            itemHolder.cvProgressBar.setProgress(30);
         }
 
         if (entity.isResult()) {//涨

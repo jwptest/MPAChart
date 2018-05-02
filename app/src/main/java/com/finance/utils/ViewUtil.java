@@ -1,5 +1,6 @@
 package com.finance.utils;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -61,6 +62,12 @@ public class ViewUtil {
 
 
         return viewEntity;
+    }
+
+    public static void dd(View view) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f);
+        animator.setDuration(500);
+        animator.start();
     }
 
 }

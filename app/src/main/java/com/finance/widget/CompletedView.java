@@ -12,11 +12,7 @@ import android.view.View;
 import com.finance.R;
 
 /**
- * ===============================
- * 描    述：
- * 作    者：pjw
- * 创建日期：2018/4/21 16:59
- * ===============================
+ * 圆形进度条
  */
 public class CompletedView extends View {
 
@@ -62,7 +58,10 @@ public class CompletedView extends View {
     }
 
     public CompletedView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        super(context, attrs, defStyleAttr);
+        // 获取自定义的属性
+        initAttrs(context, attrs);
+        initVariable();
     }
 
     public CompletedView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {

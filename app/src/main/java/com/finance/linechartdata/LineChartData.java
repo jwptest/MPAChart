@@ -177,9 +177,9 @@ public class LineChartData implements IChartData {
         set.setDrawIcons(false);//显示图标
         //set.setCircleRadius(4f);
 //        set.setFillAlpha(80);
-        set.setHighLightColor(color);
+//        set.setHighLightColor(color);//高亮颜色
         set.setValueTextColor(color);
-        set.setHighlightEnabled(true);
+        set.setHighlightEnabled(false);//不显示高亮
 //        set.setDrawHighlightIndicators(true);
 //        set.setDrawVerticalHighlightIndicator(true);
 //        set.setFillAlpha(50);

@@ -6,11 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * ===============================
- * 描    述：
- * 作    者：pjw
- * 创建日期：2018/5/2 17:57
- * ===============================
+ * 时间工具类
  */
 public class TimerUtil {
 
@@ -32,16 +28,16 @@ public class TimerUtil {
         return 0;
     }
 
-    public static String timerFormatStr(String timer) {
-        timer = formatStr(timer);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
-        try {
-            formatter.
-            return formatter.parse(timer);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+//    public static String timerFormatStr(String timer) {
+//        timer = formatStr(timer);
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
+//        try {
+//            formatter.p
+//            return formatter.parse(timer);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
 
 }

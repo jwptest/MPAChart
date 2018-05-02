@@ -5,16 +5,20 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.PopupWindow;
 
+import com.finance.R;
 import com.finance.base.BasePresenter;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
 import com.finance.model.ben.ItemEntity;
+import com.finance.model.ben.OrderEntity;
+import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.BaseParams;
 import com.finance.model.imps.NetworkRequest;
 import com.finance.ui.popupwindow.IssuesPopupWindow;
+import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.ui.popupwindow.ProductPopupWindow;
 import com.finance.ui.popupwindow.RecyclerPopupWindow;
 import com.finance.utils.HandlerUtil;
@@ -105,6 +109,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         mView.issue(null, msg);
                     }
                 });
+    }
+
+    @Override
+    public void getOrderRecord() {
+
     }
 
 
@@ -220,6 +229,47 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         }
         isDismissIssues = false;
         mIssuesPopupWindow.showBottom(view);
+    }
+
+    private OrderPopupWindow mOrderPopupWindow;
+    private boolean isDismissOrder = true;
+
+    @Override
+    public void showOrderPopWindow(View view, OrdersEntity entity, int x, int y) {
+        if (!isDismissOrder) {
+            isDismissOrder = true;
+            return;
+        }
+        entity = new OrdersEntity();
+        ArrayList<OrderEntity> entities = new ArrayList<>(10);
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entity.setOrders(entities);
+        if (mOrderPopupWindow == null) {
+            int width = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_200);
+            mOrderPopupWindow = new OrderPopupWindow(mActivity, entity, width);
+            mOrderPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    HandlerUtil.runOnUiThreadDelay(new Runnable() {
+                        @Override
+                        public void run() {
+                            isDismissOrder = true;
+                        }
+                    }, 200);
+                }
+            });
+        }
+        isDismissOrder = false;
+        mOrderPopupWindow.showAsDropDown(view, x, y);
     }
 
 

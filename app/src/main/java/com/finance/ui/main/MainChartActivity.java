@@ -157,10 +157,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     protected void onCreated() {
+        mMainPresenter = new MainPresenter(mActivity, this);
         initView();
         //初始化参数
         PurchaseViewEntity.initValue(this);
-        mMainPresenter = new MainPresenter(mActivity, this);
         mMainPresenter.getProduct();//获取产品信息
     }
 
@@ -217,7 +217,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setIvSettlementIcon(ivSettlementIcon)
                 .setRightAxisValueFormatter(mRightAxisValue)
                 .setXAxisValueFormatter(mXAxisValue);
-        leftMenu = new LeftMenu(this).onInit(llLeftMenu);
+        leftMenu = new LeftMenu(this, mMainPresenter).onInit(llLeftMenu);
         rightMenu = new RightMenu(this).onInit(llRightMenu);
         centreMenu = new CentreMenu(this).onInit(llCentreMenu);
         //设置数据处理

@@ -7,6 +7,7 @@ import com.finance.base.IBasePresenter;
 import com.finance.base.IBaseView;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
+import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.ProductEntity;
 
 import java.util.ArrayList;
@@ -36,11 +37,16 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
+        void getOrderRecord();
+
         String issueNameFormat(String issueName, StringBuilder sb);
 
         void showProductPopWindow(android.view.View view, ArrayList<ProductEntity> entities);
 
         void showIssuePopWindow(android.view.View view, ArrayList<IssueEntity> entities, int selIndex);
+
+        void showOrderPopWindow(android.view.View view, OrdersEntity entity,int x,int y);
+
     }
 
 }
