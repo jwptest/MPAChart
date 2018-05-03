@@ -32,6 +32,8 @@ import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 
+import static android.R.attr.x;
+
 /**
  * 显示数据设置类
  */
@@ -49,11 +51,13 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
     private boolean isResume = false;
     private boolean isStop = false;//是否停止
 
-    private ProductEntity productEntity;
+    private ProductEntity productEntity;//产品
+    private IssueEntity issueEntity;//期号
     private HttpConnection mHttpConnection;
     private Callback mCallback;
     private MThread mMThread;//解析数据线程
     private ArrayList<IndexMarkEntity> mIndexMarkEntities;//推送的指数数据
+    private int dpPx10;
 
     public LineChartData(Activity activity, MCombinedChart chart, MainContract.Presenter presenter) {
         this.activity = activity;
@@ -62,6 +66,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         mXAxis = mChart.getXAxis();
         mIndexMarkEntities = new ArrayList<>(2);
         mEntries = new ArrayList<>();
+        dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_10);
     }
 
     @Override
@@ -101,8 +106,10 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         }
         stopNetwork();//停止以前的网络请求
         this.productEntity = productEntity;
+        this.issueEntity = issueEntity;
+        //获取期号
         mPresenter.getHistoryIssues(productEntity.getProductId(), this);
-        //重新请求
+        //获取时时数据
         mHttpConnection = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
     }
 
@@ -171,6 +178,8 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         mMThread.start();
     }
 
+//    private float x;
+
     private void updateData(ArrayList<IndexMarkEntity> entities) {
         if (entities == null || entities.isEmpty()) return;
         if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
@@ -179,20 +188,36 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         }
         mEntries.clear();
         mEntries.addAll(entities);
+//        if (combinedData == null) {
+//            combinedData = new CombinedData();
+//            lineData = new LineData(createSet(mEntries));
+//            combinedData.setData(lineData);
+//            mChart.setData(combinedData);
+//        } else {
+//            //刷新数据
+//            combinedData.notifyDataChanged();
+//            mChart.setData(combinedData);
+//        }
+        combinedData = new CombinedData();
+        lineData = new LineData(createSet(mEntries));
+        combinedData.setData(lineData);
+        mChart.setData(combinedData);
         isInitData = true;//已经初始化
+        mChart.invalidate();
 
-        if (combinedData == null) {
-            combinedData = new CombinedData();
-            lineData = new LineData(createSet(mEntries));
-            combinedData.setData(lineData);
-            mChart.setData(combinedData);
-            mChart.invalidate();
-        } else {
-            //刷新数据
-            lineData.notifyDataChanged();
-            mChart.notifyDataSetChanged();
-        }
-        mXAxis.setAxisMaximum(lineData.getEntryCount() + 300);
+        HandlerUtil.runOnUiThreadDelay(new Runnable() {
+            @Override
+            public void run() {
+                float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
+                float labelX = mChart.getFixedPosition();
+                float labelWidth = mChart.getLabelWidth();
+                float endX = labelX - labelWidth - dpPx10;
+                float itemWidth = endX / X;
+                float addItem = (labelWidth + dpPx10) / itemWidth;
+                mXAxis.setAxisMaximum(X + addItem + 100);
+            }
+        }, 1000);
+
         //发送事件
         EventBus.post(new DataRefreshEvent(true));
     }
@@ -206,11 +231,12 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         //刷新
         lineData.notifyDataChanged();
         mChart.notifyDataSetChanged();
-        int count = lineData.getEntryCount();
-        mChart.moveViewToX(count);
-        if (mXAxis.getAxisMinimum() < count + 200) {
-            mXAxis.setAxisMaximum(count + 310);
-        }
+//        int count = lineData.getEntryCount();
+//        mChart.moveViewToX(count);
+//        if (mXAxis.getAxisMinimum() < count + 200) {
+//            mXAxis.setAxisMaximum(count + 310);
+//        }
+        mChart.invalidate();
     }
 
     private void stopNetwork() {

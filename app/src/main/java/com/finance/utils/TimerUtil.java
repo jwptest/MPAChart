@@ -14,12 +14,12 @@ public class TimerUtil {
 
     private static String formatStr(String timer) {
         if (TextUtils.isEmpty(timer) || timer.length() < 19) throw new Error("时间格式错误");
-        return timer.substring(0, 19);
+        return timer.substring(0, 19).replace("T", " ");
     }
 
     public static long timerToLong(String timer) {
         timer = formatStr(timer);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             return formatter.parse(timer).getTime();
         } catch (ParseException e) {

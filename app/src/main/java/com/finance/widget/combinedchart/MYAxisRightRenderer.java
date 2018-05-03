@@ -1,6 +1,7 @@
 package com.finance.widget.combinedchart;
 
 import android.graphics.Canvas;
+import android.text.TextUtils;
 
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.renderer.YAxisRenderer;
@@ -12,6 +13,9 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
  */
 public class MYAxisRightRenderer extends YAxisRenderer {
 
+    private float fixedPosition;
+    private String measureText;
+
     public MYAxisRightRenderer(ViewPortHandler viewPortHandler, YAxis yAxis, Transformer trans) {
         super(viewPortHandler, yAxis, trans);
     }
@@ -22,11 +26,29 @@ public class MYAxisRightRenderer extends YAxisRenderer {
         final int to = mYAxis.isDrawTopYLabelEntryEnabled()
                 ? mYAxis.mEntryCount
                 : (mYAxis.mEntryCount - 1);
+        this.fixedPosition = fixedPosition;
         // draw
         for (int i = from; i < to - 1; i++) {
             String text = mYAxis.getFormattedLabel(i);
             c.drawText(text, fixedPosition, positions[i * 2 + 1] + offset, mAxisLabelPaint);
+            if (i == from) measureText = text;
         }
+    }
+
+    public float getFixedPosition() {
+        return fixedPosition;
+//        if (TextUtils.isEmpty(measureText)) return 0;
+//        YAxis.YAxisLabelPosition position = mYAxis.getLabelPosition();
+//        if (YAxis.YAxisLabelPosition.INSIDE_CHART == position) {//画在x轴内
+//            return fixedPosition - mAxisLabelPaint.measureText(measureText);
+//        } else {//画在x轴外
+//            return fixedPosition;
+//        }
+    }
+
+    public float getLabelWidth() {
+        if (TextUtils.isEmpty(measureText)) return 0;
+        return mAxisLabelPaint.measureText(measureText);
     }
 
 }

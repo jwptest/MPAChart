@@ -47,12 +47,15 @@ public class LineChartSetting implements IChartSetting {
     public LineChartSetting initLineChart() {
         mChart.setDrawGridBackground(false);//设置是否画网格背景
         mChart.setDragDecelerationEnabled(false);//继续滚动后润色
-        mChart.getDescription().setEnabled(false);//描述文本
-        mChart.setTouchEnabled(true);//允许手势触摸
-        mChart.setDragEnabled(true);//手势拖动走势图
+        mChart.getDescription().setEnabled(true);//描述文本
+        mChart.getDescription().setText("");//设置描述文本
+        mChart.setNoDataText("");//没有数据显示的文本
+        mChart.setTouchEnabled(false);//允许手势触摸
+        mChart.setDragEnabled(false);//手势拖动走势图
         mChart.setScaleEnabled(true);//拖动放缩
         mChart.setScaleXEnabled(true);
-        mChart.setScaleYEnabled(false);
+        mChart.setScaleYEnabled(true);
+//        mChart.setPinchZoom(false);
         //偏移量
 //        mChart.setExtraOffsets(0, 0, 0, 0);
         mChart.setViewPortOffsets(0, 0, 0, 0);

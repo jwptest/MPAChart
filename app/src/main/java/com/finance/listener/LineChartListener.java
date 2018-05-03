@@ -451,6 +451,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     @Subscribe
     public void onEvent(DataRefreshEvent event) {
+        if (mActivity == null || mActivity.isFinishing()) return;
         isRefresh = event.isRefresh();
         if (isRefresh) {//走势图动画执行完成，初始化控件
             initView();

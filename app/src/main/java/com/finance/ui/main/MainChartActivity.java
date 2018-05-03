@@ -157,7 +157,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     protected void onCreated() {
-        截止线和开奖线
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
         //初始化参数

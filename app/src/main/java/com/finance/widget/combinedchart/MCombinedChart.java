@@ -17,6 +17,7 @@ import com.github.mikephil.charting.highlight.CombinedHighlighter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.CombinedDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.renderer.YAxisRenderer;
 
 /**
  * 走势图控件
@@ -28,7 +29,6 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
      * their top
      */
     private boolean mDrawValueAboveBar = true;
-
 
     /**
      * flag that indicates whether the highlight should be full-bar oriented, or single-value?
@@ -64,6 +64,7 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
     }
 
     private MCombinedChartRenderer mMCombinedChartRenderer;
+    private MYAxisRightRenderer mMYAxisRightRenderer;
 
     @Override
     protected void init() {
@@ -75,7 +76,8 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
         };
 
         setHighlighter(new CombinedHighlighter(this, this));
-
+        mMYAxisRightRenderer = new MYAxisRightRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer);
+        mAxisRendererRight = mMYAxisRightRenderer;
         // Old default behaviour
         setHighlightFullBarEnabled(true);
         mMCombinedChartRenderer = new MCombinedChartRenderer(this, mAnimator, mViewPortHandler);
@@ -271,6 +273,14 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
         //设置回调接口
         if (mMCombinedChartRenderer != null)
             mMCombinedChartRenderer.setOnDrawCompletion(drawCompletion);
+    }
+
+    public float getFixedPosition() {
+        return mMYAxisRightRenderer.getFixedPosition();
+    }
+
+    public float getLabelWidth() {
+        return mMYAxisRightRenderer.getLabelWidth();
     }
 
 }
