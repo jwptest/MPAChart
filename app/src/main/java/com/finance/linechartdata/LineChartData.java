@@ -4,14 +4,22 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 
 import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
+import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IChartData;
+import com.finance.model.ben.IndexMarkEntity;
+import com.finance.model.ben.IssueEntity;
+import com.finance.model.ben.ProductEntity;
+import com.finance.model.http.BaseCallback;
+import com.finance.model.http.HttpConnection;
+import com.finance.ui.main.MainContract;
 import com.finance.utils.HandlerUtil;
+import com.finance.utils.IndexUtil;
+import com.finance.utils.TimerUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -19,149 +27,99 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
+import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * 显示数据设置类
  */
-public class LineChartData implements IChartData {
+public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
 
     private MCombinedChart mChart;
     private Activity activity;
+    private MainContract.Presenter mPresenter;
+
     private XAxis mXAxis;
-
     private CombinedData combinedData;
-    private LineData data;
+    private LineData lineData;//显示数据
+    private ArrayList<Entry> mEntries;
+    private boolean isInitData = false;//是否初始化数据
     private boolean isResume = false;
+    private boolean isStop = false;//是否停止
 
-    public LineChartData(Activity activity, MCombinedChart chart) {
+    private ProductEntity productEntity;
+    private HttpConnection mHttpConnection;
+    private Callback mCallback;
+    private MThread mMThread;//解析数据线程
+    private ArrayList<IndexMarkEntity> mIndexMarkEntities;//推送的指数数据
+
+    public LineChartData(Activity activity, MCombinedChart chart, MainContract.Presenter presenter) {
         this.activity = activity;
         this.mChart = chart;
+        this.mPresenter = presenter;
         mXAxis = mChart.getXAxis();
+        mIndexMarkEntities = new ArrayList<>(2);
+        mEntries = new ArrayList<>();
     }
 
     @Override
     public LineChartData onInit() {
-        combinedData = new CombinedData();
-        data = initLineData(5 * 60 * 1000);
-        combinedData.setData(data);
+        mCallback = new Callback();
         return this;
     }
 
     @Override
     public void onResume(String type) {
-        isWorker = true;
         //X轴显示最大值
-        mXAxis.setAxisMaximum(data.getDataSets().get(0).getEntryCount() + 300);
-        LineDataSet dataSet = (LineDataSet) data.getDataSetByIndex(0);
-        if (TextUtils.equals(type, Constants.CHART_LINEFILL)) {
-            dataSet.setDrawFilled(true);
-            dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        } else if (TextUtils.equals(type, Constants.CHART_LINE)) {
-            dataSet.setDrawFilled(false);
-            dataSet.setMode(LineDataSet.Mode.LINEAR);
-        }
-        mChart.setData(combinedData);
-        mChart.invalidate();
-        if (!isResume) {
-            isResume = true;
-            HandlerUtil.runOnUiThreadDelay(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isWorker) return;
-                    worker = getWorker();
-                    worker.start();
-                    EventBus.post(new DataRefreshEvent(true));
-                }
-            }, Constants.XANIMATION);
-        }
+//        mXAxis.setAxisMaximum(data.getDataSets().get(0).getEntryCount() + 300);
+//        LineDataSet dataSet = (LineDataSet) data.getDataSetByIndex(0);
+//        if (TextUtils.equals(type, Constants.CHART_LINEFILL)) {
+//            dataSet.setDrawFilled(true);
+//            dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+//        } else if (TextUtils.equals(type, Constants.CHART_LINE)) {
+//            dataSet.setDrawFilled(false);
+//            dataSet.setMode(LineDataSet.Mode.LINEAR);
+//        }
+//        mChart.setData(combinedData);
+//        mChart.invalidate();
     }
 
     @Override
     public void onStop() {
-        isWorker = false;
-        worker = null;
         EventBus.post(new DataRefreshEvent(false));
+        isStop = true;
+        stopNetwork();
+    }
+
+    @Override
+    public void updateIssue(ProductEntity productEntity, IssueEntity issueEntity) {
+        if (productEntity == null || issueEntity == null) return;
+        if (this.productEntity != null && (this.productEntity == productEntity || this.productEntity.getProductId() == productEntity.getProductId())) {
+            return;
+        }
+        stopNetwork();//停止以前的网络请求
+        this.productEntity = productEntity;
+        mPresenter.getHistoryIssues(productEntity.getProductId(), this);
+        //重新请求
+        mHttpConnection = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
+    }
+
+    @Override
+    public Entry getEntry(String trim) {
+        if (mEntries == null || mEntries.isEmpty()) return null;
+        long trimL1 = TimerUtil.timerToLong(trim);
+        long trimL2 = TimerUtil.timerToLong(((IndexMarkEntity) mEntries.get(0)).getTime());
+        trimL1 = trimL1 - trimL2;
+        int x = (int) (trimL1 / Constants.ISSUEINTERVAL);
+        return new Entry(x, 0);
     }
 
     @Override
     public void onDestroy() {
-        isWorker = false;
-        worker = null;
         EventBus.post(new DataRefreshEvent(false));
     }
-
-    private boolean isWorker = false;
-    private Thread worker;
-
-    private Thread getWorker() {
-        return new Thread() {
-            @Override
-            public void run() {
-                while (isWorker) {
-                    HandlerUtil.runOnUiThread(runnable);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-    }
-
-    private long startTime = 0;
-
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            LineData data = mChart.getData().getLineData();
-            if (data == null) return;
-            ILineDataSet dataSet = data.getDataSetByIndex(0);
-            if (dataSet == null) {
-                dataSet = createSet(null);
-                data.addDataSet(dataSet);
-            }
-            int count = data.getEntryCount();
-//            Entry entry = dataSet.getEntryForIndex(count - 1);
-//            entry.setIcon(null);//去掉图标
-            Entry entry = getEntry(count);
-            data.addEntry(entry, 0);
-            data.notifyDataChanged();
-            //刷新
-            mChart.notifyDataSetChanged();
-//            mChart.moveViewToX(data.getEntryCount() - 20);
-
-            long mis = System.currentTimeMillis();
-            float vt = (mis - startTime) / 100f;
-//            Log.d("123", "startTime:" + startTime);
-//            Log.d("123", "mis:" + mis);
-
-//            if (mChart.getScaleX() != 1)
-//                mChart.setScaleX(mChart.getScaleX() - 0.1f);
-//            if (mChart.getScaleY() != 1)
-//                mChart.setScaleY(mChart.getScaleY() - 0.1f);
-
-            mChart.moveViewToX(data.getEntryCount());
-
-            //dep/s52
-
-//            if (data.getEntryCount() % 10 == 0) {
-//                mChart.moveViewToX(data.getEntryCount());
-//            } else {
-//                mChart.invalidate();
-//            }
-
-            if (mXAxis.getAxisMinimum() < count + 200) {
-                mXAxis.setAxisMaximum(count + 310);
-//                mChart.setMaxVisibleValueCount(count + 300);
-            }
-        }
-    };
 
     private LineDataSet createSet(ArrayList<Entry> entries) {
         LineDataSet set = new LineDataSet(entries, "Dynamic Data");
@@ -203,42 +161,126 @@ public class LineChartData implements IChartData {
         return set;
     }
 
-    private LineData initLineData(int timer) {
-        int size = timer / 500;
-        ArrayList<Entry> entries = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            entries.add(getEntry(i));
+    @Override
+    public void onCallback(int code, ArrayList<String> strings, String message) {
+        if (mMThread != null) {
+            mMThread.isDiscarded = true;//设置为废弃
+            mMThread = null;
         }
-
-//        entries.add(new Entry(entries.size() - 100, 0));//开奖线
-//        entries.add(new Entry(entries.size() - 200, 0));//截止购买线
-
-        LineDataSet dataSet = createSet(entries);
-        LineData data = new LineData(dataSet);
-        return data;
+        mMThread = new MThread(this, strings);
+        mMThread.start();
     }
 
-    private Random rand = new Random();
-    private int count;
-    private boolean isUp = true;
-    private float value = 51f;
-
-    private Entry getEntry(int x) {
-        if (count <= 0) {
-            count = rand.nextInt(5) + 1;
-            isUp = !isUp;
+    private void updateData(ArrayList<IndexMarkEntity> entities) {
+        if (entities == null || entities.isEmpty()) return;
+        if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
+            entities.addAll(mIndexMarkEntities);
+            mIndexMarkEntities.clear();
         }
-        if (isUp) {
-            value += 0.1f;
+        mEntries.clear();
+        mEntries.addAll(entities);
+        isInitData = true;//已经初始化
+
+        if (combinedData == null) {
+            combinedData = new CombinedData();
+            lineData = new LineData(createSet(mEntries));
+            combinedData.setData(lineData);
+            mChart.setData(combinedData);
+            mChart.invalidate();
         } else {
-            value -= 0.1f;
+            //刷新数据
+            lineData.notifyDataChanged();
+            mChart.notifyDataSetChanged();
         }
-        if (value > 60) value = 60;
-        else if (value < 50) value = 50;
-        count--;
-//        float val = rand.nextInt(3) + 50;//生成50——100直接的数
-        return new Entry(x, value);
+        mXAxis.setAxisMaximum(lineData.getEntryCount() + 300);
+        //发送事件
+        EventBus.post(new DataRefreshEvent(true));
     }
 
+    private void updateData(IndexMarkEntity entity) {
+        if (!isInitData) {
+            mIndexMarkEntities.add(entity);
+            return;
+        }
+        mEntries.add(entity);
+        //刷新
+        lineData.notifyDataChanged();
+        mChart.notifyDataSetChanged();
+        int count = lineData.getEntryCount();
+        mChart.moveViewToX(count);
+        if (mXAxis.getAxisMinimum() < count + 200) {
+            mXAxis.setAxisMaximum(count + 310);
+        }
+    }
+
+    private void stopNetwork() {
+        if (mHttpConnection != null) {
+            mHttpConnection.stop();
+            mHttpConnection = null;
+        }
+        if (mMThread != null) {
+            mMThread.isDiscarded = true;//设置废弃
+            mMThread = null;
+        }
+    }
+
+    private class Callback extends BaseCallback {
+
+        private IndexUtil mIndexUtil;
+
+        private Callback() {
+            mIndexUtil = new IndexUtil();
+        }
+
+        @Override
+        public void onMessageReceived(JsonElement jsonElement) {
+            //在子线程运行
+            if (isStop) {//断开链接
+                stopNetwork();
+                return;
+            }
+            if (lineData == null) return;
+            final IndexMarkEntity entity = mIndexUtil.parseExponentially(lineData.getEntryCount(),
+                    jsonElement.getAsString(), Constants.INDEXDIGIT);
+            if (isStop) {//断开链接
+                stopNetwork();
+                return;
+            }
+            if (entity == null) return;
+            HandlerUtil.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateData(entity);
+                }
+            });
+        }
+    }
+
+    private static class MThread extends Thread {
+        private boolean isDiscarded = false;//是否废弃
+        private ArrayList<String> strings;
+        private IndexUtil mIndexUtil;
+        private LineChartData mLineChartData;
+
+        private MThread(LineChartData mLineChartData, ArrayList<String> strings) {
+            this.strings = strings;
+            this.mLineChartData = mLineChartData;
+            mIndexUtil = new IndexUtil();
+        }
+
+        @Override
+        public void run() {
+            if (isDiscarded || mLineChartData == null) return;
+            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(strings, Constants.INDEXDIGIT);
+            if (isDiscarded || mLineChartData == null) return;
+            HandlerUtil.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mLineChartData.updateData(entities);
+                }
+            });
+        }
+
+    }
 
 }

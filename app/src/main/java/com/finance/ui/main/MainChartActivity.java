@@ -157,6 +157,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     protected void onCreated() {
+        截止线和开奖线
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
         //初始化参数
@@ -197,7 +198,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_height);
         }
         //右边轴value显示格式类
-        BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter();
+        BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);
         BaseAxisValueFormatter mXAxisValue = new XAxisValueFormatter();
 //        lineChart.setVisibility(View.GONE);
         new LineChartSetting(this, lineChart)
@@ -237,7 +238,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IChartData dataSetting = null;
         if (TextUtils.equals(type, Constants.CHART_LINEFILL) || TextUtils.equals(type, Constants.CHART_LINE)) {
             if (mLineChartData == null) {
-                mLineChartData = new LineChartData(this, lineChart)
+                mLineChartData = new LineChartData(this, lineChart, mMainPresenter)
                         .onInit();
             }
             dataSetting = mLineChartData;
@@ -251,7 +252,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         if (isResume && dataSetting != null)
             dataSetting.onResume(type);
+        chartListener.setIChartData(dataSetting);
         return dataSetting;
+    }
+
+    //更新期号
+    private void updateIssue() {
+        dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
+        chartListener.updateIssue(currentIssue);//更新期号
     }
 
     private void initLayoutParam() {
@@ -311,6 +319,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     //购买
     private void purchase(int money, boolean isAdd) {
         Entry entry = chartListener.getCurrentEntry();
+        if (entry == null) return;
         float x = entry.getX();
         float y = entry.getY();
         PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", isAdd);
@@ -330,6 +339,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         this.chartType = chartType;
         dataSetting = getChartData(chartType);
+        updateIssue();//更新走势图
     }
 
     private void initViewUser() {
@@ -359,6 +369,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         issuesSelectIndex = selIndex;
         tvJZTimer.setText(mMainPresenter.issueNameFormat(entity.getIssueName(), new StringBuilder()));
         currentIssue = entity;
+        updateIssue();//更新走势图
     }
 
     @Override

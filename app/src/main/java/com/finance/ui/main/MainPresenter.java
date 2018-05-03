@@ -7,6 +7,7 @@ import android.widget.PopupWindow;
 
 import com.finance.R;
 import com.finance.base.BasePresenter;
+import com.finance.interfaces.ICallback;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
 import com.finance.model.ben.ItemEntity;
@@ -16,12 +17,15 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.BaseParams;
+import com.finance.model.http.HttpConnection;
+import com.finance.model.http.JsonCallback;
 import com.finance.model.imps.NetworkRequest;
 import com.finance.ui.popupwindow.IssuesPopupWindow;
 import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.ui.popupwindow.ProductPopupWindow;
 import com.finance.ui.popupwindow.RecyclerPopupWindow;
 import com.finance.utils.HandlerUtil;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
@@ -70,7 +74,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(baseParams.getToken())
                 .setParams(baseParams)
-                .execute(new BaseCallback<ProductsEntity>(ProductsEntity.class) {
+                .execute(new JsonCallback<ProductsEntity>(ProductsEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, ProductsEntity result) {
                         if (mView == null) return;
@@ -96,7 +100,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(baseParams.getToken())
                 .setParams(baseParams)
-                .execute(new BaseCallback<IssuesEntity>(IssuesEntity.class) {
+                .execute(new JsonCallback<IssuesEntity>(IssuesEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, IssuesEntity result) {
                         if (mView == null) return;
@@ -112,10 +116,58 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     @Override
+    public void getHistoryIssues(int ProductId, final ICallback<ArrayList<String>> callback) {
+        BaseParams param = new BaseParams(true);
+        param.addParam("T", 20);
+        param.addParam("D", ProductId + ":300");
+        param.addParam("isRate", true);//默认值
+        param.addParam("productId", ProductId);
+        param.addParam("times", 300);//默认值
+        param.addParam("Token", "");
+//        param.addParam("Token", UserShell.getInstance().getUserToken());
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(20)
+                .setISign(NetworkRequest.getInstance().getSignBasic())
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(new JsonCallback<ArrayList<String>>(new TypeToken<ArrayList<String>>() {
+                }.getType()) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, ArrayList<String> result) {
+                        if (mView == null || callback == null) return;
+                        callback.onCallback(code, result, msg);
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (mView == null || callback == null) return;
+                        callback.onCallback(code, null, msg);
+                    }
+                });
+    }
+
+    @Override
+    public HttpConnection getAlwaysIssues(int ProductId, BaseCallback callback) {
+        BaseParams param = new BaseParams(true);
+        param.addParam("T", 0);
+        param.addParam("D", ProductId + "");
+        param.addParam("Token", "");
+        return NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(0)
+                .setISign(NetworkRequest.getInstance().getSignBasic())
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(callback);
+    }
+
+    @Override
     public void getOrderRecord() {
 
     }
-
 
     private ArrayList<ItemEntity<ProductEntity>> getProducts(ArrayList<ProductEntity> entities) {
         ArrayList<ItemEntity<ProductEntity>> products = new ArrayList<ItemEntity<ProductEntity>>(entities.size());

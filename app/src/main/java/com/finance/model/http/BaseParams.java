@@ -16,6 +16,11 @@ public class BaseParams {
     private HashMap<String, Object> params = new HashMap<String, Object>(10);
 
     public BaseParams() {
+        this(false);
+    }
+
+    public BaseParams(boolean isEmpty) {
+        if (isEmpty) return;
         //        this.SourceCode = 0;
 //        this.Sign = '';
 //        this.Token = '';
@@ -40,6 +45,10 @@ public class BaseParams {
     public BaseParams addParam(String key, Object value) {
         params.put(key, value);
         return this;
+    }
+
+    public void clearParams() {
+        params.clear();
     }
 
     //获取参数

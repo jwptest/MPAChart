@@ -17,7 +17,7 @@ public class TimerUtil {
         return timer.substring(0, 19);
     }
 
-    public static long timerFormat(String timer) {
+    public static long timerToLong(String timer) {
         timer = formatStr(timer);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
         try {

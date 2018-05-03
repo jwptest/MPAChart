@@ -82,13 +82,13 @@
 
     <RelativeLayout
         android:id="@+id/llTimer"
-        android:layout_width="@dimen/dp_115"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/dp_20"
         android:paddingRight="@dimen/dp_20">
-
+        <!--@dimen/dp_115-->
         <TextView
             android:id="@+id/tvJZTimer"
             android:layout_width="wrap_content"

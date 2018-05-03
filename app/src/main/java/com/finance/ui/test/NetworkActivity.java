@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.BaseActivity;
-import com.finance.model.http.BaseCallback;
+import com.finance.model.http.JsonCallback;
 import com.finance.model.http.BaseParams;
 import com.finance.model.http.HttpConnection;
 import com.finance.model.imps.NetworkRequest;
@@ -68,7 +68,7 @@ public class NetworkActivity extends BaseActivity {
                 .setTag(this)
                 .setT(1101)
                 .setParams(baseParams)
-                .execute(new BaseCallback<String>(String.class) {
+                .execute(new JsonCallback<String>(String.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
 

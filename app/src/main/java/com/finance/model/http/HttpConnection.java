@@ -7,8 +7,6 @@ import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
 import microsoft.aspnet.signalr.client.StateChangedCallback;
 
-import static android.R.attr.data;
-
 /**
  * 网络请求
  */
@@ -56,12 +54,28 @@ public class HttpConnection {
         return this;
     }
 
-    public void execute(BaseCallback receivedHandler) {
-        Connection connection = new Connection(url);
+    //断开链接
+    public void stop() {
+        if (connection == null) return;
+        try {
+            connection.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        connection = null;
+    }
+
+    private Connection connection;
+
+    public HttpConnection execute(BaseCallback receivedHandler) {
+        connection = new Connection(url);
         connection.received(receivedHandler);
         connection.stateChanged(mChangedCallback);
-        receivedHandler.setTag(tag);
-        receivedHandler.onBefore();//开始请求网络
+        if (receivedHandler instanceof JsonCallback) {
+            JsonCallback jsonCallback = (JsonCallback) receivedHandler;
+            jsonCallback.setTag(tag);
+            jsonCallback.onBefore();//开始请求网络
+        }
         connection.start().done(new Action<Void>() {
             @Override
             public void run(Void aVoid) throws Exception {
@@ -69,18 +83,10 @@ public class HttpConnection {
                 if (BuildConfig.DEBUG) {
                     Logger.d("提交参数：" + json);
                 }
-//                json = "{D\n" +
-//                        ":\n" +
-//                        "\"{\"sourcecode\":101,\"messageid\":\"19781581-5133-edb6-add2-43ba24157366\",\"device\":1,\"platformid\":\"2\",\"sign\":\"e89ef921e5d195dbd8740324b5d37a00\",\"t\":1101}\"\n" +
-//                        "T\n" +
-//                        ":\n" +
-//                        "1101\n" +
-//                        "Token\n" +
-//                        ":\n" +
-//                        "\"\"}";
                 connection.send(json);
             }
         });
+        return this;
     }
 
 }

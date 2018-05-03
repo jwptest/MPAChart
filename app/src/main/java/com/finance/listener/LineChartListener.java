@@ -15,8 +15,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.finance.R;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
+import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
 import com.finance.linechartview.BaseAxisValueFormatter;
+import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.ui.main.PurchaseViewAnimation;
 import com.finance.utils.ViewUtil;
@@ -56,7 +58,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     private BaseAxisValueFormatter mRightAxisValueFormatter, mXAxisValueFormatter;
 
-
     private RelativeLayout.LayoutParams iconParams, endParams, endDesParams, endIconParams;//截止线
     private RelativeLayout.LayoutParams tranConParams, tranConDesParams;//横向对比线
     private RelativeLayout.LayoutParams settParams, settDesParams, settIconParams;//结算线
@@ -64,9 +65,13 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     //当前点的坐标
     private int currentX, currentY;
     //当前点的值
-    private Entry currentEntry = new Entry();
+    private Entry currentEntry;
+    //当前点的值
+    private Entry endEntry, openEntry;
     //开奖点和购买点
-    private Entry openEntry, endEntry;
+    private IssueEntity mIssueEntity;
+
+
     //显示数据
     private IDataSet currentDataSet;
     //是否刷新子控件坐标
@@ -83,6 +88,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private int settIconWidth, settIconHight;
     //当前购买的点的实体集合
     private ArrayList<PurchaseViewEntity> mPurchaseViewEntities;
+
+    private IChartData mIChartData;
 
     public LineChartListener(Activity activity, MCombinedChart lineChart) {
         this.mActivity = activity;
@@ -304,6 +311,11 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         return this;
     }
 
+    @Override
+    public void setIChartData(IChartData iChartData) {
+        this.mIChartData = iChartData;
+    }
+
     //添加需要显示的购买点
     @Override
     public void addPurchaseView(PurchaseViewEntity entity) {
@@ -334,6 +346,11 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mPurchaseViewEntities.clear();
     }
 
+    @Override
+    public void updateIssue(IssueEntity entity) {
+        mIssueEntity = entity;
+    }
+
     //将所有布局添加到控件
     private void addPurchaseViews() {
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
@@ -354,7 +371,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         rootView.setLayoutParams(params);
         viewGroup.addView(rootView);
     }
-
 
     //获取当前点的值
     @Override
@@ -438,6 +454,10 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         isRefresh = event.isRefresh();
         if (isRefresh) {//走势图动画执行完成，初始化控件
             initView();
+            if (mIChartData != null && mIssueEntity != null) {
+                endEntry = mIChartData.getEntry(mIssueEntity.getStopTime());
+                openEntry = mIChartData.getEntry(mIssueEntity.getBonusTime());
+            }
         } else {
             hideView();
         }

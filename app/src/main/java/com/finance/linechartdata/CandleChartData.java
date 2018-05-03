@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Color;
 
 import com.finance.interfaces.IChartData;
+import com.finance.model.ben.IssueEntity;
+import com.finance.model.ben.ProductEntity;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -52,6 +54,16 @@ public class CandleChartData implements IChartData {
     @Override
     public void onStop() {
 
+    }
+
+    @Override
+    public void updateIssue(ProductEntity productEntity, IssueEntity issueEntity) {
+        if (productEntity == null || issueEntity == null) return;
+    }
+
+    @Override
+    public Entry getEntry(String trim) {
+        return null;
     }
 
     @Override
