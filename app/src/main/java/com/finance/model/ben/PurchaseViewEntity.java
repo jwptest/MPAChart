@@ -37,6 +37,7 @@ public class PurchaseViewEntity {
     private TextView tvBuyingMone;//金额显示图标
     private float xValue;//当前点的x和Y轴的值
     private float yValue;
+    private String id;//购买点的唯一标识
     private int money;//当前点购买的金额
     private boolean isDisplay = false;//是否显示在布局上
     private RelativeLayout.LayoutParams mRootParams;
@@ -74,7 +75,6 @@ public class PurchaseViewEntity {
     public void setDisplay(boolean display) {
         isDisplay = display;
     }
-
 
     public View getRootView() {
         return rootView;
@@ -130,5 +130,13 @@ public class PurchaseViewEntity {
 
     public void setMoney(int money) {
         this.money = money;
+    }
+
+    public String getId() {
+        return (id != null) ? id : "";
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

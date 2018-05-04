@@ -11,12 +11,13 @@ import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import java.util.ArrayList;
 
 /**
- *
+ * 切换期号对话框
  */
 public class IssuesPopupWindow extends RecyclerPopupWindow<IssueEntity> {
 
     public IssuesPopupWindow(Context context, ArrayList<ItemEntity<IssueEntity>> mArrayList) {
         super(context, mArrayList);
+        selectIndex = 0;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class IssuesPopupWindow extends RecyclerPopupWindow<IssueEntity> {
 
     @Override
     protected int getLayoutId() {
-        return  R.layout.popupwindow_recycler;
+        return R.layout.popupwindow_recycler;
     }
 
     @Override

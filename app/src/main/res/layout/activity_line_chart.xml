@@ -34,9 +34,8 @@
 
             <View
                 android:id="@+id/vEndLine"
-                android:layout_width="0.6dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="@dimen/dp_0.6"
+                android:layout_height="match_parent"
                 android:background="#696458"
                 tools:tooltipText="截止线"/>
 
@@ -44,26 +43,26 @@
                 android:id="@+id/tvEndLineDes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="3dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginRight="@dimen/dp_3"
+                android:layout_marginTop="@dimen/home_line_describe_top"
                 android:rotation="90"
                 android:text="截止线描述"
                 android:textColor="#696458"
                 android:textSize="11sp"/>
 
-            <ImageView
-                android:id="@+id/ivEndLineIcon"
-                android:layout_width="@dimen/dp_25"
-                android:layout_height="@dimen/dp_25"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="@dimen/home_end_line_bottom"
-                android:scaleType="centerInside"
-                android:src="@drawable/end_line_icon"/>
+            <!--<ImageView-->
+            <!--android:id="@+id/ivEndLineIcon"-->
+            <!--android:layout_width="@dimen/dp_25"-->
+            <!--android:layout_height="@dimen/dp_25"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_marginBottom="@dimen/home_end_line_bottom"-->
+            <!--android:scaleType="centerInside"-->
+            <!--android:src="@drawable/end_line_icon"/>-->
 
             <View
                 android:id="@+id/vSettlementLine"
-                android:layout_width="0.6dp"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/dp_0.6"
+                android:layout_height="match_parent"
                 android:background="#D43625"
                 tools:tooltipText="结算线"/>
 
@@ -71,27 +70,26 @@
                 android:id="@+id/tvSettlementDes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="3dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginRight="@dimen/dp_3"
+                android:layout_marginTop="@dimen/home_line_describe_top"
                 android:rotation="90"
                 android:text="结算线描述"
                 android:textColor="#D43625"
                 android:textSize="11sp"/>
 
-            <ImageView
-                android:id="@+id/ivSettlementIcon"
-                android:layout_width="@dimen/dp_25"
-                android:layout_height="@dimen/dp_25"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="@dimen/home_end_line_bottom"
-                android:scaleType="centerInside"
-                android:src="@drawable/settlement_line_icon"/>
+            <!--<ImageView-->
+            <!--android:id="@+id/ivSettlementIcon"-->
+            <!--android:layout_width="@dimen/dp_25"-->
+            <!--android:layout_height="@dimen/dp_25"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_marginBottom="@dimen/home_end_line_bottom"-->
+            <!--android:scaleType="centerInside"-->
+            <!--android:src="@drawable/settlement_line_icon"/>-->
 
             <View
                 android:id="@+id/vTransverseContrast"
-                android:layout_width="20dp"
-                android:layout_height="0.6dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_0.6"
                 android:background="#D4C495"
                 tools:tooltipText="横向对比线"/>
 

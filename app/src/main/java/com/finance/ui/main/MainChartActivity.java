@@ -65,14 +65,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     View vEndLine;
     @BindView(R.id.tvEndLineDes)
     TextView tvEndLineDes;
-    @BindView(R.id.ivEndLineIcon)
-    ImageView ivEndLineIcon;
+    //    @BindView(R.id.ivEndLineIcon)
+//    ImageView ivEndLineIcon;
     @BindView(R.id.vSettlementLine)
     View vSettlementLine;
     @BindView(R.id.tvSettlementDes)
     TextView tvSettlementDes;
-    @BindView(R.id.ivSettlementIcon)
-    ImageView ivSettlementIcon;
+    //    @BindView(R.id.ivSettlementIcon)
+//    ImageView ivSettlementIcon;
     @BindView(R.id.vTransverseContrast)
     View vTransverseContrast;
     @BindView(R.id.tvTransverseContrastDes)
@@ -209,12 +209,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setIvIcon(ivIcon)
                 .setEndLine(vEndLine)
                 .setTvEndLineDes(tvEndLineDes)
-                .setIvEndLineIcon(ivEndLineIcon)
+//                .setIvEndLineIcon(ivEndLineIcon)
                 .setTransverseContrast(vTransverseContrast)
                 .setTvTransverseContrastDes(tvTransverseContrastDes)
                 .setSettlementLine(vSettlementLine)
                 .setTvSettlementDes(tvSettlementDes)
-                .setIvSettlementIcon(ivSettlementIcon)
+//                .setIvSettlementIcon(ivSettlementIcon)
                 .setRightAxisValueFormatter(mRightAxisValue)
                 .setXAxisValueFormatter(mXAxisValue);
         leftMenu = new LeftMenu(this, mMainPresenter).onInit(llLeftMenu);
@@ -322,8 +322,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         float x = entry.getX();
         float y = entry.getY();
         PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", isAdd);
-        viewEntity.setxValue(x);
-        viewEntity.setyValue(y);
+//        viewEntity.setxValue(x);
+//        viewEntity.setyValue(y);
         viewEntity.setMoney(money);
         chartListener.addPurchaseView(viewEntity);
     }
@@ -359,13 +359,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         if (mIssueEntities == null) {
             refreshIessue();//刷新期号
         } else {
+            currentIssues = mMainPresenter.getProductIssue(entity.getProductId(), mIssueEntities);
             initViewIssue(0);
         }
     }
 
-
     private void initViewIssue(int selIndex) {
-        IssueEntity entity = mIssueEntities.get(selIndex);
+        IssueEntity entity = currentIssues.get(selIndex);
         issuesSelectIndex = selIndex;
         tvJZTimer.setText(mMainPresenter.issueNameFormat(entity.getIssueName(), new StringBuilder()));
         currentIssue = entity;

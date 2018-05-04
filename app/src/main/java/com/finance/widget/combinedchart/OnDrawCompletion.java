@@ -1,5 +1,6 @@
 package com.finance.widget.combinedchart;
 
+import com.finance.model.ben.IndexMarkEntity;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 
@@ -14,6 +15,6 @@ public interface OnDrawCompletion {
      * @param lastEntry 绘制的最后一个点
      * @param dataSet   当前绘制的数据
      */
-    void completion(Entry lastEntry, IDataSet dataSet);
+    void completion(IndexMarkEntity lastEntry, IDataSet dataSet);
 
 }

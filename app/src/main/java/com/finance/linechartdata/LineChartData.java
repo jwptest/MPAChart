@@ -44,6 +44,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     private MainContract.View mView;
     private MainContract.Presenter mPresenter;
 
+    private YAxis rightAxis;
     private XAxis mXAxis;
     private CombinedData combinedData;
     private LineData lineData;//显示数据
@@ -66,10 +67,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         this.mView = view;
         this.mChart = chart;
         this.mPresenter = presenter;
-        mXAxis = mChart.getXAxis();
-        mIndexMarkEntities = new ArrayList<>(2);
-        mEntries = new ArrayList<>();
-        dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_10);
+        this.rightAxis = mChart.getAxisRight();
+        this.mXAxis = mChart.getXAxis();
+        this.mIndexMarkEntities = new ArrayList<>(2);
+        this.mEntries = new ArrayList<>();
+        this.dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_10);
     }
 
     @Override
@@ -93,15 +95,15 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
 //        mChart.setData(combinedData);
 //        mChart.invalidate();
 
-        EventDistribution.getInstance().setChartDraws(this);
-        EventDistribution.getInstance().setPurchase(this);
+        EventDistribution.getInstance().addChartDraws(this);
+        EventDistribution.getInstance().addPurchase(this);
     }
 
     @Override
     public void onStop() {
         EventBus.post(new DataRefreshEvent(false));
-        EventDistribution.getInstance().setChartDraws(null);
-        EventDistribution.getInstance().setPurchase(null);
+        EventDistribution.getInstance().removeChartDraws(null);
+        EventDistribution.getInstance().removePurchase(null);
         isStop = true;
         stopNetwork();
     }
@@ -109,13 +111,14 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     @Override
     public void updateIssue(ProductEntity productEntity, IssueEntity issueEntity) {
         if (productEntity == null || issueEntity == null) return;
-        if (this.issueEntity != null && (this.issueEntity == issueEntity || TextUtils.equals(this.issueEntity.getIssueName(), issueEntity.getIssueName()))) {
+        if (this.issueEntity != null && this.issueEntity == issueEntity) {
             return;
         }
 //        addCount = 0;
         stopNetwork();//停止以前的网络请求
         this.productEntity = productEntity;
         this.issueEntity = issueEntity;
+        isInitData = false;
         //获取期号
         mPresenter.getHistoryIssues(productEntity.getProductId(), this);
         //获取时时数据
@@ -227,9 +230,14 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
             return;
         }
         mEntries.add(entity);
+
         //刷新
         lineData.notifyDataChanged();
+//        rightAxis.setAxisMaximum(2);
+//        rightAxis.setAxisMinimum(0);
         mChart.notifyDataSetChanged();
+
+//        mChart.fitScreen();//重设所有缩放和拖动，使图表完全适合它的边界（完全缩小）。
         //        int count = lineData.getEntryCount();
 //        mChart.moveViewToX(count);
 //        if (mXAxis.getAxisMinimum() < count + 200) {

@@ -27,7 +27,7 @@
     <ImageView
         android:id="@+id/ivKM"
         android:layout_width="@dimen/dp_100"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_25"
         android:layout_marginLeft="@dimen/dp_20"
         android:scaleType="centerInside"
         android:src="@drawable/km_icon"

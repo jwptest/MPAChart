@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.finance.model.ben.IndexMarkEntity;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BubbleData;
@@ -298,7 +299,8 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
 //        Entry entry2 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 2);//截止购买点
 //        Entry entry3 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 3);//绘制的最后一个点
         if (entry1 == null) return;
-        drawCompletion.completion(entry1, iDataSet);
+        if (entry1 instanceof IndexMarkEntity)
+            drawCompletion.completion((IndexMarkEntity) entry1, iDataSet);
     }
 
     public float getFixedPosition() {

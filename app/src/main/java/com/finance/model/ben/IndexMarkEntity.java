@@ -7,6 +7,8 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import static android.R.attr.data;
+
 /**
  * 指数实体
  */
@@ -15,19 +17,22 @@ public class IndexMarkEntity extends Entry {
     private int prod;
     private String time;
     private int isUpdatePoint;
+    private String id;
 
-    public IndexMarkEntity(int x, int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit) {
+    public IndexMarkEntity(int x, int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit, String data) {
         this.prod = prod;
         this.time = formatTime(time);
         this.isUpdatePoint = isUpdatePoint;
+        this.id = data;
         setX(x);
         setY(managerExponentially((float) exponentially, decimalPointIndex, digit));
     }
 
-    public IndexMarkEntity(int x, int prod, String time, float exponentially, int isUpdatePoint) {
+    public IndexMarkEntity(int x, int prod, String time, float exponentially, int isUpdatePoint, String data) {
         this.prod = prod;
         this.time = time;
         this.isUpdatePoint = isUpdatePoint;
+        this.id = data;
         setX(x);
         setY(exponentially);
     }
@@ -48,6 +53,9 @@ public class IndexMarkEntity extends Entry {
         return this.isUpdatePoint;
     }
 
+    public String getId() {
+        return id;
+    }
 
     public static float managerExponentially(double exponentially, int decimalPointIndex, int digit) {
         if (decimalPointIndex <= 0) {

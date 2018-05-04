@@ -55,6 +55,7 @@ public class LineChartSetting implements IChartSetting {
         mChart.setScaleEnabled(true);//拖动放缩
         mChart.setScaleXEnabled(true);
         mChart.setScaleYEnabled(true);
+        mChart.setAutoScaleMinMaxEnabled(true);//自动缩放
 //        mChart.setPinchZoom(false);
         //偏移量
 //        mChart.setExtraOffsets(0, 0, 0, 0);
@@ -131,6 +132,9 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
         rightAxis.setLabelCount(7, false);
+//        rightAxis.setAxisMinimum(0f); //
+//        rightAxis.setAxisMaximum(10f); //
+//        rightAxis.setDrawLimitLinesBehindData(true);
         //标签颜色
         rightAxis.setTextColor(getColor(R.color.form_value_color));
         rightAxis.setValueFormatter(mRightIAxisValueFormatter);

@@ -11,12 +11,13 @@ import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import java.util.ArrayList;
 
 /**
- *
+ * 切换产品对话框
  */
 public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
 
     public ProductPopupWindow(Context context, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
         super(context, mArrayList);
+        selectIndex = 0;
     }
 
     @Override

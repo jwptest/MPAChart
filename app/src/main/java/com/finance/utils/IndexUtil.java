@@ -42,7 +42,7 @@ public class IndexUtil {
             int exponent = Integer.parseInt(hex_exponent, 16);
             int isUpdate = Integer.parseInt(hex_isUpdate, 16);
             if (exponent < 0) return null;
-            return new IndexMarkEntity(x, productId, serverTime, exponent, isUpdate, pointSize, digit);
+            return new IndexMarkEntity(x, productId, serverTime, exponent, isUpdate, pointSize, digit, serverData);
         } catch (Exception var15) {
             var15.printStackTrace();
             throw var15;

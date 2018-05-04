@@ -2,15 +2,19 @@ package com.finance.listener;
 
 import com.github.mikephil.charting.data.Entry;
 
+import java.util.ArrayList;
+
 /**
  * 事件中心
  */
 public class EventDistribution {
 
-    private IChartDraw mChartDraws;
-    private IPurchase mPurchase;
+    private ArrayList<IChartDraw> mChartDraws;
+    private ArrayList<IPurchase> mPurchase;
 
     private EventDistribution() {
+        mChartDraws = new ArrayList<>(2);
+        mPurchase = new ArrayList<>(2);
     }
 
     private static class EventDistributionInstance {
@@ -21,20 +25,37 @@ public class EventDistribution {
         return EventDistributionInstance.INSTANCE;
     }
 
-    public void setChartDraws(IChartDraw sChartDraws) {
-        this.mChartDraws = sChartDraws;
+    public void addChartDraws(IChartDraw sChartDraws) {
+        mChartDraws.add(sChartDraws);
     }
 
-    public IChartDraw getChartDraws() {
-        return mChartDraws;
+    public void removeChartDraws(IChartDraw sChartDraws) {
+        mChartDraws.remove(sChartDraws);
     }
 
-    public IPurchase getPurchase() {
-        return mPurchase;
+    //执行IChartDraw接口方法
+    public void onDraw(Entry entry) {
+        for (IChartDraw draw : mChartDraws) {
+            draw.onDraw(entry);
+        }
     }
 
-    public void setPurchase(IPurchase purchase) {
-        mPurchase = purchase;
+    public void removePurchase(IPurchase purchase) {
+        mPurchase.remove(purchase);
+    }
+
+    public void addPurchase(IPurchase purchase) {
+        mPurchase.add(purchase);
+    }
+
+    public void purchase(boolean isOpenPrize, boolean isOrder) {
+        for (IPurchase purchase : mPurchase) {
+            if (isOpenPrize) {
+                purchase.openPrize(isOrder);
+            } else {
+                purchase.stopPurchase(isOrder);
+            }
+        }
     }
 
     public interface IChartDraw {

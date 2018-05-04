@@ -187,6 +187,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void showProductPopWindow(View view, ArrayList<ProductEntity> entities) {
+        if (entities == null || entities.isEmpty()) return;
         if (!isDismissProduct) {
             isDismissProduct = true;
             return;
@@ -249,6 +250,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void showIssuePopWindow(View view, ArrayList<IssueEntity> entities, int selIndex) {
+        if (entities == null || entities.isEmpty()) return;
         if (!isDismissIssues) {
             isDismissIssues = true;
             return;
