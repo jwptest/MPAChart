@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import com.finance.R;
 import com.finance.common.Constants;
@@ -11,6 +12,7 @@ import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IChartData;
+import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
@@ -32,15 +34,14 @@ import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 
-import static android.R.attr.x;
-
 /**
  * 显示数据设置类
  */
-public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
+public class LineChartData implements IChartData, ICallback<ArrayList<String>>, EventDistribution.IChartDraw, EventDistribution.IPurchase {
 
     private MCombinedChart mChart;
     private Activity activity;
+    private MainContract.View mView;
     private MainContract.Presenter mPresenter;
 
     private XAxis mXAxis;
@@ -58,9 +59,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
     private MThread mMThread;//解析数据线程
     private ArrayList<IndexMarkEntity> mIndexMarkEntities;//推送的指数数据
     private int dpPx10;
+//    private int addCount = 0;//添加的时时数据条数
 
-    public LineChartData(Activity activity, MCombinedChart chart, MainContract.Presenter presenter) {
+    public LineChartData(Activity activity, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
         this.activity = activity;
+        this.mView = view;
         this.mChart = chart;
         this.mPresenter = presenter;
         mXAxis = mChart.getXAxis();
@@ -89,11 +92,16 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
 //        }
 //        mChart.setData(combinedData);
 //        mChart.invalidate();
+
+        EventDistribution.getInstance().setChartDraws(this);
+        EventDistribution.getInstance().setPurchase(this);
     }
 
     @Override
     public void onStop() {
         EventBus.post(new DataRefreshEvent(false));
+        EventDistribution.getInstance().setChartDraws(null);
+        EventDistribution.getInstance().setPurchase(null);
         isStop = true;
         stopNetwork();
     }
@@ -101,9 +109,10 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
     @Override
     public void updateIssue(ProductEntity productEntity, IssueEntity issueEntity) {
         if (productEntity == null || issueEntity == null) return;
-        if (this.productEntity != null && (this.productEntity == productEntity || this.productEntity.getProductId() == productEntity.getProductId())) {
+        if (this.issueEntity != null && (this.issueEntity == issueEntity || TextUtils.equals(this.issueEntity.getIssueName(), issueEntity.getIssueName()))) {
             return;
         }
+//        addCount = 0;
         stopNetwork();//停止以前的网络请求
         this.productEntity = productEntity;
         this.issueEntity = issueEntity;
@@ -178,12 +187,15 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         mMThread.start();
     }
 
-//    private float x;
-
     private void updateData(ArrayList<IndexMarkEntity> entities) {
         if (entities == null || entities.isEmpty()) return;
         if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
-            entities.addAll(mIndexMarkEntities);
+            int count = entities.size();
+            for (IndexMarkEntity entity : mIndexMarkEntities) {
+                entity.setX(count);
+                count++;
+                entities.add(entity);
+            }
             mIndexMarkEntities.clear();
         }
         mEntries.clear();
@@ -204,20 +216,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         mChart.setData(combinedData);
         isInitData = true;//已经初始化
         mChart.invalidate();
-
-        HandlerUtil.runOnUiThreadDelay(new Runnable() {
-            @Override
-            public void run() {
-                float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
-                float labelX = mChart.getFixedPosition();
-                float labelWidth = mChart.getLabelWidth();
-                float endX = labelX - labelWidth - dpPx10;
-                float itemWidth = endX / X;
-                float addItem = (labelWidth + dpPx10) / itemWidth;
-                mXAxis.setAxisMaximum(X + addItem + 100);
-            }
-        }, 1000);
-
+        isDraw = false;
         //发送事件
         EventBus.post(new DataRefreshEvent(true));
     }
@@ -231,7 +230,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         //刷新
         lineData.notifyDataChanged();
         mChart.notifyDataSetChanged();
-//        int count = lineData.getEntryCount();
+        //        int count = lineData.getEntryCount();
 //        mChart.moveViewToX(count);
 //        if (mXAxis.getAxisMinimum() < count + 200) {
 //            mXAxis.setAxisMaximum(count + 310);
@@ -250,6 +249,35 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
         }
     }
 
+    private boolean isDraw = false;//是否绘制
+
+    @Override
+    public void onDraw(Entry entry) {
+        if (isDraw) return;
+        //绘制完成回调
+        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
+        float labelX = mChart.getFixedPosition();
+        float labelWidth = mChart.getLabelWidth();
+        float endX = labelX - labelWidth - dpPx10;
+        float itemWidth = endX / X;
+        float addItem = (labelWidth + dpPx10) / itemWidth;
+        mXAxis.setAxisMaximum(X + addItem + 100);
+        isDraw = true;
+    }
+
+    @Override
+    public void stopPurchase(boolean isOrder) {
+        if (isOrder) return;
+        stopNetwork();
+        mView.refreshIessue();//刷新期号
+    }
+
+    @Override
+    public void openPrize(boolean isOrder) {
+        stopNetwork();
+        mView.refreshIessue();//刷新期号
+    }
+
     private class Callback extends BaseCallback {
 
         private IndexUtil mIndexUtil;
@@ -266,8 +294,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
                 return;
             }
             if (lineData == null) return;
-            final IndexMarkEntity entity = mIndexUtil.parseExponentially(lineData.getEntryCount(),
-                    jsonElement.getAsString(), Constants.INDEXDIGIT);
+            final IndexMarkEntity entity = mIndexUtil.parseExponentially(mEntries.size() - 1, jsonElement.getAsString(), Constants.INDEXDIGIT);
             if (isStop) {//断开链接
                 stopNetwork();
                 return;
@@ -276,6 +303,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>> {
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+//                    addCount++;
                     updateData(entity);
                 }
             });

@@ -2,6 +2,7 @@ package com.finance.listener;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.finance.ui.main.PurchaseViewAnimation;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.finance.widget.combinedchart.OnDrawCompletion;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
@@ -71,7 +73,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     //开奖点和购买点
     private IssueEntity mIssueEntity;
 
-
     //显示数据
     private IDataSet currentDataSet;
     //是否刷新子控件坐标
@@ -88,13 +89,21 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private int settIconWidth, settIconHight;
     //当前购买的点的实体集合
     private ArrayList<PurchaseViewEntity> mPurchaseViewEntities;
-
+    //获取结束点和开奖点
     private IChartData mIChartData;
+    //画布的X轴
+    private XAxis mXAxis;
+    //    private int childCount;
+    private int dpPx10;
+    private boolean isOrder = false;//是否有订单
 
     public LineChartListener(Activity activity, MCombinedChart lineChart) {
         this.mActivity = activity;
         this.mChart = lineChart;
+        this.mXAxis = lineChart.getXAxis();
         mParent = (ViewGroup) mChart.getParent();
+        dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_15);
+//        childCount = mParent.getChildCount();
     }
 
     @Override
@@ -369,7 +378,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, PurchaseViewEntity.viewHeight);
         entity.setDisplay(true);
         rootView.setLayoutParams(params);
-        viewGroup.addView(rootView);
+        viewGroup.addView(rootView, mPurchaseViewEntities.size() - 1);
     }
 
     //获取当前点的值
@@ -472,28 +481,40 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;
+        //刷新购买点的位置
+        refreshPurchaseViews(dataSet);
         //开奖
         refreshOpen(openEntry, dataSet);
         //截止购买
         refreshEnd(endEntry, dataSet);
         //其他线
         refreshLocation(currentEntry, dataSet);
-        //刷新购买点的位置
-        refreshPurchaseViews(dataSet);
         //刷新位置
         mParent.requestLayout();
+        onDraws();//调用绘制完成事件
     }
 
     //刷新开奖点
     private void refreshOpen(Entry openEntry, IDataSet dataSet) {
         if (settParams != null && settDesParams != null && openEntry != null) {
-            MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, openEntry.getX() + 100, openEntry.getY());
+            Log.d("123", "openX: " + openEntry.getX() + ",lastX:" + currentEntry.getX());
             //结算线
-            settParams.leftMargin = (int) (pointD.x + settDesWidth / 2);
+            settParams.leftMargin = (int) (mChart.getFixedPosition() - mChart.getLabelWidth() - dpPx10);//(int) (pointD.x + settDesWidth / 2);
             //结算线描述
             settDesParams.leftMargin = settParams.leftMargin - settDesHight * 2 - settDesParams.rightMargin;
             //图标
             settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
+
+            if (endEntry != null && currentEntry.getX() > endEntry.getX() && mXAxis != null) {
+                MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
+                if (pointD.x < settDesParams.leftMargin - pointD.x / currentEntry.getX()) {
+                    return;
+                }
+                if (openEntry.getX() - currentEntry.getX() <= 1) {
+                    return;
+                }
+                mChart.moveViewToX(openEntry.getX() - currentEntry.getX());
+            }
         }
     }
 
@@ -502,7 +523,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (endParams != null && endDesParams != null && endEntry != null) {
             MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, endEntry.getX(), endEntry.getY());
             //截止线
-            endParams.leftMargin = (int) (pointD.x + startX + endDesHight);
+//            endParams.leftMargin = (int) (pointD.x + startX + endDesHight);
+            endParams.leftMargin = (int) (pointD.x + startX);
             //截止线描述
             endDesParams.leftMargin = endParams.leftMargin - endDesHight * 2 - endDesParams.rightMargin;
             //图标
@@ -522,6 +544,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             tranConParams.topMargin = currentY;
             //横向描线描述
             tranConDesParams.topMargin = currentY - tranConDesHight / 2;
+            tvTransverseContrastDes.setText(last.getY() + "");
         }
         if (mRightAxisValueFormatter != null) {
             //右边轴标签显示偏移值
@@ -540,10 +563,12 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     //刷新所有购买点的位置
     private void refreshPurchaseViews(IDataSet dataSet) {
+        isOrder = false;
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             refreshPurchaseView(entity, dataSet);
         }
+        isOrder = true;
     }
 
     //刷新购买点的位置
@@ -593,6 +618,19 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         }
         //设置金额显示控件的X坐标
         layoutParams3.leftMargin = layoutParams5.leftMargin - PurchaseViewEntity.leftWidth;
+    }
+
+    private void onDraws() {
+        //绘制完成事件
+        if (EventDistribution.getInstance().getChartDraws() != null)
+            EventDistribution.getInstance().getChartDraws().onDraw(currentEntry);
+        //截止购买和开奖
+        if (openEntry != null && endEntry != null && EventDistribution.getInstance().getPurchase() != null) {
+            if (!isOrder && (int) currentEntry.getX() == (int) endEntry.getX()) {
+                EventDistribution.getInstance().getPurchase().stopPurchase(isOrder);//截止购买
+            } else if ((int) currentEntry.getX() == (int) openEntry.getX())
+                EventDistribution.getInstance().getPurchase().openPrize(isOrder);//开奖
+        }
     }
 
     @Override

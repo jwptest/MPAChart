@@ -13,7 +13,7 @@
         android:layout_width="@dimen/home_titleBar_height"
         android:layout_height="match_parent"
         android:clickable="true"
-        android:padding="@dimen/dp_13"
+        android:padding="@dimen/dp_15"
         android:scaleType="centerInside"
         android:src="@drawable/exit_login"
         tools:tooltipText="退出登录"/>
@@ -26,7 +26,7 @@
 
     <ImageView
         android:id="@+id/ivKM"
-        android:layout_width="@dimen/dp_60"
+        android:layout_width="@dimen/dp_100"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_20"
         android:scaleType="centerInside"

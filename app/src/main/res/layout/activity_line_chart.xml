@@ -32,13 +32,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-            <ImageView
-                android:id="@+id/ivIcon"
-                android:layout_width="@dimen/dp_25"
-                android:layout_height="@dimen/dp_25"
-                android:scaleType="centerInside"
-                tools:tooltipText="当前点图标"/>
-
             <View
                 android:id="@+id/vEndLine"
                 android:layout_width="0.6dp"
@@ -60,8 +53,8 @@
 
             <ImageView
                 android:id="@+id/ivEndLineIcon"
-                android:layout_width="@dimen/dp_30"
-                android:layout_height="@dimen/dp_30"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="@dimen/home_end_line_bottom"
                 android:scaleType="centerInside"
@@ -87,8 +80,8 @@
 
             <ImageView
                 android:id="@+id/ivSettlementIcon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="@dimen/home_end_line_bottom"
                 android:scaleType="centerInside"
@@ -104,13 +97,22 @@
 
             <TextView
                 android:id="@+id/tvTransverseContrastDes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/home_TransverseContrast_width"
+                android:layout_height="@dimen/home_TransverseContrast_height"
                 android:layout_alignParentRight="true"
+                android:background="@drawable/tvtransversecontrastdes_icon"
                 android:gravity="center"
+                android:paddingLeft="@dimen/dp_10"
                 android:text="横向对比"
-                android:textColor="#D4C495"
+                android:textColor="#444444"
                 android:textSize="11sp"/>
+
+            <ImageView
+                android:id="@+id/ivIcon"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:scaleType="centerInside"
+                tools:tooltipText="当前点图标"/>
 
         </RelativeLayout>
 

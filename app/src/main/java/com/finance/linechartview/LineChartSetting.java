@@ -130,7 +130,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setDrawGridLines(true);
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
-        rightAxis.setLabelCount(7, true);
+        rightAxis.setLabelCount(7, false);
         //标签颜色
         rightAxis.setTextColor(getColor(R.color.form_value_color));
         rightAxis.setValueFormatter(mRightIAxisValueFormatter);

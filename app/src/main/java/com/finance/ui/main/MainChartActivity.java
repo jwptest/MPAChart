@@ -237,7 +237,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IChartData dataSetting = null;
         if (TextUtils.equals(type, Constants.CHART_LINEFILL) || TextUtils.equals(type, Constants.CHART_LINE)) {
             if (mLineChartData == null) {
-                mLineChartData = new LineChartData(this, lineChart, mMainPresenter)
+                mLineChartData = new LineChartData(mActivity, this, lineChart, mMainPresenter)
                         .onInit();
             }
             dataSetting = mLineChartData;
@@ -357,11 +357,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
         if (mIssueEntities == null) {
-            mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
+            refreshIessue();//刷新期号
         } else {
             initViewIssue(0);
         }
     }
+
 
     private void initViewIssue(int selIndex) {
         IssueEntity entity = mIssueEntities.get(selIndex);
@@ -404,6 +405,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     public void setIssue(IssueEntity issue, int index) {
         if (issue == null) return;
         initViewIssue(index);
+    }
+
+    @Override
+    public void refreshIessue() {
+        mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
     }
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})

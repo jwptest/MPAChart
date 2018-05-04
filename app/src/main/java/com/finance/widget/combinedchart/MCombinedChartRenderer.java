@@ -36,8 +36,6 @@ public class MCombinedChartRenderer extends DataRenderer {
 
     protected WeakReference<MCombinedChart> mChart;
 
-    private WeakReference<OnDrawCompletion> drawCompletion;
-
     public MCombinedChartRenderer(MCombinedChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
         mChart = new WeakReference<MCombinedChart>(chart);
@@ -72,10 +70,6 @@ public class MCombinedChartRenderer extends DataRenderer {
                 case LINE:
                     if (chart.getLineData() != null) {
                         mRenderers.add(new MLineChartRenderer(chart, mAnimator, mViewPortHandler));
-//                        MLineChartRenderer renderer = new MLineChartRenderer(chart, mAnimator, mViewPortHandler);
-//                        mRenderers.add(renderer);
-//                        if (mChart.get() != null)
-//                            mChart.get().setMcombinedchartRenderer(renderer);
                     }
                     break;
                 case CANDLE:
@@ -115,29 +109,6 @@ public class MCombinedChartRenderer extends DataRenderer {
         }
         for (DataRenderer renderer : mRenderers)
             renderer.drawExtras(c);
-        //绘制完成，刷新其他控件
-        OnDrawCompletion completion = drawCompletion == null ? null : drawCompletion.get();
-        if (completion == null) return;
-        ChartData data = getChartData(mRenderers.get(0), mChart.get());
-        if (data == null) return;
-        IDataSet iDataSet = null;
-        if (data instanceof LineData) {
-            iDataSet = ((LineData) data).getDataSets().get(0);
-        } else if (data instanceof BarData) {
-            iDataSet = ((BarData) data).getDataSets().get(0);
-        } else if (data instanceof BubbleData) {
-            iDataSet = ((BubbleData) data).getDataSets().get(0);
-        } else if (data instanceof CandleData) {
-            iDataSet = ((CandleData) data).getDataSets().get(0);
-        } else if (data instanceof ScatterData) {
-            iDataSet = ((ScatterData) data).getDataSets().get(0);
-        }
-        if (iDataSet == null) return;
-        Entry entry1 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 1);//开奖点
-//        Entry entry2 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 2);//截止购买点
-//        Entry entry3 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 3);//绘制的最后一个点
-        if (entry1 == null) return;
-        completion.completion(entry1, iDataSet);
     }
 
     protected List<Highlight> mHighlightBuffer = new ArrayList<Highlight>();
@@ -158,7 +129,7 @@ public class MCombinedChartRenderer extends DataRenderer {
         }
     }
 
-    private ChartData getChartData(DataRenderer renderer, MCombinedChart chart) {
+    public ChartData getChartData(DataRenderer renderer, MCombinedChart chart) {
         if (renderer == null || chart == null) return null;
         ChartData data = null;
         if (renderer instanceof BarChartRenderer)
@@ -200,8 +171,4 @@ public class MCombinedChartRenderer extends DataRenderer {
         this.mRenderers = renderers;
     }
 
-
-    public void setOnDrawCompletion(OnDrawCompletion drawCompletion) {
-        this.drawCompletion = new WeakReference<OnDrawCompletion>(drawCompletion);
-    }
 }

@@ -27,6 +27,8 @@ public interface MainContract {
         void setProduct(ProductEntity product);
 
         void setIssue(IssueEntity issue, int issueSelIndex);
+        //刷新期号
+        void refreshIessue();
     }
 
     interface Presenter extends IBasePresenter<View> {

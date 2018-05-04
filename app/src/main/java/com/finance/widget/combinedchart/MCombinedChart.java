@@ -9,6 +9,7 @@ import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BubbleData;
 import com.github.mikephil.charting.data.CandleData;
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -18,6 +19,8 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.CombinedDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.renderer.YAxisRenderer;
+
+import java.lang.ref.WeakReference;
 
 /**
  * 走势图控件
@@ -269,10 +272,33 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
         }
     }
 
-    public void setOnDrawCompletion(OnDrawCompletion drawCompletion) {
-        //设置回调接口
-        if (mMCombinedChartRenderer != null)
-            mMCombinedChartRenderer.setOnDrawCompletion(drawCompletion);
+    private OnDrawCompletion drawCompletion;
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        //绘制完成，刷新其他控件
+        if (drawCompletion == null) return;
+        ChartData data = mMCombinedChartRenderer.getChartData(mMCombinedChartRenderer.getSubRenderer(0), this);
+        if (data == null) return;
+        IDataSet iDataSet = null;
+        if (data instanceof LineData) {
+            iDataSet = ((LineData) data).getDataSets().get(0);
+        } else if (data instanceof BarData) {
+            iDataSet = ((BarData) data).getDataSets().get(0);
+        } else if (data instanceof BubbleData) {
+            iDataSet = ((BubbleData) data).getDataSets().get(0);
+        } else if (data instanceof CandleData) {
+            iDataSet = ((CandleData) data).getDataSets().get(0);
+        } else if (data instanceof ScatterData) {
+            iDataSet = ((ScatterData) data).getDataSets().get(0);
+        }
+        if (iDataSet == null) return;
+        Entry entry1 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 1);//开奖点
+//        Entry entry2 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 2);//截止购买点
+//        Entry entry3 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 3);//绘制的最后一个点
+        if (entry1 == null) return;
+        drawCompletion.completion(entry1, iDataSet);
     }
 
     public float getFixedPosition() {
@@ -281,6 +307,10 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
 
     public float getLabelWidth() {
         return mMYAxisRightRenderer.getLabelWidth();
+    }
+
+    public void setOnDrawCompletion(OnDrawCompletion drawCompletion) {
+        this.drawCompletion = drawCompletion;
     }
 
 }

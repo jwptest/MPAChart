@@ -14,7 +14,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 public class MYAxisRightRenderer extends YAxisRenderer {
 
     private float fixedPosition;
-    private String measureText;
+    private String measureText = "";
 
     public MYAxisRightRenderer(ViewPortHandler viewPortHandler, YAxis yAxis, Transformer trans) {
         super(viewPortHandler, yAxis, trans);
@@ -30,7 +30,8 @@ public class MYAxisRightRenderer extends YAxisRenderer {
         // draw
         for (int i = from; i < to - 1; i++) {
             String text = mYAxis.getFormattedLabel(i);
-            c.drawText(text, fixedPosition, positions[i * 2 + 1] + offset, mAxisLabelPaint);
+//            c.drawText(text, fixedPosition, positions[i * 2 + 1] + offset, mAxisLabelPaint);
+            c.drawText(text, fixedPosition, positions[i * 2 + 1], mAxisLabelPaint);
             if (i == from) measureText = text;
         }
     }
