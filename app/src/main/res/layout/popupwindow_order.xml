@@ -24,10 +24,34 @@
         android:layout_marginRight="@dimen/dp_10"
         android:padding="@dimen/dp_10"/>
 
+    <LinearLayout
+        android:id="@+id/llEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tvTitle"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
+            android:background="#ff0000"
+            android:scaleType="centerInside"/>
+
+        <TextView
+            android:id="@+id/tvEmptyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂无购买记录"
+            android:textColor="#aaaaaa"
+            android:textSize="@dimen/sp_12"/>
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvOrder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tvTitle"/>
+        android:layout_below="@+id/tvTitle"
+        android:visibility="gone"/>
 
 </RelativeLayout>

@@ -16,7 +16,7 @@
         <include
             android:id="@+id/llLeftMenu"
             layout="@layout/home_layout_left_menu"
-            android:layout_width="80dp"
+            android:layout_width="@dimen/dp_75"
             android:layout_height="match_parent"/>
 
         <RelativeLayout
@@ -117,7 +117,7 @@
         <include
             android:id="@+id/llRightMenu"
             layout="@layout/home_layout_right_menu"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/dp_150"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"/>
 
@@ -126,7 +126,9 @@
             layout="@layout/home_layout_centre_menu"
             android:layout_width="match_parent"
             android:layout_height="@dimen/home_centre_height"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/dp_75"
+            android:layout_marginRight="@dimen/dp_150"/>
 
     </RelativeLayout>
 

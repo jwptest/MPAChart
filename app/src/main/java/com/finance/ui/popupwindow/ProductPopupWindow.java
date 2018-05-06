@@ -2,6 +2,7 @@ package com.finance.ui.popupwindow;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.finance.R;
 import com.finance.model.ben.ItemEntity;
@@ -15,8 +16,8 @@ import java.util.ArrayList;
  */
 public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
 
-    public ProductPopupWindow(Context context, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
-        super(context, mArrayList);
+    public ProductPopupWindow(Context context, int width, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
+        super(context, width, ViewGroup.LayoutParams.WRAP_CONTENT, mArrayList);
         selectIndex = 0;
     }
 

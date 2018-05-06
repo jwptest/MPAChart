@@ -19,12 +19,14 @@ import com.finance.common.Constants;
 import com.finance.common.UserShell;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
+import com.finance.interfaces.IDismiss;
 import com.finance.interfaces.IViewHandler;
 import com.finance.linechartdata.CandleChartData;
 import com.finance.linechartdata.LineChartData;
 import com.finance.linechartview.BaseAxisValueFormatter;
 import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
+import com.finance.listener.EventDistribution;
 import com.finance.listener.LineChartListener;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
@@ -93,7 +95,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     TextView tvBFB;
     @BindView(R.id.tvJZTimer)
     TextView tvJZTimer;
-
     @BindView(R.id.tvMoney)
     TextView tvMoney;
     @BindView(R.id.tvUName)
@@ -148,7 +149,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private ProductEntity currentProduct;
     private ArrayList<IssueEntity> currentIssues;
     private IssueEntity currentIssue;
-    private int issuesSelectIndex = -1;
+    private int issuesSelectIndex = 0;
 
     @Override
     protected int getLayoutId() {
@@ -217,8 +218,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //                .setIvSettlementIcon(ivSettlementIcon)
                 .setRightAxisValueFormatter(mRightAxisValue)
                 .setXAxisValueFormatter(mXAxisValue);
-        leftMenu = new LeftMenu(this, mMainPresenter).onInit(llLeftMenu);
-        rightMenu = new RightMenu(this).onInit(llRightMenu);
+        leftMenu = new LeftMenu(mActivity, this, mMainPresenter).onInit(llLeftMenu);
+        rightMenu = new RightMenu(mActivity, this).onInit(llRightMenu);
         centreMenu = new CentreMenu(this).onInit(llCentreMenu);
         //设置数据处理
         checkedChart(Constants.CHART_LINEFILL);//当前显示的走势图类型
@@ -262,20 +263,20 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     private void initLayoutParam() {
-        //布局比例 1:7.6:2
-        float mWidth = PhoneUtil.getScreenWidth(mActivity);
-        float item = mWidth / 10.6f;
-        llLeftMenu.getLayoutParams().width = (int) item;//左菜单栏
-        ivExitLogin.getLayoutParams().width = (int) item;//title退出登录按钮
-        rlZst.getLayoutParams().width = (int) (item * 7.6f);//走势图
-        //右边菜单栏
-        llRightMenu.getLayoutParams().width = (int) (item * 2) + PhoneUtil.dip2px(mActivity, 1);
-        //设置中间菜单
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llCentreMenu.getLayoutParams();
-        //距离左菜单栏20dp
-        params.leftMargin = llLeftMenu.getLayoutParams().width + PhoneUtil.dip2px(mActivity, 20);
-        //距离右菜单栏40dp
-        params.rightMargin = llRightMenu.getLayoutParams().width + PhoneUtil.dip2px(mActivity, 40);
+//        //布局比例 1:7.6:2
+//        float mWidth = PhoneUtil.getScreenWidth(mActivity);
+//        float item = mWidth / 10.6f;
+//        llLeftMenu.getLayoutParams().width = (int) item;//左菜单栏
+//        ivExitLogin.getLayoutParams().width = (int) item;//title退出登录按钮
+//        rlZst.getLayoutParams().width = (int) (item * 7.6f);//走势图
+//        //右边菜单栏
+//        llRightMenu.getLayoutParams().width = (int) (item * 2) + PhoneUtil.dip2px(mActivity, 1);
+//        //设置中间菜单
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llCentreMenu.getLayoutParams();
+//        //距离左菜单栏20dp
+//        params.leftMargin = llLeftMenu.getLayoutParams().width + PhoneUtil.dip2px(mActivity, 20);
+//        //距离右菜单栏40dp
+//        params.rightMargin = llRightMenu.getLayoutParams().width + PhoneUtil.dip2px(mActivity, 40);
 
 //        rlZst.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
@@ -322,8 +323,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         float x = entry.getX();
         float y = entry.getY();
         PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", isAdd);
-//        viewEntity.setxValue(x);
-//        viewEntity.setyValue(y);
+        viewEntity.setxValue(x);
+        viewEntity.setyValue(y);
         viewEntity.setMoney(money);
         chartListener.addPurchaseView(viewEntity);
     }
@@ -362,12 +363,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             currentIssues = mMainPresenter.getProductIssue(entity.getProductId(), mIssueEntities);
             initViewIssue(0);
         }
+        EventDistribution.getInstance().product(entity);
     }
 
     private void initViewIssue(int selIndex) {
         IssueEntity entity = currentIssues.get(selIndex);
         issuesSelectIndex = selIndex;
-        tvJZTimer.setText(mMainPresenter.issueNameFormat(entity.getIssueName(), new StringBuilder()));
+        tvJZTimer.setText(mMainPresenter.issueNameFormat(entity.getBonusTime()));
         currentIssue = entity;
         updateIssue();//更新走势图
     }
@@ -392,7 +394,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         ArrayList<IssueEntity> issueEntities = mMainPresenter.getProductIssue(currentProduct.getProductId(), issues);
         if (issueEntities == null || issueEntities.isEmpty()) return;
         currentIssues = issueEntities;
-        initViewIssue(0);
+        initViewIssue(issuesSelectIndex);
     }
 
     @Override
@@ -405,6 +407,18 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     public void setIssue(IssueEntity issue, int index) {
         if (issue == null) return;
         initViewIssue(index);
+    }
+
+    @Override
+    public void showOrderPopWindow(IDismiss dismiss) {
+        int width = ivKM.getWidth() + llMoney.getWidth();
+        mMainPresenter.showOrderPopWindow(rlTitleBar, llLeftMenu, width, null, dismiss);
+    }
+
+    @Override
+    public void showDynamicPopupWindow(IDismiss dismiss) {
+        int width = ivKM.getWidth() + llMoney.getWidth();
+        mMainPresenter.showDynamicPopWindow(rlTitleBar, llLeftMenu, width, null, dismiss);
     }
 
     @Override

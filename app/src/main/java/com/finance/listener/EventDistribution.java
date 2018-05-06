@@ -1,5 +1,6 @@
 package com.finance.listener;
 
+import com.finance.model.ben.ProductEntity;
 import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
@@ -11,10 +12,12 @@ public class EventDistribution {
 
     private ArrayList<IChartDraw> mChartDraws;
     private ArrayList<IPurchase> mPurchase;
+    private ArrayList<IProductChecked> mProductCheckeds;
 
     private EventDistribution() {
         mChartDraws = new ArrayList<>(2);
         mPurchase = new ArrayList<>(2);
+        mProductCheckeds = new ArrayList<>(2);
     }
 
     private static class EventDistributionInstance {
@@ -58,6 +61,20 @@ public class EventDistribution {
         }
     }
 
+    public void removeProduct(IProductChecked purchase) {
+        mProductCheckeds.remove(purchase);
+    }
+
+    public void addProduct(IProductChecked purchase) {
+        mProductCheckeds.add(purchase);
+    }
+
+    public void product(ProductEntity entity) {
+        for (IProductChecked product : mProductCheckeds) {
+            product.productChecked(entity);
+        }
+    }
+
     public interface IChartDraw {
         //走势图绘制完成回调方法
         void onDraw(Entry entry);
@@ -69,6 +86,11 @@ public class EventDistribution {
 
         //开奖事件回调
         void openPrize(boolean isOrder);
+    }
+
+    //产品改变
+    public interface IProductChecked {
+        void productChecked(ProductEntity entity);
     }
 
 }

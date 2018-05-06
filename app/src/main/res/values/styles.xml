@@ -60,5 +60,33 @@
         <item name="android:textSize">@dimen/sp_11</item>
     </style>
 
+    <style name="right_keyboard_item">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="right_keyboard_item_text">
+        <item name="android:layout_width">0.0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="right_keyboard_line_vertical">
+        <item name="android:layout_width">@dimen/dp_0.6</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">#5a5a5a</item>
+    </style>
+
+    <style name="right_keyboard_line_horizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_0.6</item>
+        <item name="android:background">#5a5a5a</item>
+    </style>
+
 
 </resources>

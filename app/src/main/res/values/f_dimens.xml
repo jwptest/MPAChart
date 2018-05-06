@@ -273,7 +273,8 @@
     <dimen name="home_titleBar_height">60dp</dimen>
     <dimen name="home_centre_height">30dp</dimen>
 
-    <dimen name="home_TransverseContrast_width">60dp</dimen>
-    <dimen name="home_TransverseContrast_height">20dp</dimen>
+    <!--2.76-->
+    <dimen name="home_TransverseContrast_width">63dp</dimen>
+    <dimen name="home_TransverseContrast_height">23dp</dimen>
 
 </resources>

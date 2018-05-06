@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.finance.R;
@@ -29,7 +29,11 @@ public abstract class RecyclerPopupWindow<D> extends PopupWindow implements Recy
     protected OnItemClicklistener<D> mOnItemClicklistener;
 
     public RecyclerPopupWindow(Context context, ArrayList<ItemEntity<D>> mArrayList) {
-        super(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        this(context, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, mArrayList);
+    }
+
+    public RecyclerPopupWindow(Context context, int width, int height, ArrayList<ItemEntity<D>> mArrayList) {
+        super(width, height);
         View rootView = LayoutInflater.from(context).inflate(getLayoutId(), null);
         setContentView(rootView);
         rvList = rootView.findViewById(R.id.rvList);

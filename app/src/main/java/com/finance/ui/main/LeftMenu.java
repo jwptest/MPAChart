@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
 import com.finance.base.BaseViewHandle;
-import com.finance.ui.popupwindow.OrderPopupWindow;
+import com.finance.interfaces.IDismiss;
 import com.finance.utils.BtnClickUtil;
 
 import butterknife.BindView;
@@ -22,7 +22,7 @@ import butterknife.OnClick;
 /**
  * 左菜单处理
  */
-public class LeftMenu extends BaseViewHandle {
+public class LeftMenu extends BaseViewHandle implements IDismiss {
 
     @BindView(R.id.vItemBg)
     View vItemBg;
@@ -40,7 +40,8 @@ public class LeftMenu extends BaseViewHandle {
     TextView tvDynamic;
 
     private Activity mActivity;
-    private MainContract.Presenter mPresenter;
+    //    private MainContract.Presenter mPresenter;
+    private MainContract.View mView;
 
     private RelativeLayout.LayoutParams mLayoutParams;
 
@@ -48,10 +49,12 @@ public class LeftMenu extends BaseViewHandle {
     private MBaseAminatorListener mListener;//动画执行监听
 
     private TextView currentSelect;
+    private int selIndex = 0;
 
-    public LeftMenu(Activity activity, MainContract.Presenter presenter) {
+    public LeftMenu(Activity activity, MainContract.View view, MainContract.Presenter presenter) {
         this.mActivity = activity;
-        mPresenter = presenter;
+        this.mView = view;
+//        this.mPresenter = presenter;
     }
 
     @Override
@@ -98,17 +101,19 @@ public class LeftMenu extends BaseViewHandle {
             case R.id.ivOrder://订单
             case R.id.tvOrder:
                 startAnimation(1, tvOrder);
-                mPresenter.showOrderPopWindow(tvOrder, null, vItemBg.getHeight() * 2, -vItemBg.getWidth());
+                mView.showOrderPopWindow(this);
                 break;
             case R.id.ivDynamic://动态
             case R.id.tvDynamic:
                 startAnimation(2, tvDynamic);
-
+                mView.showDynamicPopupWindow(this);
                 break;
         }
     }
 
     private void startAnimation(int toItem, TextView textView) {
+        if (selIndex == toItem) return;
+        selIndex = toItem;
         String tab = vItemBg.getTag() + "";
         int item = 0;
         try {
@@ -160,6 +165,11 @@ public class LeftMenu extends BaseViewHandle {
             //动态
 
         }
+    }
+
+    @Override
+    public void onDismiss() {
+        startAnimation(0, tvTransaction);
     }
 
 

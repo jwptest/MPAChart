@@ -12,8 +12,13 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.finance.R;
+import com.finance.interfaces.IDismiss;
+import com.finance.model.ben.OrderEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.ui.adapters.OrderAdapter;
+import com.finance.utils.PhoneUtil;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +33,11 @@ public class OrderPopupWindow extends PopupWindow {
     TextView tvTitle;
     @BindView(R.id.ivClose)
     ImageView ivClose;
+    @BindView(R.id.llEmpty)
+    View llEmpty;
+    @BindView(R.id.tvEmptyText)
+    TextView tvEmptyText;
+
     @BindView(R.id.rvOrder)
     RecyclerView rvOrder;
     private Activity mActivity;
@@ -37,29 +47,49 @@ public class OrderPopupWindow extends PopupWindow {
 
     private CountDownTimer timer;//倒计时
     private long serviceTimer;//服务器时间
-
-    public OrderPopupWindow(Activity activity, OrdersEntity ordersEntity, int width) {
-        super(width, LinearLayout.LayoutParams.WRAP_CONTENT);
-        mActivity = activity;
-        View rootView = LayoutInflater.from(activity).inflate(R.layout.popupwindow_order, null);
-        setContentView(rootView);
-        ButterKnife.bind(this, rootView);
-        this.ordersEntity = ordersEntity;
-        setTouchable(true);
-        setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
-        initData();
-    }
+    private IDismiss dismiss;
 
     @OnClick(R.id.ivClose)
     public void onViewClicked() {
         dismiss();
     }
 
+    public OrderPopupWindow(Activity activity, int width) {
+        super(width, LinearLayout.LayoutParams.MATCH_PARENT);
+        mActivity = activity;
+        View rootView = LayoutInflater.from(activity).inflate(R.layout.popupwindow_order, null);
+        setContentView(rootView);
+        //PhoneUtil.getScreenHeight(activity) / 2
+        ButterKnife.bind(this, rootView);
+        setTouchable(true);
+        setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
+        tvTitle.setText("交易订单");
+        tvEmptyText.setText("暂无购买记录");
+    }
+
+    public void setOrdersEntity(OrdersEntity ordersEntity) {
+        this.ordersEntity = ordersEntity;
+        initData();
+    }
+
     private void initData() {
-        mAdapter = new OrderAdapter(ordersEntity.getOrders());
-        mAdapter.setServiceTimer(System.currentTimeMillis());
-        rvOrder.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
-        rvOrder.setAdapter(mAdapter);
+        ArrayList<OrderEntity> orderEntities = ordersEntity == null ? null : ordersEntity.getOrders() == null ? null : ordersEntity.getOrders();
+        if (orderEntities == null || orderEntities.isEmpty()) {
+            llEmpty.setVisibility(View.VISIBLE);
+            rvOrder.setVisibility(View.GONE);
+            return;
+        }
+        llEmpty.setVisibility(View.GONE);
+        rvOrder.setVisibility(View.VISIBLE);
+        if (mAdapter == null) {
+            mAdapter = new OrderAdapter(orderEntities);
+            mAdapter.setServiceTimer(System.currentTimeMillis());
+            rvOrder.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
+            rvOrder.setAdapter(mAdapter);
+        } else {
+            mAdapter.clear();
+            mAdapter.addAll(orderEntities);
+        }
     }
 
     private void startCountDown(final long l) {
@@ -82,6 +112,16 @@ public class OrderPopupWindow extends PopupWindow {
         timer.start();
     }
 
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (dismiss != null)
+            dismiss.onDismiss();
+    }
+
+    public void setOnDismiss(IDismiss dismiss) {
+        this.dismiss = dismiss;
+    }
 
     public void showBottom(View parent) {
         showAsDropDown(parent);

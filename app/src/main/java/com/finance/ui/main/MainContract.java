@@ -4,12 +4,13 @@ package com.finance.ui.main;
 import com.finance.base.IBasePresenter;
 import com.finance.base.IBaseView;
 import com.finance.interfaces.ICallback;
+import com.finance.interfaces.IDismiss;
+import com.finance.model.ben.DynamicsEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.HttpConnection;
-import com.finance.model.http.JsonCallback;
 
 import java.util.ArrayList;
 
@@ -27,6 +28,15 @@ public interface MainContract {
         void setProduct(ProductEntity product);
 
         void setIssue(IssueEntity issue, int issueSelIndex);
+
+        void showOrderPopWindow(IDismiss dismiss);
+
+        void showDynamicPopupWindow(IDismiss dismiss);
+
+        void rise(int money);
+
+        void fall(int money);
+
         //刷新期号
         void refreshIessue();
     }
@@ -46,14 +56,15 @@ public interface MainContract {
 
         void getOrderRecord();
 
-        String issueNameFormat(String issueName, StringBuilder sb);
+        String issueNameFormat(String issueName);
 
         void showProductPopWindow(android.view.View view, ArrayList<ProductEntity> entities);
 
         void showIssuePopWindow(android.view.View view, ArrayList<IssueEntity> entities, int selIndex);
 
-        void showOrderPopWindow(android.view.View view, OrdersEntity entity, int x, int y);
+        void showOrderPopWindow(android.view.View anchor, android.view.View leftView, int width, OrdersEntity entity, IDismiss dismiss);
 
+        void showDynamicPopWindow(android.view.View anchor, android.view.View leftView, int width, DynamicsEntity entity, IDismiss dismiss);
     }
 
 }
