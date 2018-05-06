@@ -31,6 +31,8 @@ import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.ui.dialog.ExitAppDialog;
+import com.finance.ui.dialog.StartDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -157,6 +159,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     protected void onCreated() {
+
+//        new StartDialog(this).show();
+        购买接口
+
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
         //初始化参数
@@ -187,6 +193,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        new ExitAppDialog(this).show();
+    }
+
     //初始化控件
     private void initView() {
         if (StatusBarUtil.StatusBarNormalMode(this) != 0) {
@@ -194,7 +205,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             rlTitleBar.setPadding(rlTitleBar.getLeft(), rlTitleBar.getPaddingTop() + statusBarHigh,
                     rlTitleBar.getPaddingRight(), rlTitleBar.getPaddingBottom());
             //设置titleBar的高度
-            rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_height);
+            rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_left_menu_width);
         }
         //右边轴value显示格式类
         BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);

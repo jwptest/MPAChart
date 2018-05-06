@@ -63,37 +63,37 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemHolder itemHolder = (ItemHolder) holder;
         OrderEntity entity = getItem(position);
-        if (isOpen(entity)) {//开奖完成
+        if (isOpen(entity, position)) {//开奖完成
             itemHolder.cvProgressBar.setVisibility(View.GONE);
-            itemHolder.tvTimer.setText(entity.getCreateTime());
-            itemHolder.tvDate.setText(entity.getCreateTime());
+//            itemHolder.tvTimer.setText(entity.getCreateTime());
+//            itemHolder.tvDate.setText(entity.getCreateTime());
+            itemHolder.llTimer.setVisibility(View.VISIBLE);
         } else {//交易中
             itemHolder.cvProgressBar.setVisibility(View.VISIBLE);
-            itemHolder.tvTimer.setVisibility(View.GONE);
-            itemHolder.tvDate.setVisibility(View.GONE);
-            //计算进度
+            itemHolder.llTimer.setVisibility(View.GONE);
+//            计算进度
             itemHolder.cvProgressBar.setProgress(30);
         }
-
-        if (entity.isResult()) {//涨
-            itemHolder.ivRiseFall.setImageResource(R.drawable.rise_icon);
-            itemHolder.tvExplain.setText("看涨");
-        } else {//跌
-            itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon);
-            itemHolder.tvExplain.setText("看跌");
-        }
-
-        itemHolder.tvName.setText(entity.getProductTxt());
-        itemHolder.tvPurchase.setText(entity.getBonusHexIndexMark());
-        itemHolder.tvMoney.setText(entity.getBonusMoney() + "");
-        itemHolder.tvPurchase2.setText("指数");
-        itemHolder.tvName.setText(entity.getMoney() + "");
+//
+//        if (entity.isResult()) {//涨
+//            itemHolder.ivRiseFall.setImageResource(R.drawable.rise_icon);
+//            itemHolder.tvExplain.setText("看涨");
+//        } else {//跌
+//            itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon);
+//            itemHolder.tvExplain.setText("看跌");
+//        }
+//
+//        itemHolder.tvName.setText(entity.getProductTxt());
+//        itemHolder.tvPurchase.setText(entity.getBonusHexIndexMark());
+//        itemHolder.tvMoney.setText(entity.getBonusMoney() + "");
+//        itemHolder.tvPurchase2.setText("指数");
+//        itemHolder.tvName.setText(entity.getMoney() + "");
     }
 
     @Override
     public long getHeaderId(int position) {
         OrderEntity entity = getItem(position);
-        if (isOpen(entity)) {
+        if (isOpen(entity, position)) {
             return 1;
         }
         return 0;
@@ -111,7 +111,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         ImageView icon = holder.itemView.findViewById(R.id.ivStateIcon);//.setimage
         TextView textView = holder.itemView.findViewById(R.id.tvTransaction);
         OrderEntity entity = getItem(position);
-        if (isOpen(entity)) {
+        if (isOpen(entity, position)) {
             icon.setImageResource(R.drawable.rise_icon);
             textView.setText("交易完成订单");
         } else {
@@ -120,12 +120,13 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         }
     }
 
-    private boolean isOpen(OrderEntity entity) {
-        if (serviceTimer > entity.getOpenTimer()) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean isOpen(OrderEntity entity, int i) {
+        return i > 5;
+//        if (serviceTimer > entity.getOpenTimer()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
     }
 
     public void setServiceTimer(long serviceTimer) {
@@ -134,6 +135,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 
     public class ItemHolder extends RecyclerViewHolder {
         CompletedView cvProgressBar;
+        View llTimer;
         TextView tvTimer;
         TextView tvName;
         TextView tvPurchase;
@@ -152,6 +154,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         public ItemHolder(View itemView) {
             super(itemView);
             cvProgressBar = findViewById(R.id.cvProgressBar);
+            llTimer = findViewById(R.id.llTimer);
             tvTimer = findViewById(R.id.tvTimer);
             tvName = findViewById(R.id.tvName);
             tvPurchase = findViewById(R.id.tvPurchase);

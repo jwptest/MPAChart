@@ -9,6 +9,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="noBackDialog"
+           parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
     <style name="leftMenuImage">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">50dp</item>
@@ -47,17 +52,19 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
+    <style name="orderItemText2" parent="orderItemText">
+        <item name="android:textColor">#666666</item>
+        <item name="android:textSize">@dimen/sp_11</item>
+    </style>
+
     <style name="orderItemText">
         <item name="android:layout_width">0.0dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/sp_12</item>
-    </style>
-
-    <style name="orderItemText2" parent="orderItemText">
-        <item name="android:textColor">#666666</item>
-        <item name="android:textSize">@dimen/sp_11</item>
+        <item name="android:gravity">left</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="right_keyboard_item">

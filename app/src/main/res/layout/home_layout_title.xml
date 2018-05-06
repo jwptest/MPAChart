@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/ivExitLogin"
-        android:layout_width="@dimen/home_titleBar_height"
+        android:layout_width="@dimen/home_left_menu_width"
         android:layout_height="match_parent"
         android:clickable="true"
         android:padding="@dimen/dp_15"

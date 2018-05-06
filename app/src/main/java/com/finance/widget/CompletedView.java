@@ -75,12 +75,12 @@ public class CompletedView extends View {
     private void initAttrs(Context context, AttributeSet attrs) {
         TypedArray typeArray = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.TasksCompletedView, 0, 0);
-        mRadius = typeArray.getDimension(R.styleable.TasksCompletedView_radius, 10);
-        mStrokeWidth = typeArray.getDimension(R.styleable.TasksCompletedView_strokeWidth, 10);
-        mCircleColor = typeArray.getColor(R.styleable.TasksCompletedView_circleColor, 0xFFFFFFFF);
-        mRingColor = typeArray.getColor(R.styleable.TasksCompletedView_ringColor, 0xFFFFFFFF);
-        mRingBgColor = typeArray.getColor(R.styleable.TasksCompletedView_ringBgColor, 0xFFFFFFFF);
-        mProgress = typeArray.getInt(R.styleable.TasksCompletedView_progress, 0);
+        mRadius = typeArray.getDimension(R.styleable.TasksCompletedView_tcv_radius, 10);
+        mStrokeWidth = typeArray.getDimension(R.styleable.TasksCompletedView_tcv_strokeWidth, 10);
+        mCircleColor = typeArray.getColor(R.styleable.TasksCompletedView_tcv_circleColor, 0xFFFFFFFF);
+        mRingColor = typeArray.getColor(R.styleable.TasksCompletedView_tcv_ringColor, 0xFFFFFFFF);
+        mRingBgColor = typeArray.getColor(R.styleable.TasksCompletedView_tcv_ringBgColor, 0xFFFFFFFF);
+        mProgress = typeArray.getInt(R.styleable.TasksCompletedView_tcv_progress, 0);
 
         mRingRadius = mRadius + mStrokeWidth / 2;
     }

@@ -16,7 +16,7 @@
         <include
             android:id="@+id/llLeftMenu"
             layout="@layout/home_layout_left_menu"
-            android:layout_width="@dimen/dp_75"
+            android:layout_width="@dimen/home_left_menu_width"
             android:layout_height="match_parent"/>
 
         <RelativeLayout
@@ -117,7 +117,7 @@
         <include
             android:id="@+id/llRightMenu"
             layout="@layout/home_layout_right_menu"
-            android:layout_width="@dimen/dp_150"
+            android:layout_width="@dimen/home_right_menu_width"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"/>
 

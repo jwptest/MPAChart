@@ -54,4 +54,31 @@
         android:layout_below="@+id/tvTitle"
         android:visibility="gone"/>
 
+    <!--<com.finance.widget.circleprogressbar.CustomCircleProgressBar-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--android:id="@+id/cvProgressBar"-->
+        <!--android:layout_width="@dimen/dp_55"-->
+        <!--android:layout_height="@dimen/dp_55"-->
+        <!--app:direction="left"-->
+        <!--app:max_progress="100"-->
+        <!--app:outside_color="@color/colorPrimary"-->
+        <!--app:outside_radius="@dimen/dp_25"-->
+        <!--app:progress="50"-->
+        <!--app:progress_width="@dimen/dp_2"/>-->
+
+    <!--<com.finance.widget.CompletedView-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--android:id="@+id/cvProgressBar1"-->
+        <!--android:layout_width="@dimen/dp_55"-->
+        <!--android:layout_height="@dimen/dp_55"-->
+        <!--android:layout_toRightOf="@+id/cvProgressBar"-->
+        <!--android:layout_weight="1"-->
+        <!--app:tcv_circleColor="@color/transparent"-->
+        <!--app:tcv_progress="30"-->
+        <!--app:tcv_radius="@dimen/dp_25"-->
+        <!--app:tcv_ringBgColor="@color/colorPrimary"-->
+        <!--app:tcv_ringColor="#0000ff"-->
+        <!--app:tcv_strokeWidth="@dimen/dp_2"/>-->
+
+
 </RelativeLayout>

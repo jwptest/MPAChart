@@ -498,7 +498,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     //刷新开奖点
     private void refreshOpen(Entry openEntry, IDataSet dataSet) {
         if (settParams != null && settDesParams != null && openEntry != null) {
-            Log.d("123", "openX: " + openEntry.getX() + ",lastX:" + currentEntry.getX());
+//            Log.d("123", "openX: " + openEntry.getX() + ",lastX:" + currentEntry.getX());
             MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, openEntry.getX(), openEntry.getY());
             //结算线
             settParams.leftMargin = (int) (pointD.x + startX);//(int) (mChart.getFixedPosition() - mChart.getLabelWidth() - dpPx10);//(int) (pointD.x + settDesWidth / 2);
@@ -506,7 +506,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             settDesParams.leftMargin = settParams.leftMargin - settDesHight * 2 - settDesParams.rightMargin;
 //            //图标
 //            settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
-
 //            if (endEntry != null && currentEntry.getX() > endEntry.getX() && mXAxis != null) {
 //                MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
 //                if (pointD.x < settDesParams.leftMargin - pointD.x / currentEntry.getX()) {

@@ -6,27 +6,83 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
+    <!--<LinearLayout-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="horizontal">-->
+
+    <RelativeLayout
         android:layout_width="@dimen/dp_473"
         android:layout_height="@dimen/dp_260"
-        android:background="@drawable/dialog_ts_bg"
         android:layout_marginTop="@dimen/dp_11"
-        tools:tooltipText="1.82宽高比例"
-        >
+        android:background="@drawable/dialog_ts_bg1"
+        tools:tooltipText="1.82宽高比例">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="是否退出游戏？"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_22.5"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvEdit"
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_35"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_toLeftOf="@+id/vLine"
+            android:background="@drawable/dialog_editlogin_button"
+            android:gravity="center"
+            android:paddingBottom="@dimen/dp_3"
+            android:text="退出"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_18"
+            tools:tooltipText="6.44宽高比例"/>
 
+        <View
+            android:id="@+id/vLine"
+            android:layout_width="1px"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
 
+        <TextView
+            android:id="@+id/tvCancel"
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_35"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_toRightOf="@+id/vLine"
+            android:background="@drawable/dialog_editlogin_button"
+            android:gravity="center"
+            android:paddingBottom="@dimen/dp_3"
+            android:text="取消"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_18"
+            tools:tooltipText="6.44宽高比例"/>
+
+    </RelativeLayout>
+
+    <!--<ImageView-->
+    <!--android:layout_width="@dimen/dp_278"-->
+    <!--android:layout_height="@dimen/dp_43"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:scaleType="centerInside"-->
+    <!--android:src="@drawable/dialog_tittle_ts_icon"-->
+    <!--tools:tooltipText="6.48宽高比例"/>-->
+    <!--android:layout_width="@dimen/dp_473"-->
     <ImageView
-        android:layout_width="@dimen/dp_278"
-        android:layout_height="@dimen/dp_43"
-        android:layout_centerHorizontal="true"
+        android:id="@+id/ivClose"
+        android:layout_width="@dimen/dp_45"
+        android:layout_height="@dimen/dp_45"
+        android:layout_marginLeft="@dimen/dp_468"
         android:scaleType="centerInside"
-        android:src="@drawable/dialog_tittle_ts_icon"
-        tools:tooltipText="6.48宽高比例"/>
+        android:src="@drawable/dialog_editlogin_colse"/>
+    <!--</LinearLayout>-->
+
 
 </RelativeLayout>

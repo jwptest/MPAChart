@@ -67,6 +67,11 @@ public class CandleChartData implements IChartData {
     }
 
     @Override
+    public boolean isRefrshChartData() {
+        return true;
+    }
+
+    @Override
     public void onDestroy() {
         mCombinedData = null;
     }
