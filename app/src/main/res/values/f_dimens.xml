@@ -199,10 +199,12 @@
     <dimen name="dp_220">220dp</dimen>
     <dimen name="dp_225">225dp</dimen>
     <dimen name="dp_230">230dp</dimen>
+    <dimen name="dp_260">260dp</dimen>
     <dimen name="dp_270">270dp</dimen>
+    <dimen name="dp_278">278dp</dimen>
     <dimen name="dp_350">350dp</dimen>
     <dimen name="dp_426">426dp</dimen>
-
+    <dimen name="dp_473">473dp</dimen>
 
     <dimen name="sp_6">6sp</dimen>
     <dimen name="sp_6.5">6.5sp</dimen>
@@ -265,10 +267,10 @@
     <dimen name="home_line_describe_top">33dp</dimen>
 
     <dimen name="home_puy_item_height">20dp</dimen>
-    <dimen name="home_puy_item_text_width">45dp</dimen>
+    <dimen name="home_puy_item_text_width">40dp</dimen>
     <dimen name="home_puy_item_icon_width">15dp</dimen>
     <dimen name="home_puy_item_icon_left">-2dp</dimen>
-    <dimen name="home_end_money_paddLeft">20dp</dimen>
+    <dimen name="home_end_money_paddLeft">18dp</dimen>
     <dimen name="home_end_line_bottom">30dp</dimen>
     <dimen name="home_titleBar_height">60dp</dimen>
     <dimen name="home_centre_height">30dp</dimen>

@@ -93,6 +93,13 @@
                 android:background="#D4C495"
                 tools:tooltipText="横向对比线"/>
 
+            <ImageView
+                android:id="@+id/ivIcon"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:scaleType="centerInside"
+                tools:tooltipText="当前点图标"/>
+
             <TextView
                 android:id="@+id/tvTransverseContrastDes"
                 android:layout_width="@dimen/home_TransverseContrast_width"
@@ -104,13 +111,6 @@
                 android:text="横向对比"
                 android:textColor="#444444"
                 android:textSize="11sp"/>
-
-            <ImageView
-                android:id="@+id/ivIcon"
-                android:layout_width="@dimen/dp_25"
-                android:layout_height="@dimen/dp_25"
-                android:scaleType="centerInside"
-                tools:tooltipText="当前点图标"/>
 
         </RelativeLayout>
 

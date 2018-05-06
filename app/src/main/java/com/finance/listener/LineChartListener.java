@@ -499,23 +499,24 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void refreshOpen(Entry openEntry, IDataSet dataSet) {
         if (settParams != null && settDesParams != null && openEntry != null) {
             Log.d("123", "openX: " + openEntry.getX() + ",lastX:" + currentEntry.getX());
+            MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, openEntry.getX(), openEntry.getY());
             //结算线
-            settParams.leftMargin = (int) (mChart.getFixedPosition() - mChart.getLabelWidth() - dpPx10);//(int) (pointD.x + settDesWidth / 2);
+            settParams.leftMargin = (int) (pointD.x + startX);//(int) (mChart.getFixedPosition() - mChart.getLabelWidth() - dpPx10);//(int) (pointD.x + settDesWidth / 2);
             //结算线描述
             settDesParams.leftMargin = settParams.leftMargin - settDesHight * 2 - settDesParams.rightMargin;
 //            //图标
 //            settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
 
-            if (endEntry != null && currentEntry.getX() > endEntry.getX() && mXAxis != null) {
-                MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
-                if (pointD.x < settDesParams.leftMargin - pointD.x / currentEntry.getX()) {
-                    return;
-                }
-                if (openEntry.getX() - currentEntry.getX() <= 1) {
-                    return;
-                }
-                mChart.moveViewToX(openEntry.getX() - currentEntry.getX());
-            }
+//            if (endEntry != null && currentEntry.getX() > endEntry.getX() && mXAxis != null) {
+//                MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
+//                if (pointD.x < settDesParams.leftMargin - pointD.x / currentEntry.getX()) {
+//                    return;
+//                }
+//                if (openEntry.getX() - currentEntry.getX() <= 1) {
+//                    return;
+//                }
+//                mChart.moveViewToX(openEntry.getX() - currentEntry.getX());
+//            }
         }
     }
 
@@ -636,7 +637,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         EventDistribution.getInstance().onDraw(currentEntry);
         //截止购买和开奖
         if (openEntry != null && endEntry != null) {
-            if (!isOrder && currentEntry.getX() >= endEntry.getX())
+            if (currentEntry.getX() == endEntry.getX())
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
             else if (currentEntry.getX() >= openEntry.getX())
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖

@@ -39,6 +39,8 @@ public interface MainContract {
 
         //刷新期号
         void refreshIessue();
+
+        boolean isRefrshChartData();//是否在刷新走势图数据
     }
 
     interface Presenter extends IBasePresenter<View> {

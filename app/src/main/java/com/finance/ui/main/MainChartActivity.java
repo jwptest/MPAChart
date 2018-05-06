@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -219,7 +218,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setRightAxisValueFormatter(mRightAxisValue)
                 .setXAxisValueFormatter(mXAxisValue);
         leftMenu = new LeftMenu(mActivity, this, mMainPresenter).onInit(llLeftMenu);
-        rightMenu = new RightMenu(mActivity, this).onInit(llRightMenu);
+        rightMenu = new RightMenu(mActivity, this, this).onInit(llRightMenu);
         centreMenu = new CentreMenu(this).onInit(llCentreMenu);
         //设置数据处理
         checkedChart(Constants.CHART_LINEFILL);//当前显示的走势图类型
@@ -260,6 +259,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private void updateIssue() {
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
         chartListener.updateIssue(currentIssue);//更新期号
+        EventDistribution.getInstance().issue(currentIssue);
     }
 
     private void initLayoutParam() {
@@ -357,13 +357,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         tvMoneyType.setText(entity.getProductName());
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
+        EventDistribution.getInstance().product(entity);
         if (mIssueEntities == null) {
             refreshIessue();//刷新期号
         } else {
             currentIssues = mMainPresenter.getProductIssue(entity.getProductId(), mIssueEntities);
             initViewIssue(0);
         }
-        EventDistribution.getInstance().product(entity);
     }
 
     private void initViewIssue(int selIndex) {
@@ -424,6 +424,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Override
     public void refreshIessue() {
         mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
+    }
+
+    @Override
+    public boolean isRefrshChartData() {
+        return dataSetting == null || dataSetting.isRefrshChartData();
     }
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})

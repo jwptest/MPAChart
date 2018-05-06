@@ -4,10 +4,9 @@ import com.github.mikephil.charting.data.Entry;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-
-import static android.R.attr.data;
 
 /**
  * 指数实体
@@ -15,34 +14,33 @@ import static android.R.attr.data;
 public class IndexMarkEntity extends Entry {
 
     private int prod;
-    private String time;
+    private long time;
     private int isUpdatePoint;
     private String id;
 
     public IndexMarkEntity(int x, int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit, String data) {
         this.prod = prod;
-        this.time = formatTime(time);
         this.isUpdatePoint = isUpdatePoint;
         this.id = data;
+        this.time = time;
         setX(x);
         setY(managerExponentially((float) exponentially, decimalPointIndex, digit));
     }
-
-    public IndexMarkEntity(int x, int prod, String time, float exponentially, int isUpdatePoint, String data) {
-        this.prod = prod;
-        this.time = time;
-        this.isUpdatePoint = isUpdatePoint;
-        this.id = data;
-        setX(x);
-        setY(exponentially);
-    }
+//    public IndexMarkEntity(int x, int prod, String time, float exponentially, int isUpdatePoint, String data) {
+//        this.prod = prod;
+//        this.time = time;
+//        this.isUpdatePoint = isUpdatePoint;
+//        this.id = data;
+//        setX(x);
+//        setY(exponentially);
+//    }
 
     public int getProd() {
         return this.prod;
     }
 
     public String getTime() {
-        return this.time;
+        return formatTime(this.time);
     }
 
     public double getExponentially() {
@@ -69,16 +67,28 @@ public class IndexMarkEntity extends Entry {
             } else {
                 tem1 = (new BigDecimal(temp)).setScale(2, RoundingMode.HALF_EVEN);
             }
-
             float back = Float.parseFloat(String.valueOf(tem1));
             return back;
         }
     }
 
+    public static long getTimeMillis(long time) {
+        time -= 621355968000000000L;
+        long str = time / 10000L;
+        time = Long.parseLong(String.valueOf(str), 10);
+        time -= 28800000L;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        try {
+            return sdf.parse(sdf.format(time)).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return time;
+    }
+
     public static String formatTime(long time) {
         System.out.println(time);
-        long unknown1 = 621355968000000000L;
-        long unknown2 = 28800000L;
         time -= 621355968000000000L;
         long str = time / 10000L;
         time = Long.parseLong(String.valueOf(str), 10);
@@ -88,4 +98,6 @@ public class IndexMarkEntity extends Entry {
         String sd = sdf.format(Long.valueOf(time));
         return sd;
     }
+
+
 }

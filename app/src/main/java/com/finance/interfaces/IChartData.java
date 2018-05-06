@@ -20,4 +20,6 @@ public interface IChartData extends IDestroy {
 
     Entry getEntry(String trim);
 
+    boolean isRefrshChartData();//是否在刷新走势图数据
+
 }

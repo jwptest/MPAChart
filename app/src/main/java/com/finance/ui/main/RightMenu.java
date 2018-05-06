@@ -11,10 +11,12 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
 import com.finance.listener.EventDistribution;
+import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.ui.popupwindow.KeyboardPopupWindow;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.NumberUtil;
+import com.finance.utils.TimerUtil;
 
 import java.util.Locale;
 
@@ -24,7 +26,7 @@ import butterknife.OnClick;
 /**
  * 右菜单处理
  */
-public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase {
+public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase, EventDistribution.IIssueChecked {
 
     @BindView(R.id.ivMoneyAdd)
     ImageView ivMoneyAdd;
@@ -47,7 +49,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     @BindView(R.id.llRightNext)
     View llRightNext;
     @BindView(R.id.tvRightTimer)
-    View tvRightTimer;
+    TextView tvRightTimer;
     @BindView(R.id.ivRightNext)
     View ivRightNext;
 //    @BindView(R.id.llRise)
@@ -59,10 +61,14 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     private MainContract.View mView;
     private IRightMenu mRightMenu;
     private ProductEntity mProductEntity;//当前产品
+    private IssueEntity mIssueEntity;//当前期号
 
     private int sept = 2;//金额步长
     private int minMoney = 10;//最少投资金额
     private int maxMoney = 400;//最多投资金额
+
+    private CountDownTimer timer;//倒计时
+    private long serviceTimer;//服务器时间
 
     public RightMenu(Activity activity, MainContract.View view, IRightMenu rightMenu) {
         this.mActivity = activity;
@@ -109,7 +115,9 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 //                tvInvestmentMoney.setLayoutParams(paramsEdit);
 //            }
 //        });
+        EventDistribution.getInstance().addPurchase(this);
         EventDistribution.getInstance().addProduct(this);
+        EventDistribution.getInstance().addIssue(this);
         setMoney(10);
         return this;
     }
@@ -117,7 +125,9 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventDistribution.getInstance().removePurchase(this);
         EventDistribution.getInstance().removeProduct(this);
+        EventDistribution.getInstance().removeIssue(this);
     }
 
     @OnClick({R.id.ivMoneyAdd, R.id.ivMoneyReduce, R.id.ivRise, R.id.ivFall, R.id.ivEditBg, R.id.ivRightNext})
@@ -245,11 +255,13 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     }
 
     private void rise() {
+        if (mView.isRefrshChartData()) return;
         //看涨
         mRightMenu.rise(getMoney());
     }
 
     private void fall() {
+        if (mView.isRefrshChartData()) return;
         //看跌
         mRightMenu.fall(getMoney());
     }
@@ -263,9 +275,6 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         setMoney(getMoney());
     }
 
-    private CountDownTimer timer;//倒计时
-    private long serviceTimer;//服务器时间
-
     private void stopCountDown() {
         if (timer == null) return;
         timer.cancel();
@@ -277,12 +286,12 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         timer = new CountDownTimer(l, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                serviceTimer = serviceTimer + (l - millisUntilFinished);
+                tvRightTimer.setText(millisUntilFinished / 1000 + "");
             }
 
             @Override
             public void onFinish() {
-
+                buttonChecked(false);
             }
         };
         timer.start();
@@ -293,10 +302,19 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
             ivRise.setVisibility(View.GONE);
             ivFall.setVisibility(View.GONE);
             llRightNext.setVisibility(View.VISIBLE);
+            if (mIssueEntity != null) {
+                long end = TimerUtil.timerToLong(mIssueEntity.getStopTime());
+                long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
+                long d = open - end;
+                if (d > 0) {
+                    startCountDown(d);
+                }
+            }
         } else {
             ivRise.setVisibility(View.VISIBLE);
             ivFall.setVisibility(View.VISIBLE);
             llRightNext.setVisibility(View.GONE);
+            stopCountDown();//停止倒计时
         }
     }
 
@@ -312,4 +330,8 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     }
 
 
+    @Override
+    public void issueChecked(IssueEntity entity) {
+        mIssueEntity = entity;
+    }
 }

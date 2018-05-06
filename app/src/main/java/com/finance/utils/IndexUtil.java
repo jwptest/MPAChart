@@ -9,15 +9,15 @@ import java.util.ArrayList;
  */
 public class IndexUtil {
 
-    public ArrayList<IndexMarkEntity> parseExponentially(ArrayList<String> serverDatas, int digit) {
+    public ArrayList<IndexMarkEntity> parseExponentially(int startX, ArrayList<String> serverDatas, int digit) {
         if (serverDatas == null || serverDatas.isEmpty()) return null;
         ArrayList<IndexMarkEntity> entitys = new ArrayList<>(serverDatas.size());
-        int count = 0;
         for (String str : serverDatas) {
-            IndexMarkEntity entity = parseExponentially(count, str, digit);
+            IndexMarkEntity entity = parseExponentially(startX, str, digit);
             if (entity == null) continue;
+            //更新下标
             entitys.add(entity);
-            count++;
+            startX++;
         }
         return entitys;
     }
@@ -37,6 +37,9 @@ public class IndexUtil {
             String hex_exponent = serverData.substring(19, 27);
             String hex_isUpdate = serverData.substring(27, 28);
             int productId = Integer.parseInt(e, 16);
+            //"9701238551","9701238521"
+            //08D5B33DBD1D8A8060
+            //08D5B33DBD69D5C060
             long serverTime = Long.parseLong(hex_Time, 16);
             int pointSize = Integer.parseInt(hex_PointSize, 16);
             int exponent = Integer.parseInt(hex_exponent, 16);
@@ -45,7 +48,7 @@ public class IndexUtil {
             return new IndexMarkEntity(x, productId, serverTime, exponent, isUpdate, pointSize, digit, serverData);
         } catch (Exception var15) {
             var15.printStackTrace();
-            throw var15;
+            throw var15;//1525572123
         }
     }
 
