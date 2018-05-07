@@ -3,6 +3,7 @@ package com.finance.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
@@ -100,7 +101,6 @@ public class CompletedView extends View {
         mRingPaintBg.setStyle(Paint.Style.STROKE);
         mRingPaintBg.setStrokeWidth(mStrokeWidth);
 
-
         //外圆弧
         mRingPaint = new Paint();
         mRingPaint.setAntiAlias(true);
@@ -113,8 +113,8 @@ public class CompletedView extends View {
         mTextPaint = new Paint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setColor(mRingColor);
-        mTextPaint.setTextSize(mRadius / 2);
+        mTextPaint.setColor(Color.parseColor("#FFFFFF"));
+        mTextPaint.setTextSize(10);
 
         Paint.FontMetrics fm = mTextPaint.getFontMetrics();
         mTxtHeight = (int) Math.ceil(fm.descent - fm.ascent);
@@ -147,7 +147,7 @@ public class CompletedView extends View {
             canvas.drawArc(oval, -90, ((float) mProgress / mTotalProgress) * 360, false, mRingPaint); //
 
             //字体
-            String txt = mProgress + "分";
+            String txt = mProgress + "";
             mTxtWidth = mTextPaint.measureText(txt, 0, txt.length());
             canvas.drawText(txt, mXCenter - mTxtWidth / 2, mYCenter + mTxtHeight / 4, mTextPaint);
         }

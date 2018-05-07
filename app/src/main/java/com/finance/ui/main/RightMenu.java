@@ -1,7 +1,6 @@
 package com.finance.ui.main;
 
 import android.app.Activity;
-import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,7 +16,6 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.ui.popupwindow.KeyboardPopupWindow;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.NumberUtil;
-import com.finance.utils.TimerUtil;
 
 import java.util.Locale;
 
@@ -154,7 +152,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
                 fall();
                 break;
             case R.id.ivEditBg://打开键盘
-                openKeyboardPopupWindow();
+//                openKeyboardPopupWindow();
                 break;
             case R.id.ivRightNext://下一期
                 isUpdateText = false;
@@ -284,11 +282,6 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
             ivRise.setVisibility(View.GONE);
             ivFall.setVisibility(View.GONE);
             llRightNext.setVisibility(View.VISIBLE);
-            if (mIssueEntity != null) {
-                long end = TimerUtil.timerToLong(mIssueEntity.getStopTime());
-                long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
-                long d = open - end;
-            }
         } else {
             ivRise.setVisibility(View.VISIBLE);
             ivFall.setVisibility(View.VISIBLE);

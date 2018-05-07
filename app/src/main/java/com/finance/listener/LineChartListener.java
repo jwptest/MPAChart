@@ -474,6 +474,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             }
             entity.setxValue(indexMarkEntity.getX());
             entity.setyValue(indexMarkEntity.getY());
+            //启动动画
+            PurchaseViewAnimation.getCompleteAnimation(entity.getTvBuyingMone()).start();
         }
     }
 
@@ -659,14 +661,17 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         }
         if (currentEntry.getX() == endEntry.getX()) {
             EventDistribution.getInstance().purchase(false, isOrder);//截止购买
-            long end = TimerUtil.timerToLong(mIssueEntity.getStopTime());
-            long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
-            if (open - end > 0)//开始倒计时
-                OpenCountDown.getInstance().startCountDown(open - end);
+            if (isOrder) {
+                long end = TimerUtil.timerToLong(mIssueEntity.getStopTime());
+                long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
+                if (open - end > 0)//开始倒计时
+                    OpenCountDown.getInstance().startCountDown(open - end);
+            }
         } else if (currentEntry.getX() >= openEntry.getX()) {
             EventDistribution.getInstance().purchase(true, isOrder);//开奖
             clearPurchaseView();//清空购买点
-            OpenCountDown.getInstance().stopCountDown();//停止倒计时
+            if (isOrder)
+                OpenCountDown.getInstance().stopCountDown();//停止倒计时
         }
     }
 

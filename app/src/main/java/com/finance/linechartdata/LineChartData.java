@@ -162,8 +162,10 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         LineDataSet set = new LineDataSet(entries, "Dynamic Data");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
 //        set.setColor(ColorTemplate.getHoloBlue());
-        int color = Color.parseColor("#6CAEDC");
-        set.setCircleColor(color);
+//        int color = Color.parseColor("#6CAEDC");
+
+
+//        set.setCircleColor(Color.parseColor("#90ffed79"));
         set.setLineWidth(1f);
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);//不画点
@@ -173,7 +175,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         //set.setCircleRadius(4f);
 //        set.setFillAlpha(80);
 //        set.setHighLightColor(color);//高亮颜色
-        set.setValueTextColor(color);
+//        set.setValueTextColor(color);
         set.setHighlightEnabled(false);//不显示高亮
 //        set.setDrawHighlightIndicators(true);
 //        set.setDrawVerticalHighlightIndicator(true);
@@ -193,7 +195,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
             Drawable drawable = ContextCompat.getDrawable(activity, R.drawable.fade_red);
             set.setFillDrawable(drawable);
         } else {
-            set.setFillColor(Color.BLACK);
+            set.setFillColor(Color.parseColor("#30FFED79"));
         }
         return set;
     }

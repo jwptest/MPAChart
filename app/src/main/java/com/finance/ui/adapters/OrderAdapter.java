@@ -74,14 +74,14 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 //            计算进度
             itemHolder.cvProgressBar.setProgress(30);
         }
-//
-//        if (entity.isResult()) {//涨
-//            itemHolder.ivRiseFall.setImageResource(R.drawable.rise_icon);
-//            itemHolder.tvExplain.setText("看涨");
-//        } else {//跌
-//            itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon);
-//            itemHolder.tvExplain.setText("看跌");
-//        }
+
+        if (entity.isResult()) {//涨
+            itemHolder.ivRiseFall.setImageResource(R.drawable.add_icon_item);
+            itemHolder.tvExplain.setText("看涨");
+        } else {//跌
+            itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon_item);
+            itemHolder.tvExplain.setText("看跌");
+        }
 //
 //        itemHolder.tvName.setText(entity.getProductTxt());
 //        itemHolder.tvPurchase.setText(entity.getBonusHexIndexMark());
@@ -112,11 +112,11 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         TextView textView = holder.itemView.findViewById(R.id.tvTransaction);
         OrderEntity entity = getItem(position);
         if (isOpen(entity, position)) {
-            icon.setImageResource(R.drawable.rise_icon);
+            icon.setImageResource(R.drawable.complete_icon);
             textView.setText("交易完成订单");
         } else {
             textView.setText("交易中订单");
-            icon.setImageResource(R.drawable.fall_icon);
+            icon.setImageResource(R.drawable.inthetransaction_icon);
         }
     }
 

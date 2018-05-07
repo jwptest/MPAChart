@@ -35,6 +35,8 @@ public class PurchaseViewAnimation extends ValueAnimator implements ValueAnimato
      * 获取一个显示和隐藏动画
      */
     public static PurchaseViewAnimation getCompleteAnimation(final View animView) {
+        if (animView.getVisibility() != View.VISIBLE)
+            animView.setVisibility(View.VISIBLE);
         PurchaseViewAnimation animation = getDisplayAnimation(animView);
         animation.addListener(new BaseAminatorListener() {
             @Override
@@ -49,7 +51,6 @@ public class PurchaseViewAnimation extends ValueAnimator implements ValueAnimato
                 anim.start();
             }
         });
-//        animView.setVisibility(View.VISIBLE);
         return animation;
     }
 

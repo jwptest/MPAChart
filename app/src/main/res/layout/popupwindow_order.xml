@@ -3,13 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/product_bg"
+    android:background="#ee2f2e2a"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_40"
+        android:layout_height="@dimen/dp_50"
+        android:background="#24201b"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/dp_15"
         android:text="交易订单"

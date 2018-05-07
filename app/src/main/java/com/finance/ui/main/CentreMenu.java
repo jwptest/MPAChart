@@ -5,13 +5,10 @@ import android.widget.ImageView;
 
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
-import com.finance.common.Constants;
-import com.finance.utils.BtnClickUtil;
 import com.finance.widget.roundview.RoundLinearLayout;
 import com.finance.widget.roundview.RoundTextView;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * 中间菜单栏
@@ -44,27 +41,27 @@ public class CentreMenu extends BaseViewHandle {
     }
 
 
-    @OnClick({R.id.ivZST, R.id.ivZXT, R.id.ivKXT})
-    public void onViewClicked(View view) {
-        if (BtnClickUtil.isFastDoubleClick(view.getId())) {
-            //防止双击
-            return;
-        }
-        switch (view.getId()) {
-            case R.id.ivZST:
-                if (mCentreMenu != null)
-                    mCentreMenu.checkedChart(Constants.CHART_LINEFILL);
-                break;
-            case R.id.ivZXT:
-                if (mCentreMenu != null)
-                    mCentreMenu.checkedChart(Constants.CHART_LINE);
-                break;
-            case R.id.ivKXT:
-                if (mCentreMenu != null)
-                    mCentreMenu.checkedChart(Constants.CHART_CANDLE);
-                break;
-        }
-    }
+//    @OnClick({R.id.ivZST, R.id.ivZXT, R.id.ivKXT})
+//    public void onViewClicked(View view) {
+//        if (BtnClickUtil.isFastDoubleClick(view.getId())) {
+//            //防止双击
+//            return;
+//        }
+//        switch (view.getId()) {
+//            case R.id.ivZST:
+//                if (mCentreMenu != null)
+//                    mCentreMenu.checkedChart(Constants.CHART_LINEFILL);
+//                break;
+//            case R.id.ivZXT:
+//                if (mCentreMenu != null)
+//                    mCentreMenu.checkedChart(Constants.CHART_LINE);
+//                break;
+//            case R.id.ivKXT:
+//                if (mCentreMenu != null)
+//                    mCentreMenu.checkedChart(Constants.CHART_CANDLE);
+//                break;
+//        }
+//    }
 
 
 }

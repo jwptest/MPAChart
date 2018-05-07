@@ -10,38 +10,38 @@
         android:id="@+id/rllUZST"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="bottom"
         android:layout_marginBottom="@dimen/dp_m_1"
+        android:gravity="bottom"
         app:rv_backgroundColor="@color/centre_menu_bg_color"
-        app:rv_cornerRadius="@dimen/dp_5"
+        app:rv_cornerRadius="@dimen/dp_3"
         app:rv_strokeColor="@color/centre_menu_from_color"
         app:rv_strokeWidth="@dimen/dp_0.6">
 
         <ImageView
             android:id="@+id/ivZST"
             style="@style/centreMenuButton"
-            android:src="@drawable/xiala"/>
+            android:src="@drawable/centre_defaultline"/>
 
         <View style="@style/centreMenuLine"/>
 
         <ImageView
             android:id="@+id/ivZXT"
             style="@style/centreMenuButton"
-            android:src="@drawable/xiala"/>
+            android:src="@drawable/centre_brokenline"/>
 
         <View style="@style/centreMenuLine"/>
 
         <ImageView
             android:id="@+id/ivKXT"
             style="@style/centreMenuButton"
-            android:src="@drawable/xiala"/>
+            android:src="@drawable/centre_kline"/>
 
         <View style="@style/centreMenuLine"/>
 
         <ImageView
             android:id="@+id/ivOther"
             style="@style/centreMenuButton"
-            android:src="@drawable/xiala"/>
+            android:src="@drawable/centre_other"/>
 
     </com.finance.widget.roundview.RoundLinearLayout>
 
@@ -50,16 +50,16 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp_m_1"
         android:gravity="bottom"
+        android:paddingBottom="@dimen/dp_3"
         android:paddingLeft="@dimen/dp_15"
         android:paddingRight="@dimen/dp_15"
-        android:layout_marginBottom="@dimen/dp_m_1"
-        android:paddingBottom="@dimen/dp_3"
         android:text="刚刚xx获利￥500"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_12"
         app:rv_backgroundColor="@color/centre_menu_bg_color"
-        app:rv_cornerRadius="@dimen/dp_5"
+        app:rv_cornerRadius="@dimen/dp_3"
         app:rv_strokeColor="@color/centre_menu_from_color"
         app:rv_strokeWidth="@dimen/dp_0.6"/>
 

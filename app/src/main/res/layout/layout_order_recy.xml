@@ -27,8 +27,8 @@
             app:tcv_circleColor="@color/transparent"
             app:tcv_progress="30"
             app:tcv_radius="@dimen/dp_13"
-            app:tcv_ringBgColor="@color/colorPrimary"
-            app:tcv_ringColor="#0000ff"
+            app:tcv_ringBgColor="#604433"
+            app:tcv_ringColor="#f2d53d"
             app:tcv_strokeWidth="@dimen/dp_2"/>
 
         <LinearLayout
@@ -95,13 +95,14 @@
                 <LinearLayout
                     style="@style/orderItemText"
                     android:layout_gravity="center_vertical"
-                    android:gravity="bottom"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/ivRiseFall"
                         android:layout_width="@dimen/dp_10"
-                        android:layout_height="@dimen/dp_10"
+                        android:layout_height="@dimen/dp_7"
+                        android:layout_marginRight="@dimen/dp_2"
                         android:scaleType="centerInside"/>
 
                     <TextView
@@ -131,6 +132,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0.6"
         android:layout_marginLeft="@dimen/dp_10"
-        android:background="#777777"/>
+        android:background="#0aFFFFFF"/>
 
 </LinearLayout>

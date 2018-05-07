@@ -268,7 +268,6 @@
     <dimen name="home_left_menu_width">75dp</dimen>
     <dimen name="home_right_menu_width">150dp</dimen>
 
-
     <dimen name="home_right_top">10dp</dimen>
     <dimen name="home_line_describe_top">33dp</dimen>
 
