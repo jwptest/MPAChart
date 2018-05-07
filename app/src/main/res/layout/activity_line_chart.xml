@@ -126,8 +126,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/home_centre_height"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="@dimen/dp_75"
-            android:layout_marginRight="@dimen/dp_150"/>
+            android:layout_toLeftOf="@+id/llRightMenu"
+            android:layout_toRightOf="@+id/llLeftMenu"/>
 
     </RelativeLayout>
 

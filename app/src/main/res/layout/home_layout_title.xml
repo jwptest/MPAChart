@@ -21,7 +21,6 @@
     <View
         android:layout_width="@dimen/dp_0.6"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/dp_m_0.6"
         android:background="#35000000"/>
 
     <ImageView
