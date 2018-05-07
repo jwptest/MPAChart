@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 
 import com.finance.interfaces.IChartData;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.widget.combinedchart.MCombinedChart;
@@ -63,6 +64,11 @@ public class CandleChartData implements IChartData {
 
     @Override
     public Entry getEntry(String trim) {
+        return null;
+    }
+
+    @Override
+    public IndexMarkEntity getIndexMarkEntity(String indexMark) {
         return null;
     }
 

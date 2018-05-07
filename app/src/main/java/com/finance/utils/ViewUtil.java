@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.finance.R;
+import com.finance.interfaces.IChartData;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
@@ -59,8 +61,6 @@ public class ViewUtil {
         viewEntity.setLine(line);
         viewEntity.setIvZD(ivZD);
         viewEntity.setTvBuyingMone(tvBuyingMoney);
-
-
         return viewEntity;
     }
 

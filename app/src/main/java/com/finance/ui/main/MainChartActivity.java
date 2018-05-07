@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.finance.App;
 import com.finance.R;
 import com.finance.base.BaseActivity;
 import com.finance.common.Constants;
@@ -27,18 +28,19 @@ import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.listener.EventDistribution;
 import com.finance.listener.LineChartListener;
+import com.finance.listener.OpenCountDown;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
+import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
 import com.finance.ui.dialog.ExitAppDialog;
-import com.finance.ui.dialog.StartDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
-import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 
@@ -48,7 +50,7 @@ import butterknife.OnClick;
 /**
  * 首页
  */
-public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu, ICentreMenu {
+public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu, ICentreMenu, OpenCountDown.ICallback {
 
     @BindView(R.id.rlTitleBar)
     View rlTitleBar;
@@ -151,6 +153,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private ArrayList<IssueEntity> currentIssues;
     private IssueEntity currentIssue;
     private int issuesSelectIndex = 0;
+    private int statusBarHigh = 0;
 
     @Override
     protected int getLayoutId() {
@@ -159,10 +162,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     protected void onCreated() {
-
 //        new StartDialog(this).show();
-        购买接口
-
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
         //初始化参数
@@ -175,11 +175,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         super.onResume();
         isResume = true;
         if (dataSetting != null) dataSetting.onResume(chartType);
+        OpenCountDown.getInstance().addCallback(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        OpenCountDown.getInstance().removeCallback(this);
         if (dataSetting != null) dataSetting.onStop();
     }
 
@@ -190,6 +192,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         if (leftMenu != null) leftMenu.onDestroy();
         if (rightMenu != null) rightMenu.onDestroy();
         if (centreMenu != null) centreMenu.onDestroy();
+        OpenCountDown.getInstance().removeCallback(this);
         super.onDestroy();
     }
 
@@ -201,7 +204,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     //初始化控件
     private void initView() {
         if (StatusBarUtil.StatusBarNormalMode(this) != 0) {
-            int statusBarHigh = PhoneUtil.getStatusBarHigh(this);
+            statusBarHigh = PhoneUtil.getStatusBarHigh(this);
             rlTitleBar.setPadding(rlTitleBar.getLeft(), rlTitleBar.getPaddingTop() + statusBarHigh,
                     rlTitleBar.getPaddingRight(), rlTitleBar.getPaddingBottom());
             //设置titleBar的高度
@@ -215,7 +218,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setRightIAxisValueFormatter(mRightAxisValue)
                 .setXIAxisValueFormatter(mXAxisValue)
                 .initLineChart();
-        chartListener = new LineChartListener(this, lineChart)
+        chartListener = new LineChartListener(mActivity, this, lineChart)
                 .initListener()
                 .setIvIcon(ivIcon)
                 .setEndLine(vEndLine)
@@ -318,26 +321,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     @Override
-    public void rise(int money) {
-        purchase(money, true);
-    }
-
-    @Override
-    public void fall(int money) {
-        purchase(money, false);
-    }
-
-    //购买
-    private void purchase(int money, boolean isAdd) {
-        Entry entry = chartListener.getCurrentEntry();
-        if (entry == null) return;
-        float x = entry.getX();
-        float y = entry.getY();
-        PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", isAdd);
-        viewEntity.setxValue(x);
-        viewEntity.setyValue(y);
-        viewEntity.setMoney(money);
-        chartListener.addPurchaseView(viewEntity);
+    public void placeOrder(int money, boolean Result) {
+        IndexMarkEntity entry = chartListener.getCurrentEntry();
+        if (entry == null || currentProduct == null || currentIssue == null) return;
+        mMainPresenter.placeOrder(currentIssue.getIssueName(), currentIssue.getIssueType(), money, currentProduct.getProductId(), Result, entry.getId());
+//        purchase(money, false);
     }
 
     @Override
@@ -421,15 +409,20 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     @Override
+    public IndexMarkEntity getIndexMarkEntity(String indexMark) {
+        return dataSetting.getIndexMarkEntity(indexMark);
+    }
+
+    @Override
     public void showOrderPopWindow(IDismiss dismiss) {
         int width = ivKM.getWidth() + llMoney.getWidth();
-        mMainPresenter.showOrderPopWindow(rlTitleBar, llLeftMenu, width, null, dismiss);
+        mMainPresenter.showOrderPopWindow(rlTitleBar, llLeftMenu, width, rlTitleBar.getHeight() - statusBarHigh, dismiss);
     }
 
     @Override
     public void showDynamicPopupWindow(IDismiss dismiss) {
         int width = ivKM.getWidth() + llMoney.getWidth();
-        mMainPresenter.showDynamicPopWindow(rlTitleBar, llLeftMenu, width, null, dismiss);
+        mMainPresenter.showDynamicPopWindow(rlTitleBar, llLeftMenu, width, rlTitleBar.getHeight() - statusBarHigh, dismiss);
     }
 
     @Override
@@ -442,6 +435,23 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         return dataSetting == null || dataSetting.isRefrshChartData();
     }
 
+    @Override
+    public void placeOrder(PlaceOrderEntity entity, String msg) {
+        if (entity == null) {
+            App.getInstance().showErrorMsg(msg);
+            return;
+        }
+        IndexMarkEntity markEntity = getIndexMarkEntity(entity.getHexIndexMark());
+        if (markEntity == null) return;
+        int money = (int) entity.getMoney();
+        PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", entity.isResult());
+        viewEntity.setIndexMark(entity.getHexIndexMark());
+        viewEntity.setMoney(money);
+        viewEntity.setxValue(markEntity.getX());
+        viewEntity.setyValue(markEntity.getY());
+        chartListener.addPurchaseView(viewEntity);
+    }
+
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
     public void onClickListener(View view) {
         if (BtnClickUtil.isFastDoubleClick(view.getId())) {
@@ -452,15 +462,35 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             case R.id.ivExitLogin:
                 break;
             case R.id.llMoney:
-                mMainPresenter.showProductPopWindow(llMoney, mProductEntities);
+                int[] location = new int[2];
+                llMoney.getLocationOnScreen(location);
+                mMainPresenter.showProductPopWindow(llMoney, location[0], rlTitleBar.getHeight() - statusBarHigh, mProductEntities);
                 break;
             case R.id.llTimer:
-                mMainPresenter.showIssuePopWindow(llTimer, currentIssues, issuesSelectIndex);
+                int[] location1 = new int[2];
+                llTimer.getLocationOnScreen(location1);
+                mMainPresenter.showIssuePopWindow(llTimer, location1[0], rlTitleBar.getHeight() - statusBarHigh, currentIssues, issuesSelectIndex);
                 break;
             case R.id.ivRefresh:
                 break;
         }
+    }
 
+    @Override
+    public void startTick() {
+        //开始开奖倒计时
+    }
+
+    @Override
+    public void onTick(long millisUntilFinished) {
+
+    }
+
+    @Override
+    public void onFinish() {
+        //结束开奖倒计时
+        //获取开奖结果
+        chartListener.clearPurchaseView();
     }
 
 

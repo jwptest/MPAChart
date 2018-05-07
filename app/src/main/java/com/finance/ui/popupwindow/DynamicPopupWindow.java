@@ -7,16 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.finance.App;
 import com.finance.R;
+import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicEntity;
 import com.finance.model.ben.DynamicsEntity;
-import com.finance.model.ben.OrderEntity;
 import com.finance.ui.adapters.DynamicAdapter;
-import com.finance.ui.adapters.OrderAdapter;
+import com.finance.ui.main.MainContract;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ import butterknife.OnClick;
 /**
  * 动态对话框
  */
-public class DynamicPopupWindow extends PopupWindow {
+public class DynamicPopupWindow extends BasePopupWindow implements ICallback<DynamicsEntity> {
 
     @BindView(R.id.tvTitle)
     TextView tvTitle;
@@ -40,28 +40,27 @@ public class DynamicPopupWindow extends PopupWindow {
     @BindView(R.id.rvOrder)
     RecyclerView rvOrder;
     private Activity mActivity;
+    private MainContract.Presenter mPresenter;
     private IDismiss dismiss;
 
     private DynamicAdapter mAdapter;
-
     private DynamicsEntity mEntity;
 
-    public DynamicPopupWindow(Activity activity, int width) {
-        super(width, LinearLayout.LayoutParams.MATCH_PARENT);
+    public DynamicPopupWindow(Activity activity, MainContract.Presenter presenter, int width, int x, int y) {
+        super(activity, width, LinearLayout.LayoutParams.MATCH_PARENT, x, y);
         mActivity = activity;
-        View rootView = LayoutInflater.from(activity).inflate(R.layout.popupwindow_order, null);
-        setContentView(rootView);
-        //PhoneUtil.getScreenHeight(activity) / 2
-        ButterKnife.bind(this, rootView);
+        this.mPresenter = presenter;
         setTouchable(true);
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
         tvTitle.setText("交易动态");
         tvEmptyText.setText("暂无动态记录");
+        if (presenter != null)
+            presenter.getDynamicPopupWindow(this);
     }
 
-    public void setEntity(DynamicsEntity entity) {
-        mEntity = entity;
-        initData();
+    @Override
+    protected int getLayoutId() {
+        return R.layout.popupwindow_order;
     }
 
     @OnClick(R.id.ivClose)
@@ -90,6 +89,11 @@ public class DynamicPopupWindow extends PopupWindow {
     }
 
     @Override
+    protected boolean isBindView() {
+        return true;
+    }
+
+    @Override
     public void dismiss() {
         super.dismiss();
         if (dismiss != null)
@@ -100,4 +104,13 @@ public class DynamicPopupWindow extends PopupWindow {
         this.dismiss = dismiss;
     }
 
+    @Override
+    public void onCallback(int code, DynamicsEntity dynamicsEntity, String message) {
+        if (!this.isShowing()) return;
+        if (dynamicsEntity == null) {
+            App.getInstance().showErrorMsg(message);
+        }
+        mEntity = dynamicsEntity;
+        initData();
+    }
 }

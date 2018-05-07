@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import com.finance.R;
 import com.finance.common.Constants;
@@ -132,6 +133,19 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         trimL1 = trimL1 - trimL2;
         int x = (int) (trimL1 / Constants.ISSUEINTERVAL);
         return new Entry(x, 0);
+    }
+
+    @Override
+    public IndexMarkEntity getIndexMarkEntity(String indexMark) {
+        if (mEntries == null || mEntries.isEmpty() || TextUtils.isEmpty(indexMark)) return null;
+        int size = mEntries.size();
+        IndexMarkEntity entity;
+        for (int i = size - 1; i >= 0; i--) {
+            entity = (IndexMarkEntity) mEntries.get(i);
+            if (TextUtils.equals(entity.getId(), indexMark))
+                return entity;
+        }
+        return null;
     }
 
     @Override

@@ -6,8 +6,10 @@ import com.finance.base.IBaseView;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.OrdersEntity;
+import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.HttpConnection;
@@ -29,18 +31,18 @@ public interface MainContract {
 
         void setIssue(IssueEntity issue, int issueSelIndex);
 
+        IndexMarkEntity getIndexMarkEntity(String indexMark);
+
         void showOrderPopWindow(IDismiss dismiss);
 
         void showDynamicPopupWindow(IDismiss dismiss);
-
-        void rise(int money);
-
-        void fall(int money);
 
         //刷新期号
         void refreshIessue();
 
         boolean isRefrshChartData();//是否在刷新走势图数据
+
+        void placeOrder(PlaceOrderEntity entity,String msg);
     }
 
     interface Presenter extends IBasePresenter<View> {
@@ -58,15 +60,19 @@ public interface MainContract {
 
         void getOrderRecord();
 
+        void getDynamicPopupWindow(ICallback<DynamicsEntity> iCallback);
+
         String issueNameFormat(String issueName);
 
-        void showProductPopWindow(android.view.View view, ArrayList<ProductEntity> entities);
+        void showProductPopWindow(android.view.View view,int x,int y, ArrayList<ProductEntity> entities);
 
-        void showIssuePopWindow(android.view.View view, ArrayList<IssueEntity> entities, int selIndex);
+        void showIssuePopWindow(android.view.View view, int x,int y,ArrayList<IssueEntity> entities, int selIndex);
 
-        void showOrderPopWindow(android.view.View anchor, android.view.View leftView, int width, OrdersEntity entity, IDismiss dismiss);
+        void showOrderPopWindow(android.view.View anchor, android.view.View leftView, int width,int y, IDismiss dismiss);
 
-        void showDynamicPopWindow(android.view.View anchor, android.view.View leftView, int width, DynamicsEntity entity, IDismiss dismiss);
+        void showDynamicPopWindow(android.view.View anchor, android.view.View leftView, int width,int y, IDismiss dismiss);
+
+        void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark);
     }
 
 }

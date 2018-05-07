@@ -39,10 +39,29 @@ public class PurchaseViewEntity {
     private float yValue;
     private String id;//购买点的唯一标识
     private int money;//当前点购买的金额
+    private String indexMark;//购买指数
     private boolean isDisplay = false;//是否显示在布局上
+    private boolean isShow = true;//是否需要显示在布局上
     private RelativeLayout.LayoutParams mRootParams;
     private RelativeLayout.LayoutParams mMoneyParams;
     private RelativeLayout.LayoutParams mIconParams;
+
+
+    public String getIndexMark() {
+        return (indexMark != null) ? indexMark : "";
+    }
+
+    public void setIndexMark(String indexMark) {
+        this.indexMark = indexMark;
+    }
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
+    }
 
     public RelativeLayout.LayoutParams getIconParams() {
         return mIconParams;

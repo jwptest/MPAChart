@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
 import com.finance.listener.EventDistribution;
+import com.finance.listener.OpenCountDown;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.ui.popupwindow.KeyboardPopupWindow;
@@ -26,7 +27,7 @@ import butterknife.OnClick;
 /**
  * 右菜单处理
  */
-public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase, EventDistribution.IIssueChecked {
+public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase, EventDistribution.IIssueChecked, OpenCountDown.ICallback {
 
     @BindView(R.id.ivMoneyAdd)
     ImageView ivMoneyAdd;
@@ -67,8 +68,8 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     private int minMoney = 10;//最少投资金额
     private int maxMoney = 400;//最多投资金额
 
-    private CountDownTimer timer;//倒计时
     private long serviceTimer;//服务器时间
+    private boolean isUpdateText = true;
 
     public RightMenu(Activity activity, MainContract.View view, IRightMenu rightMenu) {
         this.mActivity = activity;
@@ -118,6 +119,8 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         EventDistribution.getInstance().addPurchase(this);
         EventDistribution.getInstance().addProduct(this);
         EventDistribution.getInstance().addIssue(this);
+        OpenCountDown.getInstance().addCallback(this);
+
         setMoney(10);
         return this;
     }
@@ -128,6 +131,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         EventDistribution.getInstance().removePurchase(this);
         EventDistribution.getInstance().removeProduct(this);
         EventDistribution.getInstance().removeIssue(this);
+        OpenCountDown.getInstance().removeCallback(this);
     }
 
     @OnClick({R.id.ivMoneyAdd, R.id.ivMoneyReduce, R.id.ivRise, R.id.ivFall, R.id.ivEditBg, R.id.ivRightNext})
@@ -153,7 +157,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
                 openKeyboardPopupWindow();
                 break;
             case R.id.ivRightNext://下一期
-                stopCountDown();
+                isUpdateText = false;
                 buttonChecked(false);
                 mView.refreshIessue();//刷新期号
                 break;
@@ -257,13 +261,13 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     private void rise() {
         if (mView.isRefrshChartData()) return;
         //看涨
-        mRightMenu.rise(getMoney());
+        mRightMenu.placeOrder(getMoney(), true);
     }
 
     private void fall() {
         if (mView.isRefrshChartData()) return;
         //看跌
-        mRightMenu.fall(getMoney());
+        mRightMenu.placeOrder(getMoney(), false);
     }
 
     @Override
@@ -275,28 +279,6 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         setMoney(getMoney());
     }
 
-    private void stopCountDown() {
-        if (timer == null) return;
-        timer.cancel();
-        timer = null;
-    }
-
-    private void startCountDown(final long l) {
-        stopCountDown();
-        timer = new CountDownTimer(l, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                tvRightTimer.setText(millisUntilFinished / 1000 + "");
-            }
-
-            @Override
-            public void onFinish() {
-                buttonChecked(false);
-            }
-        };
-        timer.start();
-    }
-
     private void buttonChecked(boolean isNext) {
         if (isNext) {
             ivRise.setVisibility(View.GONE);
@@ -306,15 +288,11 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
                 long end = TimerUtil.timerToLong(mIssueEntity.getStopTime());
                 long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
                 long d = open - end;
-                if (d > 0) {
-                    startCountDown(d);
-                }
             }
         } else {
             ivRise.setVisibility(View.VISIBLE);
             ivFall.setVisibility(View.VISIBLE);
             llRightNext.setVisibility(View.GONE);
-            stopCountDown();//停止倒计时
         }
     }
 
@@ -329,9 +307,26 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 
     }
 
-
     @Override
     public void issueChecked(IssueEntity entity) {
         mIssueEntity = entity;
+    }
+
+    @Override
+    public void startTick() {
+        isUpdateText = true;
+        buttonChecked(true);
+    }
+
+    @Override
+    public void onTick(long millisUntilFinished) {
+        if (isUpdateText)
+            tvRightTimer.setText(millisUntilFinished / 1000 + "");
+    }
+
+    @Override
+    public void onFinish() {
+        isUpdateText = true;
+        buttonChecked(false);
     }
 }

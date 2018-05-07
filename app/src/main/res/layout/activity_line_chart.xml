@@ -24,8 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/llRightMenu"
-            android:layout_toRightOf="@+id/llLeftMenu"
-            android:layout_weight="7.6">
+            android:layout_toRightOf="@+id/llLeftMenu">
 
             <com.finance.widget.combinedchart.MCombinedChart
                 android:id="@+id/lineChart"

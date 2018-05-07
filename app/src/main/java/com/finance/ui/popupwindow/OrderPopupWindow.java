@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.os.CountDownTimer;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.finance.R;
@@ -16,18 +14,17 @@ import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.OrderEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.ui.adapters.OrderAdapter;
-import com.finance.utils.PhoneUtil;
+import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersDecoration;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * 订单PopupWindow
  */
-public class OrderPopupWindow extends PopupWindow {
+public class OrderPopupWindow extends BasePopupWindow {
 
     @BindView(R.id.tvTitle)
     TextView tvTitle;
@@ -54,20 +51,36 @@ public class OrderPopupWindow extends PopupWindow {
         dismiss();
     }
 
-    public OrderPopupWindow(Activity activity, int width) {
-        super(width, LinearLayout.LayoutParams.MATCH_PARENT);
+    public OrderPopupWindow(Activity activity, int width, int x, int y) {
+        super(activity, width, LinearLayout.LayoutParams.MATCH_PARENT, x, y);
         mActivity = activity;
-        View rootView = LayoutInflater.from(activity).inflate(R.layout.popupwindow_order, null);
-        setContentView(rootView);
-        //PhoneUtil.getScreenHeight(activity) / 2
-        ButterKnife.bind(this, rootView);
         setTouchable(true);
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
         tvTitle.setText("交易订单");
         tvEmptyText.setText("暂无购买记录");
+
+        OrdersEntity entity = new OrdersEntity();
+        ArrayList<OrderEntity> entities = new ArrayList<>(10);
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entities.add(new OrderEntity());
+        entity.setOrders(entities);
+        setOrdersEntity(entity);
     }
 
-    public void setOrdersEntity(OrdersEntity ordersEntity) {
+    @Override
+    protected int getLayoutId() {
+        return R.layout.popupwindow_order;
+    }
+
+    private void setOrdersEntity(OrdersEntity ordersEntity) {
         this.ordersEntity = ordersEntity;
         initData();
     }
@@ -86,6 +99,8 @@ public class OrderPopupWindow extends PopupWindow {
             mAdapter.setServiceTimer(System.currentTimeMillis());
             rvOrder.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
             rvOrder.setAdapter(mAdapter);
+            StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(mAdapter);
+            rvOrder.addItemDecoration(headersDecor);
         } else {
             mAdapter.clear();
             mAdapter.addAll(orderEntities);
@@ -110,6 +125,11 @@ public class OrderPopupWindow extends PopupWindow {
             }
         };
         timer.start();
+    }
+
+    @Override
+    protected boolean isBindView() {
+        return true;
     }
 
     @Override

@@ -18,6 +18,7 @@
         android:id="@+id/tvBuyingMoney"
         android:layout_width="@dimen/home_puy_item_text_width"
         android:layout_height="match_parent"
+        android:background="@drawable/rise_bg"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/home_end_money_paddLeft"
         android:text="100"
@@ -31,8 +32,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/home_puy_item_icon_left"
         android:scaleType="fitXY"
+        android:src="@drawable/rise_icon"
         tools:tooltipText="涨跌图标"/>
     <!--android:src="@drawable/fall_icon"-->
-
-
 </RelativeLayout>

@@ -8,13 +8,11 @@ import android.widget.PopupWindow;
 import com.finance.base.BasePresenter;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
-import com.finance.model.ben.DynamicEntity;
 import com.finance.model.ben.DynamicsEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
 import com.finance.model.ben.ItemEntity;
-import com.finance.model.ben.OrderEntity;
-import com.finance.model.ben.OrdersEntity;
+import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
 import com.finance.model.http.BaseCallback;
@@ -27,7 +25,6 @@ import com.finance.ui.popupwindow.IssuesPopupWindow;
 import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.ui.popupwindow.ProductPopupWindow;
 import com.finance.ui.popupwindow.RecyclerPopupWindow;
-import com.finance.utils.HandlerUtil;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -172,6 +169,31 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     }
 
+    @Override
+    public void getDynamicPopupWindow(final ICallback<DynamicsEntity> iCallback) {
+        BaseParams param = new BaseParams();
+        param.addParam("SourceCode", 206);
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(200)
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(new JsonCallback<DynamicsEntity>(DynamicsEntity.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, DynamicsEntity result) {
+                        if (iCallback != null)
+                            iCallback.onCallback(code, result, msg);
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (iCallback != null)
+                            iCallback.onCallback(code, null, msg);
+                    }
+                });
+    }
+
     private ArrayList<ItemEntity<ProductEntity>> getProducts(ArrayList<ProductEntity> entities) {
         ArrayList<ItemEntity<ProductEntity>> products = new ArrayList<ItemEntity<ProductEntity>>(entities.size());
         for (ProductEntity entity : entities) {
@@ -184,47 +206,24 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         return products;
     }
 
-    private ProductPopupWindow mProductPopupWindow;
-    private boolean isDismissProduct = true;//是否已经关闭产品
-    private int productSelectIndex = -1;
+    private int productSelectIndex;
 
     @Override
-    public void showProductPopWindow(View view, ArrayList<ProductEntity> entities) {
+    public void showProductPopWindow(View view, int x, int y, ArrayList<ProductEntity> entities) {
         if (entities == null || entities.isEmpty()) return;
-        if (!isDismissProduct) {
-            isDismissProduct = true;
-            dismiss(mProductPopupWindow);
-            return;
-        }
         ArrayList<ItemEntity<ProductEntity>> arrayList = getProducts(entities);
-        if (mProductPopupWindow == null) {
-            mProductPopupWindow = new ProductPopupWindow(mActivity, view.getWidth(), arrayList);
-            mProductPopupWindow.setOnItemClicklistener(new RecyclerPopupWindow.OnItemClicklistener<ProductEntity>() {
-                @Override
-                public void onClickListener(int privation, ItemEntity<ProductEntity> itemEntity) {
-                    if (mView == null) return;
-                    productSelectIndex = privation;
-                    mView.setProduct(itemEntity.getData());
-                    mProductPopupWindow.dismiss();
-                }
-            });
-            mProductPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    HandlerUtil.runOnUiThreadDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            isDismissProduct = true;
-                        }
-                    }, 200);
-                }
-            });
-        } else {
-            mProductPopupWindow.setSelectIndex(productSelectIndex);
-            mProductPopupWindow.setData(arrayList);
-        }
-        isDismissProduct = false;
-        mProductPopupWindow.showBottom(view);
+        final ProductPopupWindow mProductPopupWindow = new ProductPopupWindow(mActivity, view.getWidth(), x, y, arrayList);
+        mProductPopupWindow.setOnItemClicklistener(new RecyclerPopupWindow.OnItemClicklistener<ProductEntity>() {
+            @Override
+            public void onClickListener(int privation, ItemEntity<ProductEntity> itemEntity) {
+                if (mView == null) return;
+                productSelectIndex = privation;
+                mView.setProduct(itemEntity.getData());
+                mProductPopupWindow.dismiss();
+            }
+        });
+        mProductPopupWindow.setSelectIndex(productSelectIndex);
+        mProductPopupWindow.showPopupWindow(view);
     }
 
     @Override
@@ -247,138 +246,76 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         return issues;
     }
 
-    private IssuesPopupWindow mIssuesPopupWindow;
-    private boolean isDismissIssues = true;//是否已经关闭产品
-
     @Override
-    public void showIssuePopWindow(View view, ArrayList<IssueEntity> entities, int selIndex) {
+    public void showIssuePopWindow(View view, int x, int y, ArrayList<IssueEntity> entities, int selIndex) {
         if (entities == null || entities.isEmpty()) return;
-        if (!isDismissIssues) {
-            isDismissIssues = true;
-            dismiss(mIssuesPopupWindow);
-            return;
-        }
         ArrayList<ItemEntity<IssueEntity>> arrayList = getIssues(entities);
-        if (mIssuesPopupWindow == null) {
-            mIssuesPopupWindow = new IssuesPopupWindow(mActivity, view.getWidth(), arrayList);
-            mIssuesPopupWindow.setOnItemClicklistener(new RecyclerPopupWindow.OnItemClicklistener<IssueEntity>() {
-                @Override
-                public void onClickListener(int privation, ItemEntity<IssueEntity> itemEntity) {
-                    if (mView == null) return;
-                    mView.setIssue(itemEntity.getData(), privation);
-                    mIssuesPopupWindow.dismiss();
-                }
-            });
-            mIssuesPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    HandlerUtil.runOnUiThreadDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            isDismissIssues = true;
-                        }
-                    }, 200);
-                }
-            });
-        } else {
-            mIssuesPopupWindow.setSelectIndex(selIndex);
-            mIssuesPopupWindow.setData(arrayList);
-        }
-        isDismissIssues = false;
-        mIssuesPopupWindow.showBottom(view);
+        IssuesPopupWindow mIssuesPopupWindow = new IssuesPopupWindow(mActivity, view.getWidth(), x, y, arrayList);
+        mIssuesPopupWindow.setOnItemClicklistener(new RecyclerPopupWindow.OnItemClicklistener<IssueEntity>() {
+            @Override
+            public void onClickListener(int privation, ItemEntity<IssueEntity> itemEntity) {
+                if (mView == null) return;
+                mView.setIssue(itemEntity.getData(), privation);
+                mIssuesPopupWindow.dismiss();
+            }
+        });
+        mIssuesPopupWindow.setSelectIndex(selIndex);
+        mIssuesPopupWindow.showPopupWindow(view);
     }
 
-    private OrderPopupWindow mOrderPopupWindow;
-    private boolean isDismissOrder = true;
 
     @Override
-    public void showOrderPopWindow(View anchor, View leftView, int width, OrdersEntity entity, IDismiss dismiss) {
-        if (!isDismissOrder) {
-            isDismissOrder = true;
-            dismiss(mOrderPopupWindow);
-            return;
-        }
-        entity = new OrdersEntity();
-        ArrayList<OrderEntity> entities = new ArrayList<>(10);
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entities.add(new OrderEntity());
-        entity.setOrders(entities);
-        if (mOrderPopupWindow == null) {
-            mOrderPopupWindow = new OrderPopupWindow(mActivity, width);
-            mOrderPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    HandlerUtil.runOnUiThreadDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            isDismissOrder = true;
-                        }
-                    }, 200);
-                }
-            });
-        }
-        mOrderPopupWindow.setOrdersEntity(entity);
+    public void showOrderPopWindow(View anchor, View leftView, int width, int y, IDismiss dismiss) {
+        OrderPopupWindow mOrderPopupWindow = new OrderPopupWindow(mActivity, width, leftView.getWidth(), y);
         mOrderPopupWindow.setOnDismiss(dismiss);
-        isDismissOrder = false;
-        mOrderPopupWindow.showAsDropDown(anchor, leftView.getWidth(), 0);
+        mOrderPopupWindow.showPopupWindow(anchor);
     }
 
-
-    private DynamicPopupWindow mDynamicPopupWindow;
-    private boolean isDynamicPopup = true;
-
     @Override
-    public void showDynamicPopWindow(View anchor, View leftView, int width, DynamicsEntity entity, IDismiss dismiss) {
-        if (!isDynamicPopup) {
-            isDynamicPopup = true;
-            dismiss(mDynamicPopupWindow);
-            return;
-        }
-        entity = new DynamicsEntity();
-        ArrayList<DynamicEntity> entities = new ArrayList<>(10);
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entities.add(new DynamicEntity());
-        entity.setTrends(entities);
-        if (mDynamicPopupWindow == null) {
-            mDynamicPopupWindow = new DynamicPopupWindow(mActivity, width);
-            mDynamicPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    HandlerUtil.runOnUiThreadDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            isDismissOrder = true;
-                        }
-                    }, 200);
-                }
-            });
-        }
-        mDynamicPopupWindow.setEntity(entity);
+    public void showDynamicPopWindow(View anchor, View leftView, int width, int y, IDismiss dismiss) {
+        DynamicPopupWindow mDynamicPopupWindow = new DynamicPopupWindow(mActivity, this, width, leftView.getWidth(), y);
         mDynamicPopupWindow.setOnDismiss(dismiss);
-        isDynamicPopup = false;
-        mDynamicPopupWindow.showAsDropDown(anchor, leftView.getWidth(), 0);
+        mDynamicPopupWindow.showPopupWindow(anchor);
     }
 
     //关闭对话框
     private void dismiss(PopupWindow popupWindow) {
         if (popupWindow != null && popupWindow.isShowing())
             popupWindow.dismiss();
+    }
+
+    @Override
+    public void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark) {
+        BaseParams baseParams = new BaseParams();
+        baseParams.addParam("SourceCode", 201);
+//        baseParams.addParam("IndexMark", IndexMark);
+        baseParams.addParam("Issue", Issue);
+        baseParams.addParam("IssueType", IssueType);
+        baseParams.addParam("Money", Money);
+        baseParams.addParam("ProductId", ProductId);
+        baseParams.addParam("Result", Result);
+        baseParams.addParam("StrIndexMark", StrIndexMark);
+        baseParams.addParam("Ticks", 0);
+        baseParams.addParam("taskid", "00000000-0000-0000-0000-000000000000");
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(200)
+                .setToken(baseParams.getToken())
+                .setParams(baseParams)
+                .execute(new JsonCallback<PlaceOrderEntity>(PlaceOrderEntity.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, PlaceOrderEntity result) {
+                        if (mView == null) return;
+                        mView.placeOrder(result, msg);
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (mView == null) return;
+                        mView.placeOrder(null, msg);
+                    }
+                });
     }
 
 }

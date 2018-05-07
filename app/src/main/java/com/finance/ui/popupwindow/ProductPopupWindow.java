@@ -16,8 +16,8 @@ import java.util.ArrayList;
  */
 public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
 
-    public ProductPopupWindow(Context context, int width, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
-        super(context, width, ViewGroup.LayoutParams.WRAP_CONTENT, mArrayList);
+    public ProductPopupWindow(Context context, int width, int x, int y, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
+        super(context, width, ViewGroup.LayoutParams.WRAP_CONTENT, x, y, mArrayList);
         selectIndex = 0;
     }
 
@@ -35,6 +35,11 @@ public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
     @Override
     protected int getLayoutId() {
         return R.layout.popupwindow_recycler;
+    }
+
+    @Override
+    protected boolean isBindView() {
+        return false;
     }
 
     @Override

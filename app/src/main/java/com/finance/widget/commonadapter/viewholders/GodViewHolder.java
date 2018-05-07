@@ -11,15 +11,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 /**
- * Created by Christain on 16/6/1.
  */
 public class GodViewHolder {
     /**
      * ViewHolder实现类,桥接模式适配AbsListView与RecyclerView的二维变化
      */
     ViewHolderImpl mHolderImpl ;
-
-
     /**
      * @param itemView
      */

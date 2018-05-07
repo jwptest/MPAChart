@@ -1,5 +1,6 @@
 package com.finance.interfaces;
 
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.github.mikephil.charting.data.Entry;
@@ -11,7 +12,7 @@ public interface IChartListener extends IDestroy {
 
     IChartListener initListener();
 
-    Entry getCurrentEntry();
+    IndexMarkEntity getCurrentEntry();
 
     void addPurchaseView(PurchaseViewEntity entity);
 

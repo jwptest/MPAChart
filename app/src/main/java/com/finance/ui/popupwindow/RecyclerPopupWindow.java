@@ -6,8 +6,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.PopupWindow;
 
 import com.finance.R;
 import com.finance.model.ben.ItemEntity;
@@ -19,7 +17,7 @@ import java.util.ArrayList;
 /**
  * 线上列表的PopupWindow
  */
-public abstract class RecyclerPopupWindow<D> extends PopupWindow implements RecyclerAdapter.OnItemClickListener {
+public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements RecyclerAdapter.OnItemClickListener {
 
     protected ArrayList<ItemEntity<D>> mArrayList;
     protected RecyclerView rvList;//线上数据列表
@@ -28,14 +26,12 @@ public abstract class RecyclerPopupWindow<D> extends PopupWindow implements Recy
     protected RecyclerAdapter<ItemEntity<D>> mAdapter;
     protected OnItemClicklistener<D> mOnItemClicklistener;
 
-    public RecyclerPopupWindow(Context context, ArrayList<ItemEntity<D>> mArrayList) {
-        this(context, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, mArrayList);
-    }
+//    public RecyclerPopupWindow(Context context, ArrayList<ItemEntity<D>> mArrayList) {
+//        this(context, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, mArrayList);
+//    }
 
-    public RecyclerPopupWindow(Context context, int width, int height, ArrayList<ItemEntity<D>> mArrayList) {
-        super(width, height);
-        View rootView = LayoutInflater.from(context).inflate(getLayoutId(), null);
-        setContentView(rootView);
+    public RecyclerPopupWindow(Context context, int width, int height, int x, int y, ArrayList<ItemEntity<D>> mArrayList) {
+        super(context, width, height, x, y);
         rvList = rootView.findViewById(R.id.rvList);
         this.mArrayList = mArrayList;
         rvList.setLayoutManager(getLayoutManager(context));
@@ -74,8 +70,6 @@ public abstract class RecyclerPopupWindow<D> extends PopupWindow implements Recy
     protected abstract void onBindData(RecyclerViewHolder viewHolder, int position, ItemEntity<D> item);
 
     protected abstract void onItemClick(int position, ItemEntity<D> entity);
-
-    protected abstract int getLayoutId();
 
     protected abstract int getItemLayoutId();
 
