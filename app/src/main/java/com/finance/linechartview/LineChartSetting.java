@@ -66,8 +66,7 @@ public class LineChartSetting implements IChartSetting {
 
 // 当前统计图表中最多在x轴坐标线上显示的总量
 //        mChart.setVisibleXRangeMaximum(100);
-        mChart.setMaxVisibleValueCount(5);
-
+//        mChart.setMaxVisibleValueCount(5);
         mChart.animateX(Constants.XANIMATION);//X轴显示动画
         mChart.animateY(0);
         // get the legend (only possible after setting data)

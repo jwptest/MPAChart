@@ -24,7 +24,7 @@ import butterknife.OnClick;
 /**
  * 订单PopupWindow
  */
-public class OrderPopupWindow extends BasePopupWindow {
+public class OrderPopupWindow extends LeftToRightPopupWindow {
 
     @BindView(R.id.tvTitle)
     TextView tvTitle;

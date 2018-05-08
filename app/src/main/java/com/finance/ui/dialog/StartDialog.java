@@ -9,16 +9,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.finance.R;
+import com.finance.common.UserCommon;
+import com.finance.event.DataRefreshEvent;
+import com.finance.event.EventBus;
+import com.finance.interfaces.ICallback;
+import com.finance.model.ben.UserInfoEntity;
+import com.finance.utils.HandlerUtil;
+
+import org.greenrobot.eventbus.Subscribe;
 
 /**
  * 启动dialog
  */
 public class StartDialog extends Dialog {
 
-    public StartDialog(@NonNull Context context) {
-        super(context, R.style.noBackDialog);
+    private Context mContext;
+    private int imageId;
+
+    public StartDialog(@NonNull Context context, int imageId) {
+        super(context, R.style.fullScreenDialog);
+        this.mContext = context;
+        this.imageId = imageId;
 //    <!--关键点1-->
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_start, null);
@@ -30,11 +45,58 @@ public class StartDialog extends Dialog {
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
     }
 
+    private boolean isLogin = false;//是否登录完成
+    private boolean isData = false;//是否获取数据完成
+    private boolean isCountDown = false;//倒计时是否完成
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.register(this);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_start, null);
+        setContentView(view);
+        Glide.with(mContext)
+                .load(imageId)
+                .skipMemoryCache(true)
+                .into((ImageView) findViewById(R.id.ivBg));
+        setCancelable(false);
+        Runnable mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                isCountDown = true;
+                toMainActivity();
+            }
+        };
+        //如果10秒钟还没有请求成功，就关闭对话框
+        HandlerUtil.runOnUiThreadDelay(mRunnable, 2000);
+        login();
     }
 
+    private void login() {
+        UserCommon.getUserInfo(mContext, new ICallback<UserInfoEntity>() {
+            @Override
+            public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
+                isLogin = true;
+                toMainActivity();
+            }
+        });
+    }
 
+    @Override
+    public void dismiss() {
+        EventBus.unregister(this);
+        super.dismiss();
+    }
+
+    @Subscribe
+    public void onEvent(DataRefreshEvent event) {
+        isData = true;
+        toMainActivity();
+    }
+
+    private void toMainActivity() {
+        if (!isLogin || !isCountDown || !isData) return;
+        dismiss();
+    }
 
 }

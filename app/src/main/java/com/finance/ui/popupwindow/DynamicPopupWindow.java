@@ -27,7 +27,7 @@ import butterknife.OnClick;
 /**
  * 动态对话框
  */
-public class DynamicPopupWindow extends BasePopupWindow implements ICallback<DynamicsEntity> {
+public class DynamicPopupWindow extends LeftToRightPopupWindow implements ICallback<DynamicsEntity> {
 
     @BindView(R.id.tvTitle)
     TextView tvTitle;

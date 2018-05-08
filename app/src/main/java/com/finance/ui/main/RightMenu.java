@@ -152,7 +152,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
                 fall();
                 break;
             case R.id.ivEditBg://打开键盘
-//                openKeyboardPopupWindow();
+                openKeyboardPopupWindow();
                 break;
             case R.id.ivRightNext://下一期
                 isUpdateText = false;
@@ -173,8 +173,9 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         int[] location = new int[2];
         rlEdit.getLocationInWindow(location);
         int y1 = location[1];
+        int x1 = location[0];
         ivRise.getLocationInWindow(location);
-        popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), location[1] - y1);
+        popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), location[1] - y1, x1, y1 - mView.getStatusBarHigh());
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
@@ -203,7 +204,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
                 updateMoney(tag);
             }
         });
-        popupWindow.showAsDropDown(rlEdit);
+        popupWindow.showPopupWindow(rlEdit);
     }
 
     private int getMoney() {

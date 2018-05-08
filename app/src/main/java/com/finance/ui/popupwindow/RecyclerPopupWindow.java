@@ -1,14 +1,14 @@
 package com.finance.ui.popupwindow;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import com.finance.R;
 import com.finance.model.ben.ItemEntity;
+import com.finance.widget.animation.BaseAnimatorSet;
 import com.finance.widget.commonadapter.RecyclerAdapter;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 
@@ -87,6 +87,27 @@ public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements 
 
     public void setSelectIndex(int selectIndex) {
         this.selectIndex = selectIndex;
+    }
+
+    protected BaseAnimatorSet getShowAs() {
+//        return new BaseAnimatorSet() {
+//            @Override
+//            public void setAnimation(View view) {
+//                ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "translationY", 0.1f, 1f);
+//                ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "alpha", 0.5f, 1f);
+//                animatorSet.playTogether(oa1, oa2);
+//            }
+//        };
+        return null;
+    }
+
+    protected BaseAnimatorSet getDismissAs() {
+        return null;
+    }
+
+    @Override
+    public void dismiss() {
+        ValueAnimator oa2 = ValueAnimator.ofFloat(0f, 1f);
     }
 
     public interface OnItemClicklistener<D> {

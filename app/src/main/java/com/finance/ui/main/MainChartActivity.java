@@ -35,7 +35,7 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
-import com.finance.ui.dialog.ExitAppDialog;
+import com.finance.ui.dialog.StartDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -168,6 +168,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         //初始化参数
         PurchaseViewEntity.initValue(this);
         mMainPresenter.getProduct();//获取产品信息
+
+        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
+        mDialog.show();
     }
 
     @Override
@@ -198,7 +201,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     public void onBackPressed() {
-        new ExitAppDialog(this).show();
+        super.onBackPressed();
+//        new ExitAppDialog(this).show();
     }
 
     //初始化控件
@@ -406,6 +410,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     public void setIssue(IssueEntity issue, int index) {
         if (issue == null) return;
         initViewIssue(index);
+    }
+
+    @Override
+    public int getStatusBarHigh() {
+        return statusBarHigh;
     }
 
     @Override

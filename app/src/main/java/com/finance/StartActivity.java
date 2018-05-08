@@ -2,17 +2,16 @@ package com.finance;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.finance.base.BaseActivity;
 import com.finance.common.UserCommon;
 import com.finance.common.UserShell;
 import com.finance.interfaces.ICallback;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.ui.dialog.StartDialog;
 import com.finance.ui.main.MainChartActivity;
 import com.finance.utils.HandlerUtil;
 
@@ -25,12 +24,12 @@ public class StartActivity extends BaseActivity {
 
     @BindView(R.id.ivBg)
     ImageView ivBg;
-    @BindView(R.id.ivIcon)
-    ImageView ivIcon;
-    @BindView(R.id.ivTip)
-    ImageView ivTip;
-    @BindView(R.id.pbLoad)
-    ProgressBar pbLoad;
+//    @BindView(R.id.ivIcon)
+//    ImageView ivIcon;
+//    @BindView(R.id.ivTip)
+//    ImageView ivTip;
+//    @BindView(R.id.pbLoad)
+//    ProgressBar pbLoad;
 
     private Runnable mRunnable;
 
@@ -52,9 +51,18 @@ public class StartActivity extends BaseActivity {
         return R.layout.activity_start;
     }
 
+    private StartDialog mDialog;
+
     @Override
     protected void onCreated() {
-        pbLoad.setVisibility(View.INVISIBLE);
+//        Glide.with(this)
+//                .load(R.drawable.start_bg)
+//                .skipMemoryCache(true)
+//                .into(ivBg);
+//        pbLoad.setVisibility(View.INVISIBLE);
+
+//        mDialog = new FullScreenDialog(this, R.drawable.start_bg);
+//        mDialog.show();
         mRunnable = new Runnable() {
             @Override
             public void run() {
@@ -79,16 +87,16 @@ public class StartActivity extends BaseActivity {
     }
 
     private void setProgress() {
-        if (pbLoad.getVisibility() != View.VISIBLE) {
-            pbLoad.setVisibility(View.VISIBLE);
-            pbLoad.setProgress(20);
-            return;
-        }
-        if ((isLogin && !isCountDown) || (!isLogin && isCountDown)) {
-            pbLoad.setProgress(80);
-            return;
-        }
-        pbLoad.setProgress(100);
+//        if (pbLoad.getVisibility() != View.VISIBLE) {
+//            pbLoad.setVisibility(View.VISIBLE);
+//            pbLoad.setProgress(20);
+//            return;
+//        }
+//        if ((isLogin && !isCountDown) || (!isLogin && isCountDown)) {
+//            pbLoad.setProgress(80);
+//            return;
+//        }
+//        pbLoad.setProgress(100);
     }
 
     private void login() {
@@ -113,7 +121,9 @@ public class StartActivity extends BaseActivity {
 
     private void toMainActivity() {
         if (!isLogin || !isCountDown) return;
+        mDialog.dismiss();
         startActivity(new Intent(mActivity, MainChartActivity.class));
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
     }
 

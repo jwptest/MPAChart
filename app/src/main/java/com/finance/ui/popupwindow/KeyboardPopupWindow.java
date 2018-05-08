@@ -3,26 +3,22 @@ package com.finance.ui.popupwindow;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.finance.R;
-import com.finance.utils.BtnClickUtil;
+import com.finance.widget.animation.BaseAnimatorSet;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static android.R.attr.key;
-
 /**
  * 键盘对话框
  */
-public class KeyboardPopupWindow extends PopupWindow {
+public class KeyboardPopupWindow extends BasePopupWindow {
 
     private IKeyListener mKeyListener;
 
-    public KeyboardPopupWindow(Activity activity, int width, int height) {
-        super(width, height);
+    public KeyboardPopupWindow(Activity activity, int width, int height, int x, int y) {
+        super(activity, width, height, x, y);
         View rootView = LayoutInflater.from(activity).inflate(R.layout.popupwindow_keyboard, null);
         setContentView(rootView);
         ButterKnife.bind(this, rootView);
@@ -50,6 +46,21 @@ public class KeyboardPopupWindow extends PopupWindow {
         } else if (key == -1) {//删除
             mKeyListener.onDelete();
         }
+    }
+
+    @Override
+    protected boolean isBindView() {
+        return false;
+    }
+
+    @Override
+    protected BaseAnimatorSet getShowAs() {
+        return null;
+    }
+
+    @Override
+    protected BaseAnimatorSet getDismissAs() {
+        return null;
     }
 
     public interface IKeyListener {

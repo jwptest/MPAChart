@@ -9,10 +9,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="noBackDialog"
-           parent="@android:style/Theme.Dialog">
+    <style name="noBackDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+    <style name="fullScreenDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 
     <style name="leftMenuImage">
         <item name="android:layout_width">match_parent</item>

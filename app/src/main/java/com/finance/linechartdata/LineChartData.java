@@ -159,12 +159,10 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     }
 
     private LineDataSet createSet(ArrayList<Entry> entries) {
-        LineDataSet set = new LineDataSet(entries, "Dynamic Data");
+        LineDataSet set = new LineDataSet(entries, "");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set.setColor(ColorTemplate.getHoloBlue());
+        set.setColor(Color.parseColor("#FFFFED79"));//走势图线条颜色
 //        int color = Color.parseColor("#6CAEDC");
-
-
 //        set.setCircleColor(Color.parseColor("#90ffed79"));
         set.setLineWidth(1f);
         set.setDrawCircleHole(false);
@@ -181,7 +179,6 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
 //        set.setDrawVerticalHighlightIndicator(true);
 //        set.setFillAlpha(50);
         set.setValueTextSize(9f);
-
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
 //        set.setFormLineWidth(1f);
 //        set.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
@@ -190,12 +187,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
 //        set.enableDashedHighlightLine(10f, 5f, 0f);
 //        set.setCircleRadius(1f);
 //        set.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
-
         if (Utils.getSDKInt() >= 18) {
             Drawable drawable = ContextCompat.getDrawable(activity, R.drawable.fade_red);
             set.setFillDrawable(drawable);
         } else {
-            set.setFillColor(Color.parseColor("#30FFED79"));
+            set.setFillColor(Color.parseColor("#50FFED79"));
         }
         return set;
     }
