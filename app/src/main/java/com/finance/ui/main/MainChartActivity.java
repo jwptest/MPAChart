@@ -17,6 +17,8 @@ import com.finance.R;
 import com.finance.base.BaseActivity;
 import com.finance.common.Constants;
 import com.finance.common.UserShell;
+import com.finance.event.EventBus;
+import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
 import com.finance.interfaces.IDismiss;
@@ -41,6 +43,8 @@ import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -162,6 +166,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     protected void onCreated() {
+        EventBus.register(this);
 //        new StartDialog(this).show();
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
@@ -196,6 +201,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         if (rightMenu != null) rightMenu.onDestroy();
         if (centreMenu != null) centreMenu.onDestroy();
         OpenCountDown.getInstance().removeCallback(this);
+        EventBus.unregister(this);
         super.onDestroy();
     }
 
@@ -245,7 +251,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         setBackground(llRightMenu, R.drawable.right_bg);
         setBackground(llLeftMenu, R.drawable.left_menu_bg);
         setBackground(rlZst, R.drawable.zst_bg);
-
         initLayoutParam();
         initViewUser();
     }
@@ -343,6 +348,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         this.chartType = chartType;
         dataSetting = getChartData(chartType);
         updateIssue();//更新走势图
+    }
+
+    @Subscribe
+    public void onEvent(UserLoginEvent event) {
+        initViewUser();
     }
 
     private void initViewUser() {

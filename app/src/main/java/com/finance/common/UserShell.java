@@ -114,7 +114,7 @@ public class UserShell {
     }
 
     public UserInfoEntity getUserInfo() {
-        return userInfo;
+        return userInfo == null ? new UserInfoEntity() : userInfo;
     }
 
     public boolean isLogin() {

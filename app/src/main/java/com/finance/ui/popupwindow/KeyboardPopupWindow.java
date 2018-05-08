@@ -19,11 +19,13 @@ public class KeyboardPopupWindow extends BasePopupWindow {
 
     public KeyboardPopupWindow(Activity activity, int width, int height, int x, int y) {
         super(activity, width, height, x, y);
-        View rootView = LayoutInflater.from(activity).inflate(R.layout.popupwindow_keyboard, null);
-        setContentView(rootView);
-        ButterKnife.bind(this, rootView);
         setTouchable(true);
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.popupwindow_keyboard;
     }
 
     @OnClick({R.id.tv1, R.id.tv2, R.id.tv3, R.id.tv4, R.id.tv5, R.id.tv6, R.id.tv7, R.id.tv8, R.id.tv9, R.id.tv11, R.id.tv0, R.id.tvn1})
@@ -50,7 +52,7 @@ public class KeyboardPopupWindow extends BasePopupWindow {
 
     @Override
     protected boolean isBindView() {
-        return false;
+        return true;
     }
 
     @Override

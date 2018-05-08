@@ -162,20 +162,14 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         }
     }
 
-    private KeyboardPopupWindow popupWindow;
-
     private void openKeyboardPopupWindow() {
-        if (popupWindow != null) {
-            popupWindow.dismiss();
-            popupWindow = null;
-            return;
-        }
         int[] location = new int[2];
         rlEdit.getLocationInWindow(location);
         int y1 = location[1];
         int x1 = location[0];
         ivRise.getLocationInWindow(location);
-        popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), location[1] - y1, x1, y1 - mView.getStatusBarHigh());
+        int dp3 = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_5);
+        final KeyboardPopupWindow popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), location[1] - y1 - rlEdit.getHeight() - dp3, x1, y1 - mView.getStatusBarHigh() + rlEdit.getHeight());
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
@@ -193,7 +187,6 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
             @Override
             public void onOk() {
                 popupWindow.dismiss();
-                popupWindow = null;
             }
 
             @Override

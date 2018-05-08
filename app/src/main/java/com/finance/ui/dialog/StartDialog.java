@@ -14,8 +14,10 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.finance.R;
 import com.finance.common.UserCommon;
+import com.finance.common.UserShell;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
+import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.model.ben.UserInfoEntity;
 import com.finance.utils.HandlerUtil;
@@ -78,6 +80,7 @@ public class StartDialog extends Dialog {
             public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
                 isLogin = true;
                 toMainActivity();
+                EventBus.post(new UserLoginEvent(UserShell.getInstance().isLogin()));
             }
         });
     }

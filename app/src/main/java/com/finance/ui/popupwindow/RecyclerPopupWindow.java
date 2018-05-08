@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.finance.R;
 import com.finance.model.ben.ItemEntity;
@@ -90,24 +92,41 @@ public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements 
     }
 
     protected BaseAnimatorSet getShowAs() {
-//        return new BaseAnimatorSet() {
-//            @Override
-//            public void setAnimation(View view) {
-//                ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "translationY", 0.1f, 1f);
-//                ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "alpha", 0.5f, 1f);
-//                animatorSet.playTogether(oa1, oa2);
-//            }
-//        };
-        return null;
+        if (mAminationView == null) return null;
+        final ViewGroup.LayoutParams params = mAminationView.getLayoutParams();
+        return new BaseAnimatorSet() {
+            @Override
+            public void setAnimation(View view) {
+                ValueAnimator valueAnimator = ValueAnimator.ofInt(0, mAnimViewHeight);
+                valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        params.height = (Integer) animation.getAnimatedValue();
+                        mAminationView.setLayoutParams(params);
+                    }
+                });
+                animatorSet.playTogether(valueAnimator);
+            }
+        };
     }
 
     protected BaseAnimatorSet getDismissAs() {
-        return null;
-    }
-
-    @Override
-    public void dismiss() {
-        ValueAnimator oa2 = ValueAnimator.ofFloat(0f, 1f);
+        if (mAminationView == null) return null;
+        final ViewGroup.LayoutParams params = mAminationView.getLayoutParams();
+        return new BaseAnimatorSet() {
+            @Override
+            public void setAnimation(View view) {
+                ValueAnimator valueAnimator = ValueAnimator.ofInt(mAnimViewHeight, 0);
+                valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        params.height = (Integer) animation.getAnimatedValue();
+                        mAminationView.setLayoutParams(params);
+                    }
+                });
+                animatorSet.playTogether(valueAnimator);
+            }
+        };
     }
 
     public interface OnItemClicklistener<D> {

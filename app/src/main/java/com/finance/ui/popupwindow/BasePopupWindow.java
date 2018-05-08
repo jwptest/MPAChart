@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
@@ -23,7 +24,8 @@ public abstract class BasePopupWindow extends PopupWindow {
     protected View mAminationView;
     private IDismiss dismiss;
     //动画执行时间
-    protected long mInnerAnimDuration = 500;
+    protected long mInnerAnimDuration = 1000;
+    protected int mAnimViewWidth, mAnimViewHeight;
 
     public BasePopupWindow(Context context, int width, int height) {
         this(context, width, height, 0, 0);
@@ -48,7 +50,6 @@ public abstract class BasePopupWindow extends PopupWindow {
         if (isBindView()) {
             ButterKnife.bind(this, contentView);
         }
-        contentView.get
         mAminationView = contentView;
     }
 
@@ -72,21 +73,7 @@ public abstract class BasePopupWindow extends PopupWindow {
 
     @Override
     public void dismiss() {
-        BaseAnimatorSet dismissAs = getDismissAs();
-        if (dismissAs != null) {
-            dismissAs.listener(new BaseAnimatorSet.AnimatorListener() {
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    superDismiss();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                    superDismiss();
-                }
-            });
-            dismissAs.duration(mInnerAnimDuration).playOn(mAminationView);
-        } else {
+        if (!startDismissAnimation()) {
             superDismiss();
         }
     }
@@ -115,12 +102,52 @@ public abstract class BasePopupWindow extends PopupWindow {
         });
     }
 
-    public void showPopupWindow(View view) {
-        showAtLocation(view, Gravity.START, 0, 0);
+    private void monitoringShow() {
+        mAminationView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mAnimViewWidth = mAminationView.getWidth();
+                if (mAnimViewWidth <= 0) return;
+                mAnimViewHeight = mAminationView.getHeight();
+                mAminationView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                startShowAnimation();
+            }
+        });
+    }
+
+    //执行显示动画
+    protected boolean startShowAnimation() {
         BaseAnimatorSet showAs = getShowAs();
         if (showAs != null) {
             showAs.duration(mInnerAnimDuration).playOn(mAminationView);
+            return true;
         }
+        return false;
+    }
+
+    protected boolean startDismissAnimation() {
+        BaseAnimatorSet dismissAs = getDismissAs();
+        if (dismissAs != null) {//执行关闭动画
+            dismissAs.listener(new BaseAnimatorSet.AnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    superDismiss();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+                    superDismiss();
+                }
+            });
+            dismissAs.duration(mInnerAnimDuration).playOn(mAminationView);
+            return true;
+        }
+        return false;
+    }
+
+    public void showPopupWindow(View view) {
+        monitoringShow();
+        showAtLocation(view, Gravity.START, 0, 0);
     }
 
 }
