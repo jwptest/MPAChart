@@ -5,13 +5,13 @@
     android:layout_height="@dimen/dp_50"
     android:orientation="vertical"
     android:paddingLeft="@dimen/dp_10"
-    android:paddingRight="@dimen/dp_10"
-    android:paddingTop="@dimen/dp_10">
+    android:paddingRight="@dimen/dp_10">
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_30"
+        android:layout_centerVertical="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -20,19 +20,31 @@
             android:layout_width="0.0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingLeft="@dimen/dp_10"
+            android:singleLine="true"
             android:text="交易者"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_14"/>
+            android:textSize="@dimen/sp_12"/>
 
         <TextView
             android:id="@+id/tvProduct"
-            android:layout_width="wrap_content"
+            android:layout_width="0.0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:singleLine="true"
             android:text="资产"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_14"/>
+            android:textSize="@dimen/sp_12"/>
+
+        <TextView
+            android:id="@+id/tvMoney"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:paddingRight="@dimen/dp_3"
+            android:singleLine="true"
+            android:text="投资金额"
+            android:textColor="#a0ffffff"
+            android:textSize="@dimen/sp_12"/>
 
         <ProgressBar
             android:id="@+id/vProportion"
@@ -40,19 +52,9 @@
             android:layout_width="0.0dp"
             android:layout_height="@dimen/dp_3"
             android:layout_weight="0.5"
-            android:max="100"
-            android:progress="30"
+            android:max="400"
+            android:progress="10"
             android:progressDrawable="@drawable/dynamic_progressbar"/>
-
-        <TextView
-            android:id="@+id/tvMoney"
-            android:layout_width="0.0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:paddingRight="@dimen/dp_10"
-            android:text="投资金额"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_12"/>
 
     </LinearLayout>
 

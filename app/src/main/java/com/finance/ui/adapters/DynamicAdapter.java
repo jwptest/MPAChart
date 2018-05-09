@@ -60,18 +60,21 @@ public class DynamicAdapter extends StickyBaseAdapter<DynamicEntity> implements 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemHolder itemHolder = (ItemHolder) holder;
         DynamicEntity entity = getItem(position);
+        itemHolder.tvName.setText(entity.getUserName());
+        itemHolder.tvProduct.setText(entity.getProductName());
+        itemHolder.tvMoney.setText("￥" + entity.getMoney());
+        itemHolder.vProportion.setProgress((int) entity.getMoney());
     }
 
     @Override
     public long getHeaderId(int position) {
-        return position == 0 ? 0 : 1;
+        return 1;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_dynamic_recy_head, parent, false);
-        return new RecyclerView.ViewHolder(view) {
-        };
+        return new RecyclerView.ViewHolder(view) {};
     }
 
     @Override

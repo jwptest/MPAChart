@@ -59,7 +59,8 @@ public class LineChartSetting implements IChartSetting {
 //        mChart.setPinchZoom(false);
         //偏移量
 //        mChart.setExtraOffsets(0, 0, 0, 0);
-        mChart.setViewPortOffsets(0, 0, 0, 0);
+        int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
+        mChart.setViewPortOffsets(0, top, 0, 0);
 //        mChart.setPinchZoom(true);//放缩 作用同上
         mChart.setDrawBorders(false);
 //        mChart.setGridBackgroundColor(Color.WHITE);

@@ -243,14 +243,14 @@ public class MLineChartRenderer extends LineChartRenderer {
 
     //间隔步长
     private int getStep(int length) {
-        if (length <= 200) return 0;
-        return length / 200;
+        if (length <= 120) return 0;
+        return length / 120;
     }
 
     //间隔步长
     private int getStep2(int length) {
-        if (length <= 200) return 1;
-        return length / 200;
+        if (length <= 120) return 1;
+        return length / 120;
     }
 
 }

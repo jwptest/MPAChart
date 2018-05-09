@@ -4,7 +4,80 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dialog_open_prize_bg"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/dp_30"
+    android:paddingRight="@dimen/dp_30"
+    android:paddingTop="@dimen/dp_50">
 
+    <RelativeLayout
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tvTitleType"
+            style="@style/open_prize_product"
+            android:text="资产类型"/>
+
+        <TextView
+            android:id="@+id/tvTitleMoney"
+            style="@style/open_prize_product"
+            android:layout_centerHorizontal="true"
+            android:text="投资"/>
+
+        <TextView
+            android:id="@+id/tvTitleProfit"
+            style="@style/open_prize_product"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dp_30"
+            android:text="收益"/>
+
+        <TextView
+            android:id="@+id/tvTitleTypeValue"
+            style="@style/open_prize_product_value"
+            android:layout_alignLeft="@+id/tvTitleType"
+            android:layout_below="@+id/tvTitleType"
+            android:text="资产名称"/>
+
+        <TextView
+            android:id="@+id/tvTitleMoneyValue"
+            style="@style/open_prize_product_value"
+            android:layout_alignLeft="@+id/tvTitleMoney"
+            android:layout_below="@+id/tvTitleType"
+            android:text="投资"/>
+
+        <TextView
+            android:id="@+id/tvTitleProfitValue"
+            style="@style/open_prize_product_value"
+            android:layout_alignLeft="@+id/tvTitleProfit"
+            android:layout_below="@+id/tvTitleType"
+            android:text="收益"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tvTitleTypeValue"
+            android:layout_marginTop="@dimen/dp_5">
+
+            <com.finance.widget.combinedchart.MCombinedChart
+                android:id="@+id/lineChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="@dimen/dp_0.6"
+        android:layout_height="match_parent"
+        android:background="@color/line_color"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvList"
+        android:layout_width="0.0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/dp_10"
+        android:paddingRight="@dimen/dp_10"/>
 
 </LinearLayout>

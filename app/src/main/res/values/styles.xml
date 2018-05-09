@@ -100,5 +100,27 @@
         <item name="android:background">#5a5a5a</item>
     </style>
 
+    <style name="open_prize_product">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/dynamic_title_color</item>
+        <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="open_prize_product1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="open_prize_product_value">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/dp_5</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/sp_13.5</item>
+    </style>
+
 
 </resources>

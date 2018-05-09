@@ -4,7 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,6 +39,7 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.ui.dialog.OpenPrizeDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -172,6 +175,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
 //        mDialog.show();
         mMainPresenter.getProduct();
+        int a = ViewConfiguration.get(mActivity).getScaledDoubleTapSlop();//双击的最大间距
+        int b = ViewConfiguration.get(mActivity).getScaledTouchSlop();//移动的最小距离
+        Log.d("123", "最小滑动距离:" + a + ",:" + b);
     }
 
     @Override
@@ -479,6 +485,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         switch (view.getId()) {
             case R.id.ivExitLogin:
+                new OpenPrizeDialog(mActivity).show();
                 break;
             case R.id.llMoney:
                 int[] location = new int[2];

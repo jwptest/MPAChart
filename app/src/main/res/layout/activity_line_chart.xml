@@ -47,7 +47,7 @@
                 android:rotation="90"
                 android:text="截止线描述"
                 android:textColor="#696458"
-                android:textSize="11sp"/>
+                android:textSize="@dimen/sp_10"/>
 
             <!--<ImageView-->
             <!--android:id="@+id/ivEndLineIcon"-->
@@ -74,7 +74,7 @@
                 android:rotation="90"
                 android:text="结算线描述"
                 android:textColor="#D43625"
-                android:textSize="11sp"/>
+                android:textSize="@dimen/sp_10"/>
 
             <!--<ImageView-->
             <!--android:id="@+id/ivSettlementIcon"-->

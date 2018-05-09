@@ -2,38 +2,38 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_40"
-    android:background="#1e24201b"
+    android:layout_height="@dimen/dp_35"
+    android:background="@color/popupWindow_item_title_color"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/dp_10"
+    android:paddingRight="@dimen/dp_10">
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="0.0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingLeft="@dimen/dp_10"
         android:text="交易者"
-        android:textColor="@color/white"
-        android:textSize="@dimen/sp_14"/>
+        android:textColor="@color/dynamic_title_color"
+        android:textSize="@dimen/sp_12"/>
 
     <TextView
         android:id="@+id/tvProduct"
-        android:layout_width="wrap_content"
+        android:layout_width="0.0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="资产"
-        android:textColor="@color/white"
-        android:textSize="@dimen/sp_14"/>
+        android:textColor="@color/dynamic_title_color"
+        android:textSize="@dimen/sp_12"/>
 
     <TextView
         android:id="@+id/tvMoney"
-        android:layout_width="wrap_content"
+        android:layout_width="0.0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingRight="@dimen/dp_10"
         android:text="投资金额"
-        android:textColor="@color/white"
-        android:textSize="@dimen/sp_14"/>
+        android:textColor="@color/dynamic_title_color"
+        android:textSize="@dimen/sp_12"/>
 
 </LinearLayout>

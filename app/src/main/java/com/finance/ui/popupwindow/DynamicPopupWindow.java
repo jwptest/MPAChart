@@ -16,6 +16,7 @@ import com.finance.model.ben.DynamicEntity;
 import com.finance.model.ben.DynamicsEntity;
 import com.finance.ui.adapters.DynamicAdapter;
 import com.finance.ui.main.MainContract;
+import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersDecoration;
 
 import java.util.ArrayList;
 
@@ -79,7 +80,8 @@ public class DynamicPopupWindow extends LeftToRightPopupWindow implements ICallb
             mAdapter = new DynamicAdapter(orderEntities);
             rvOrder.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
             rvOrder.setAdapter(mAdapter);
-
+            StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(mAdapter);
+            rvOrder.addItemDecoration(headersDecor);
         } else {
             mAdapter.clear();
             mAdapter.addAll(orderEntities);

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_55"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/dp_10">
+
+    <TextView
+        android:id="@+id/tvTimer"
+        style="@style/open_prize_product1"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:text="21:33"/>
+
+    <TextView
+        android:id="@+id/tvIndex"
+        style="@style/open_prize_product1"
+        android:layout_centerHorizontal="true"
+        android:text="1.189562"/>
+
+    <TextView
+        android:id="@+id/tvProfit"
+        style="@style/open_prize_product1"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/dp_10"
+        android:text="￥17.9"/>
+
+    <TextView
+        android:id="@+id/tvDate"
+        style="@style/open_prize_product"
+        android:layout_alignLeft="@+id/tvTimer"
+        android:layout_below="@+id/tvTimer"
+        android:layout_marginTop="@dimen/dp_5"
+        android:text="05-09"/>
+
+    <TextView
+        android:id="@+id/tvIndexValue"
+        style="@style/open_prize_product"
+        android:layout_alignLeft="@+id/tvIndex"
+        android:layout_below="@+id/tvIndex"
+        android:layout_marginRight="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_5"
+        android:text="1.182356"/>
+
+    <ImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="@dimen/dp_10"
+        android:layout_height="@dimen/dp_10"
+        android:layout_below="@+id/tvIndex"
+        android:layout_marginTop="@dimen/dp_6"
+        android:layout_alignBottom="@+id/tvIndexValue"
+        android:layout_toRightOf="@+id/tvIndexValue"
+        android:scaleType="centerInside"
+        android:src="@drawable/fall_icon_item"/>
+
+    <TextView
+        android:id="@+id/tvMoney"
+        style="@style/open_prize_product"
+        android:layout_alignLeft="@+id/tvProfit"
+        android:layout_below="@+id/tvTimer"
+        android:layout_marginTop="@dimen/dp_5"
+        android:text="￥10"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0.6"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/line_color"/>
+</RelativeLayout>
