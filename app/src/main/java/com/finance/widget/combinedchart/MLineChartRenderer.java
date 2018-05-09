@@ -111,7 +111,6 @@ public class MLineChartRenderer extends LineChartRenderer {
 
     private float[] mLineBuffer = new float[4];
 
-
     @Override
     protected void drawLinear(Canvas c, ILineDataSet dataSet) {
 

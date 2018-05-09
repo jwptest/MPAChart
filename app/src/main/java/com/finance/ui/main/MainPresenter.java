@@ -116,13 +116,13 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     @Override
-    public void getHistoryIssues(int ProductId, final ICallback<ArrayList<String>> callback) {
+    public void getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback) {
         BaseParams param = new BaseParams(true);
         param.addParam("T", 20);
         param.addParam("D", ProductId + ":300");
         param.addParam("isRate", true);//默认值
         param.addParam("productId", ProductId);
-        param.addParam("times", 300);//默认值
+        param.addParam("times", timer);//默认值
         param.addParam("Token", "");
 //        param.addParam("Token", UserShell.getInstance().getUserToken());
         NetworkRequest.getInstance()

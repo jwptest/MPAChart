@@ -13,6 +13,8 @@ public class Constants {
 
     public static final String HTTPURL = "https://i.api789.top:8080/indexMark";//请求地址
 
+    public static long SERVERCURRENTTIMER = 0;//服务器当前时间
+
     public static final int XANIMATION = 0;//x轴动画时间
 
     public static final String CHART_LINEFILL = "CHART_LINEFILL";//填充折线图

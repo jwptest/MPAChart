@@ -56,7 +56,7 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
-        void getHistoryIssues(int ProductId, final ICallback<ArrayList<String>> callback);
+        void getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback);
 
         HttpConnection getAlwaysIssues(int ProductId, final BaseCallback callback);
 

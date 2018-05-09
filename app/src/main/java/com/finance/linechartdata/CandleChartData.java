@@ -37,24 +37,18 @@ public class CandleChartData implements IChartData {
         mXAxis = mChart.getXAxis();
     }
 
-    @Override
-    public CandleChartData onInit() {
-        mCombinedData = new CombinedData();
-//        data.setData(generateLineData());//折线图
-        mCombinedData.setData(generateCandleData());//蜡烛图
-        return this;
-    }
+//    @Override
+//    protected void onInit() {
+//        mCombinedData = new CombinedData();
+////        data.setData(generateLineData());//折线图
+//        mCombinedData.setData(generateCandleData());//蜡烛图
+//    }
 
     @Override
     public void onResume(String type) {
         mChart.setData(mCombinedData);
         mXAxis.setAxisMaximum(20);
         mChart.invalidate();
-    }
-
-    @Override
-    public void onStop() {
-
     }
 
     @Override

@@ -75,7 +75,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private Entry endEntry, openEntry;
     //开奖点和购买点
     private IssueEntity mIssueEntity;
-
     //显示数据
     private IDataSet currentDataSet;
     //是否刷新子控件坐标
@@ -500,6 +499,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (!isRefresh) return;
         currentEntry = lastEntry;
         currentDataSet = dataSet;
+        if (mView.isRefrshChartData()) return;
         MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;

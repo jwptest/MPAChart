@@ -206,7 +206,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         try {
             money = Integer.parseInt(tag);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return money;
     }

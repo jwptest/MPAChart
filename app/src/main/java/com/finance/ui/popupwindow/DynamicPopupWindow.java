@@ -3,7 +3,6 @@ package com.finance.ui.popupwindow;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,7 +20,6 @@ import com.finance.ui.main.MainContract;
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**

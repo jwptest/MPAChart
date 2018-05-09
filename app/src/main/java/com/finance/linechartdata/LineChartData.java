@@ -70,12 +70,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         this.mIndexMarkEntities = new ArrayList<>(2);
         this.mEntries = new ArrayList<>();
         this.dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
+        onInit();
     }
 
-    @Override
-    public LineChartData onInit() {
+    private void onInit() {
         mCallback = new Callback();
-        return this;
     }
 
     @Override
@@ -97,7 +96,6 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         EventDistribution.getInstance().addPurchase(this);
     }
 
-    @Override
     public void onStop() {
         EventBus.post(new DataRefreshEvent(false));
         EventDistribution.getInstance().removeChartDraws(null);
@@ -119,7 +117,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         this.issueEntity = issueEntity;
         isInitData = false;
         //获取期号
-        mPresenter.getHistoryIssues(productEntity.getProductId(), this);
+        mPresenter.getHistoryIssues(productEntity.getProductId(), 300, this);
         //获取时时数据
         mHttpConnection = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
     }
@@ -360,7 +358,5 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
                 }
             });
         }
-
     }
-
 }

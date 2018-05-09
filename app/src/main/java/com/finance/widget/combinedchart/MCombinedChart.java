@@ -294,7 +294,7 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
         } else if (data instanceof ScatterData) {
             iDataSet = ((ScatterData) data).getDataSets().get(0);
         }
-        if (iDataSet == null) return;
+        if (iDataSet == null || iDataSet.getEntryCount() <= 0) return;
         Entry entry1 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 1);//开奖点
 //        Entry entry2 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 2);//截止购买点
 //        Entry entry3 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 3);//绘制的最后一个点

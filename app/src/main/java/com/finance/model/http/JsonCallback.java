@@ -7,13 +7,12 @@ import com.finance.BuildConfig;
 import com.finance.common.Constants;
 import com.finance.model.ben.ResponseEntity;
 import com.finance.utils.HandlerUtil;
+import com.finance.utils.TimerUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.orhanobut.logger.Logger;
 
 import java.lang.reflect.Type;
-
-import microsoft.aspnet.signalr.client.MessageReceivedHandler;
 
 /**
  * 网络回调
@@ -72,6 +71,7 @@ public abstract class JsonCallback<T> extends BaseCallback {
                         failed(entity.getSourceCode(), entity.getMessage(), false);
                         return;
                     }
+                    Constants.SERVERCURRENTTIMER = TimerUtil.timerToLong(entity.getCurrDateTime());
                     //成功
                     successed(entity.getSourceCode(), entity.getMessage(), false, t);
                     return;

@@ -24,8 +24,9 @@ public abstract class BasePopupWindow extends PopupWindow {
     protected View mAminationView;
     private IDismiss dismiss;
     //动画执行时间
-    protected long mInnerAnimDuration = 1000;
+    protected long mInnerAnimDuration = 350;
     protected int mAnimViewWidth, mAnimViewHeight;
+    protected Context mContext;
 
     public BasePopupWindow(Context context, int width, int height) {
         this(context, width, height, 0, 0);
@@ -33,6 +34,7 @@ public abstract class BasePopupWindow extends PopupWindow {
 
     public BasePopupWindow(Context context, int width, int height, int x, int y) {
         super(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mContext = context;
         setContentView(context, width, height, x, y);
     }
 
@@ -42,6 +44,12 @@ public abstract class BasePopupWindow extends PopupWindow {
             contentView = LayoutInflater.from(context).inflate(getLayoutId(), null);
         rootView = new LinearLayout(context);
         rootView.setOrientation(LinearLayout.VERTICAL);
+        if (isAnimation()) {//添加执行动画布局
+            LinearLayout animation = new LinearLayout(context);
+            LinearLayout.LayoutParams paramAnimation = new LinearLayout.LayoutParams(width, height);
+            animation.addView(contentView, paramAnimation);
+            contentView = animation;
+        }
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
         params.leftMargin = x;
         params.topMargin = y;
@@ -61,6 +69,8 @@ public abstract class BasePopupWindow extends PopupWindow {
         return null;
     }
 
+    protected abstract boolean isAnimation();//是否有动画
+
     protected abstract boolean isBindView();
 
     protected abstract BaseAnimatorSet getShowAs();
@@ -69,13 +79,6 @@ public abstract class BasePopupWindow extends PopupWindow {
 
     public void setDismiss(IDismiss dismiss) {
         this.dismiss = dismiss;
-    }
-
-    @Override
-    public void dismiss() {
-        if (!startDismissAnimation()) {
-            superDismiss();
-        }
     }
 
     public void superDismiss() {
@@ -125,6 +128,14 @@ public abstract class BasePopupWindow extends PopupWindow {
         return false;
     }
 
+    @Override
+    public void dismiss() {
+        if (!startDismissAnimation()) {
+            superDismiss();
+        }
+    }
+
+    //执行关闭动画
     protected boolean startDismissAnimation() {
         BaseAnimatorSet dismissAs = getDismissAs();
         if (dismissAs != null) {//执行关闭动画

@@ -91,6 +91,12 @@ public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements 
         this.selectIndex = selectIndex;
     }
 
+    @Override
+    protected boolean isAnimation() {
+        return true;
+    }
+
+    @Override
     protected BaseAnimatorSet getShowAs() {
         if (mAminationView == null) return null;
         final ViewGroup.LayoutParams params = mAminationView.getLayoutParams();
@@ -101,7 +107,7 @@ public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements 
                 valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        params.height = (Integer) animation.getAnimatedValue();
+                        params.height = (int) animation.getAnimatedValue();
                         mAminationView.setLayoutParams(params);
                     }
                 });
@@ -110,6 +116,7 @@ public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements 
         };
     }
 
+    @Override
     protected BaseAnimatorSet getDismissAs() {
         if (mAminationView == null) return null;
         final ViewGroup.LayoutParams params = mAminationView.getLayoutParams();
@@ -120,7 +127,7 @@ public abstract class RecyclerPopupWindow<D> extends BasePopupWindow implements 
                 valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        params.height = (Integer) animation.getAnimatedValue();
+                        params.height = (int) animation.getAnimatedValue();
                         mAminationView.setLayoutParams(params);
                     }
                 });

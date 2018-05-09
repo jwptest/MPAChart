@@ -24,7 +24,7 @@ import com.finance.interfaces.IChartListener;
 import com.finance.interfaces.IDismiss;
 import com.finance.interfaces.IViewHandler;
 import com.finance.linechartdata.CandleChartData;
-import com.finance.linechartdata.LineChartData;
+import com.finance.linechartdata.LineChartData1;
 import com.finance.linechartview.BaseAxisValueFormatter;
 import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
@@ -37,7 +37,6 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
-import com.finance.ui.dialog.StartDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -130,11 +129,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     TextView tvProfit;
     @BindView(R.id.tvInterestRate)
     TextView tvInterestRate;
-//    @BindView(R.id.llRise)
+    //    @BindView(R.id.llRise)
 //    LinearLayout llRise;
 //    @BindView(R.id.llFall)
 //    LinearLayout llFall;
-
     //    private ILineChartSetting chartSetting;
     private IChartListener chartListener;
     private IViewHandler leftMenu, rightMenu, centreMenu;
@@ -146,7 +144,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     //数据处理接口
     private IChartData dataSetting;
     //数据处理
-    private LineChartData mLineChartData;//折线图
+    private LineChartData1 mLineChartData;//折线图
     private CandleChartData mCandleData;//蜡烛图
     private String chartType;//当前显示图像类型
 
@@ -167,15 +165,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Override
     protected void onCreated() {
         EventBus.register(this);
-//        new StartDialog(this).show();
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
         //初始化参数
         PurchaseViewEntity.initValue(this);
-        mMainPresenter.getProduct();//获取产品信息
-
-        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
-        mDialog.show();
+//        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
+//        mDialog.show();
+        mMainPresenter.getProduct();
     }
 
     @Override
@@ -190,7 +186,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     protected void onStop() {
         super.onStop();
         OpenCountDown.getInstance().removeCallback(this);
-        if (dataSetting != null) dataSetting.onStop();
+        if (dataSetting != null) dataSetting.onDestroy();
     }
 
     @Override
@@ -215,10 +211,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private void initView() {
         if (StatusBarUtil.StatusBarNormalMode(this) != 0) {
             statusBarHigh = PhoneUtil.getStatusBarHigh(this);
-            rlTitleBar.setPadding(rlTitleBar.getLeft(), rlTitleBar.getPaddingTop() + statusBarHigh,
-                    rlTitleBar.getPaddingRight(), rlTitleBar.getPaddingBottom());
+//            rlTitleBar.setPadding(rlTitleBar.getLeft(), rlTitleBar.getPaddingTop() + statusBarHigh,
+//                    rlTitleBar.getPaddingRight(), rlTitleBar.getPaddingBottom());
             //设置titleBar的高度
-            rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_left_menu_width);
+            rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_height);
+//            ViewUtil.setTitleLineLocation(findViewById(R.id.vTitleLine1), ivExitLogin);
+//            ViewUtil.setTitleLineLocation(findViewById(R.id.vTitleLine2), llMoney);
+//            ViewUtil.setTitleLineLocation(findViewById(R.id.vTitleLine3), llTimer);
         }
         //右边轴value显示格式类
         BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);
@@ -260,15 +259,13 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IChartData dataSetting = null;
         if (TextUtils.equals(type, Constants.CHART_LINEFILL) || TextUtils.equals(type, Constants.CHART_LINE)) {
             if (mLineChartData == null) {
-                mLineChartData = new LineChartData(mActivity, this, lineChart, mMainPresenter)
-                        .onInit();
+                mLineChartData = new LineChartData1(mActivity, this, lineChart, mMainPresenter);
             }
             dataSetting = mLineChartData;
         } else if (TextUtils.equals(type, Constants.CHART_CANDLE)) {
             //蜡烛图
             if (mCandleData == null) {
-                mCandleData = new CandleChartData(this, lineChart)
-                        .onInit();
+                mCandleData = new CandleChartData(this, lineChart);
             }
             dataSetting = mCandleData;
         }
@@ -343,7 +340,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             return;
         }
         if (dataSetting != null) {
-            dataSetting.onStop();
+            dataSetting.onDestroy();
         }
         this.chartType = chartType;
         dataSetting = getChartData(chartType);
@@ -352,6 +349,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Subscribe
     public void onEvent(UserLoginEvent event) {
+        mMainPresenter.getProduct();//获取产品信息
         initViewUser();
     }
 
@@ -361,6 +359,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .load(entity.getLogo())
                 .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.drawable.userhead)
+                .placeholder(R.drawable.userhead)
                 .into(ivUHead);
         tvUName.setText(entity.getUserName());
         tvMoney.setText("￥" + UserShell.getInstance().getUserMoneyStr());

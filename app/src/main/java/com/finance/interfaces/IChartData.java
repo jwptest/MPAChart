@@ -10,12 +10,7 @@ import com.github.mikephil.charting.data.Entry;
  */
 public interface IChartData extends IDestroy {
 
-    IChartData onInit();
-
     void onResume(String type);
-
-    void onStop();
-
     //刷新期号
     void updateIssue(ProductEntity productEntity, IssueEntity issueEntity);
 
