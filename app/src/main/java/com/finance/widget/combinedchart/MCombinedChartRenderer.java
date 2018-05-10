@@ -35,6 +35,7 @@ public class MCombinedChartRenderer extends DataRenderer {
     protected List<DataRenderer> mRenderers = new ArrayList<DataRenderer>(5);
 
     protected WeakReference<MCombinedChart> mChart;
+    private MLineChartRenderer mMLineChartRenderer;
 
     public MCombinedChartRenderer(MCombinedChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
@@ -69,7 +70,8 @@ public class MCombinedChartRenderer extends DataRenderer {
                     break;
                 case LINE:
                     if (chart.getLineData() != null) {
-                        mRenderers.add(new MLineChartRenderer(chart, mAnimator, mViewPortHandler));
+                        mMLineChartRenderer = new MLineChartRenderer(chart, mAnimator, mViewPortHandler);
+                        mRenderers.add(mMLineChartRenderer);
                     }
                     break;
                 case CANDLE:
@@ -171,4 +173,7 @@ public class MCombinedChartRenderer extends DataRenderer {
         this.mRenderers = renderers;
     }
 
+    public MLineChartRenderer getLineChartRenderer() {
+        return mMLineChartRenderer;
+    }
 }

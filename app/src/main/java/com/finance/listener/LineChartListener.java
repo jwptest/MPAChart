@@ -2,6 +2,7 @@ package com.finance.listener;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.finance.R;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
@@ -394,11 +394,15 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void initView() {
         if (ivIcon != null) {
             ViewUtil.setViewVisibility(ivIcon, View.VISIBLE);
-            //加载gif
+//            //加载gif
+//            Glide.with(mActivity)
+//                    .load(R.drawable.new_one_icon)
+//                    .asGif()
+//                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//                    .into(ivIcon);
             Glide.with(mActivity)
-                    .load(R.drawable.new_one_icon)
-                    .asGif()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .load(R.drawable.current_icon)
+                    .dontAnimate()
                     .into(ivIcon);
         }
         if (vEndLine != null && tvEndLineDes != null /*&& ivEndLineIcon != null*/) {//截止
@@ -501,6 +505,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         currentDataSet = dataSet;
         if (mView.isRefrshChartData()) return;
         MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
+        Log.d("123", "completion: " + (long) currentEntry.getX());
+        Log.d("123", "open: " + (long) openEntry.getX());
+        Log.d("123", "Xmax: " + mXAxis.getAxisMaximum());
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;
         //刷新购买点的位置

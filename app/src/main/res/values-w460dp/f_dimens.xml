@@ -271,9 +271,9 @@
 	<dimen name="home_puy_item_text_width">49.07dp</dimen>
 	<dimen name="home_puy_item_icon_width">18.40dp</dimen>
 	<dimen name="home_puy_item_icon_left">-2.45dp</dimen>
-	<dimen name="home_end_money_paddLeft">22.08dp</dimen>
+	<dimen name="home_end_money_paddLeft">24.53dp</dimen>
 	<dimen name="home_end_line_bottom">36.80dp</dimen>
-	<dimen name="home_titleBar_height">73.60dp</dimen>
+	<dimen name="home_titleBar_height">49.07dp</dimen>
 	<dimen name="home_centre_height">36.80dp</dimen>
 	<dimen name="home_TransverseContrast_width">77.28dp</dimen>
 	<dimen name="home_TransverseContrast_height">28.21dp</dimen>

@@ -3,6 +3,7 @@ package com.finance.linechartdata;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
 
 import com.finance.R;
@@ -40,6 +41,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected ProductEntity productEntity;//当前产品
     protected IssueEntity issueEntity;//当前期号
     protected long duration = 2000;//动画执行时间
+    protected int minsPacing = -1;//如果为-1折不介入绘制
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
         this.mContext = context;
@@ -49,6 +51,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         this.mXAxis = mChart.getXAxis();
         this.mChartDatas = new ArrayList<>(100);
         this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_30);
+        minsPacing = ViewConfiguration.get(context).getScaledTouchSlop();
         this.mChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -59,6 +62,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         });
         combinedData = new CombinedData();
         onInit();
+
     }
 
     @Override

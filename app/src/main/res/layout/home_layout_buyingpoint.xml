@@ -14,15 +14,17 @@
         android:layout_centerVertical="true"
         tools:tooltipText="水平线"/>
 
-    <TextView
+    <com.finance.widget.roundview.RoundTextView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/tvBuyingMoney"
         android:layout_width="@dimen/home_puy_item_text_width"
         android:layout_height="match_parent"
-        android:background="@drawable/rise_bg"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/home_end_money_paddLeft"
         android:text="100"
         android:textColor="@color/white"
+        app:rv_cornerRadius="@dimen/dp_20"
+        app:rv_backgroundColor="#EE4F3C"
         android:textSize="@dimen/sp_11"/>
 
     <ImageView

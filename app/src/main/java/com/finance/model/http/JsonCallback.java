@@ -56,7 +56,7 @@ public abstract class JsonCallback<T> extends BaseCallback {
             else t = null;
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
             t = null;
             return;

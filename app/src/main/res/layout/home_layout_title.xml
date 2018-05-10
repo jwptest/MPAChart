@@ -13,7 +13,7 @@
         android:layout_width="@dimen/home_left_menu_width"
         android:layout_height="@dimen/home_titleBar_height"
         android:clickable="true"
-        android:padding="@dimen/dp_15"
+        android:padding="@dimen/dp_3"
         android:scaleType="centerInside"
         android:src="@drawable/exit_login"
         tools:tooltipText="退出登录"/>
@@ -139,7 +139,6 @@
         android:layout_height="@dimen/home_titleBar_height"
         android:layout_marginLeft="@dimen/dp_5"
         android:layout_marginRight="@dimen/dp_10"
-        android:gravity="center_vertical"
         android:text="用户名称"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_12"/>
@@ -148,19 +147,15 @@
         android:id="@+id/tvMoney"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/home_titleBar_height"
-        android:gravity="center_vertical"
         android:text="￥8888.00"
         android:textColor="@color/red"
         android:textSize="@dimen/sp_12"/>
 
     <ImageView
         android:id="@+id/ivRefresh"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/home_titleBar_height"
         android:layout_height="@dimen/home_titleBar_height"
-        android:paddingBottom="@dimen/dp_15"
-        android:paddingLeft="@dimen/dp_10"
-        android:paddingRight="@dimen/dp_10"
-        android:paddingTop="@dimen/dp_15"
+        android:padding="@dimen/dp_7"
         android:scaleType="centerInside"
         android:src="@drawable/shuxin"
         tools:tooltipText="刷新"/>

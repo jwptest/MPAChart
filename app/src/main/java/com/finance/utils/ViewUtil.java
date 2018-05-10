@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.PurchaseViewEntity;
+import com.finance.widget.roundview.RoundTextView;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -52,17 +53,18 @@ public class ViewUtil {
      */
     public static PurchaseViewEntity getPurchase(Context context, String text, boolean isAdd) {
         View view = LayoutInflater.from(context).inflate(R.layout.home_layout_buyingpoint, null);
-        View line = view.findViewById(R.id.line);
-        TextView tvBuyingMoney = view.findViewById(R.id.tvBuyingMoney);
+        View line = view.findViewById(R.id.line);//#20CF56跌，涨#EE4F3C
+        RoundTextView tvBuyingMoney = view.findViewById(R.id.tvBuyingMoney);
         ImageView ivZD = view.findViewById(R.id.ivZD);
         tvBuyingMoney.setText(text);
         if (isAdd) {
             line.setBackgroundColor(Color.parseColor("#EE4F3C"));
-            tvBuyingMoney.setBackgroundResource(R.drawable.rise_bg);
+            tvBuyingMoney.getDelegate().setBackgroundColor(Color.parseColor("#EE4F3C"));
             ivZD.setImageResource(R.drawable.rise_icon);
         } else {
             line.setBackgroundColor(Color.parseColor("#20CF56"));
-            tvBuyingMoney.setBackgroundResource(R.drawable.fall_bg);
+//            tvBuyingMoney.setBackgroundResource(R.drawable.fall_bg);
+            tvBuyingMoney.getDelegate().setBackgroundColor(Color.parseColor("#20CF56"));
             ivZD.setImageResource(R.drawable.fall_icon);
         }
         PurchaseViewEntity viewEntity = new PurchaseViewEntity();

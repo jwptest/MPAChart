@@ -2,14 +2,18 @@ package com.finance.widget.combinedchart;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.CountDownTimer;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
+import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+
+import static android.R.attr.min;
 
 /**
  * 绘制走势图控件
@@ -20,8 +24,106 @@ public class MLineChartRenderer extends LineChartRenderer {
         super(chart, animator, viewPortHandler);
     }
 
+    private Entry previous;//当前绘制的最后一个
+    //    private boolean isComplete = true;//是否绘制完成
+    private int startIndex;//开始监听的指数
+    private int noDrawingCount = 0;//未绘制的点数
+    private int minsPacing = -1;//最小介入绘制距离
+    private int maxTimer = 100;//最长处理时间
+    private int minTimer = 100;//处理的间隔最小时长
+    private boolean isCountDown = false;//是否倒计时
+
     @Override
     protected void drawCubicBezier(ILineDataSet dataSet) {
+        int size = mXBounds.range + mXBounds.min;
+        drawCubicBezier(dataSet, size);
+//        int size = mXBounds.range + mXBounds.min;
+//        if (isCountDown) {
+//            //在倒计时
+//            noDrawingCount++;
+//            drawCubicBezier(dataSet, size - noDrawingCount);
+//            return;
+//        }
+//        if (previous == null || maxTimer / minTimer < 1 || mXBounds.range < 1 || minsPacing <= 0) {
+//            reduce(1);
+//            drawCubicBezier(dataSet, size);
+//            return;
+//        }
+//        size = size - noDrawingCount;//减去还没有绘制的
+//        Entry cur = dataSet.getEntryForIndex(size);
+//        if (previous == cur) {
+//            reduce(1);
+//            drawCubicBezier(dataSet, size);
+//            return;
+//        }
+//        if (cur.getX() < previous.getX()) {
+//            reduce(1);
+//            drawCubicBezier(dataSet, size);
+//            return;
+//        }
+//        MPPointD prevPoin = mChart.getTransformer(dataSet.getAxisDependency()).getPixelForValues(previous.getX(), previous.getY());
+//        MPPointD curPoin = mChart.getTransformer(dataSet.getAxisDependency()).getPixelForValues(cur.getX(), cur.getY());
+//        float abX = (float) Math.abs(prevPoin.x - curPoin.x);
+//        float abY = (float) Math.abs(prevPoin.y - curPoin.y);
+//        if (abX - minsPacing < minsPacing && abY - minsPacing < minsPacing) {//小于2倍不介入处理
+//            reduce(1);
+//            //不需要介入绘制处理
+//            drawCubicBezier(dataSet, size);
+//            return;
+//        }
+//        //大于2倍介入处理
+//        int b;
+//        if (abX >= abY) {
+//            b = (int) (abX / minsPacing);
+//        } else {
+//            b = (int) (abY / minsPacing);
+//        }
+//        int t = maxTimer / minTimer;
+//        b = Math.min(b, t);
+//        float sx = (cur.getX() - previous.getX()) / b;
+//        float sy = (cur.getY() - previous.getY()) / b;
+//        cur.setX(previous.getX());
+//        cur.setY(previous.getY());
+//        reduce(1);
+//        startCountDown(dataSet, b * minTimer, size, cur, sx, sy);
+    }
+
+    private CountDownTimer timer;//倒计时
+
+    //开始刷新
+    private void startCountDown(ILineDataSet dataSet, long l, int size, Entry cur, float sx, float sy) {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+            isCountDown = false;
+        }
+        isCountDown = true;
+        timer = new CountDownTimer(l, minTimer) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                cur.setX(cur.getX() + sx);
+                cur.setY(cur.getY() + sy);
+                drawCubicBezier(dataSet, size);
+            }
+
+            @Override
+            public void onFinish() {
+                isCountDown = false;
+                previous = cur;
+                drawCubicBezier(dataSet);
+            }
+        };
+        timer.start();
+    }
+
+    private void reduce(int count) {
+        noDrawingCount -= count;
+        if (noDrawingCount < 0)
+            noDrawingCount = 0;
+    }
+
+    //执行绘制
+    private void drawCubicBezier(ILineDataSet dataSet, int size) {
         float phaseY = mAnimator.getPhaseY();
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
         mXBounds.set(mChart, dataSet);
@@ -47,19 +149,21 @@ public class MLineChartRenderer extends LineChartRenderer {
 
             // let the spline start
             cubicPath.moveTo(cur.getX(), cur.getY() * phaseY);
-            int size = mXBounds.range + mXBounds.min;
+//            int size = mXBounds.range + mXBounds.min;
             int step = getStep(size);
             if (step > 0) {
                 boolean p = true;
-                for (int j = mXBounds.min + 1; j <= size; j += step) {
+                for (int j = mXBounds.min + 1; j <= size; j++) {
+                    prevPrev = prev;
+                    prev = cur;
+                    cur = nextIndex == j ? next : dataSet.getEntryForIndex(j);
+                    if (cur.getData() == null) {//没有购买的点
+                        if (j % step != 0 && j != size) continue;
+                    }
                     if (p && j + step > size) {
                         j = size - step;
                         p = false;
                     }
-                    prevPrev = prev;
-                    prev = cur;
-                    cur = nextIndex == j ? next : dataSet.getEntryForIndex(j);
-
                     nextIndex = j + 1 < dataSet.getEntryCount() ? j + 1 : j;
                     next = dataSet.getEntryForIndex(nextIndex);
 
@@ -90,6 +194,9 @@ public class MLineChartRenderer extends LineChartRenderer {
                             cur.getX() - curDx,
                             (cur.getY() - curDy) * phaseY, cur.getX(), cur.getY() * phaseY);
                 }
+            }
+            if (next != null && startIndex != -1 && next.getX() > startIndex) {
+                previous = next;
             }
         }
         // if filled is enabled, close the path
@@ -253,4 +360,12 @@ public class MLineChartRenderer extends LineChartRenderer {
         return length / 120;
     }
 
+    public void setDrawIntervention(int startIndex, int minsPacing, int maxTimer) {
+        this.startIndex = startIndex;
+        this.minsPacing = minsPacing;
+        this.maxTimer = maxTimer;
+        previous = null;
+        if (maxTimer < minTimer)
+            maxTimer = minTimer;
+    }
 }

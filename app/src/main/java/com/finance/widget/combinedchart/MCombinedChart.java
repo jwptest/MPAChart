@@ -19,9 +19,6 @@ import com.github.mikephil.charting.highlight.CombinedHighlighter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.CombinedDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.github.mikephil.charting.renderer.YAxisRenderer;
-
-import java.lang.ref.WeakReference;
 
 /**
  * 走势图控件
@@ -313,6 +310,11 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
 
     public void setOnDrawCompletion(OnDrawCompletion drawCompletion) {
         this.drawCompletion = drawCompletion;
+    }
+
+    public void setDrawIntervention(int startIndex, int minsPacing, int maxTimer) {
+        if (mMCombinedChartRenderer != null && mMCombinedChartRenderer.getLineChartRenderer() != null)
+            mMCombinedChartRenderer.getLineChartRenderer().setDrawIntervention(startIndex, minsPacing, maxTimer);
     }
 
 }

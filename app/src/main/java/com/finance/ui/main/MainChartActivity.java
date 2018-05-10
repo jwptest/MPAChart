@@ -40,6 +40,7 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
 import com.finance.ui.dialog.OpenPrizeDialog;
+import com.finance.ui.dialog.StartDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -172,9 +173,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         initView();
         //初始化参数
         PurchaseViewEntity.initValue(this);
-//        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
-//        mDialog.show();
-        mMainPresenter.getProduct();
+        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
+        mDialog.show();
+//        mMainPresenter.getProduct();
         int a = ViewConfiguration.get(mActivity).getScaledDoubleTapSlop();//双击的最大间距
         int b = ViewConfiguration.get(mActivity).getScaledTouchSlop();//移动的最小距离
         Log.d("123", "最小滑动距离:" + a + ",:" + b);
