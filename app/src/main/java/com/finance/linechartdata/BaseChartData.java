@@ -89,14 +89,23 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //刷新X轴显示的最大值
     protected void setAxisMaximum() {
-        long trimL = getLengthTime() / Constants.ISSUEINTERVAL;
-        if (trimL <= 0) return;
-        //有效绘制的X轴条数
-        int chartWidth = mChartWidth - dpPxRight;
-        float itemWidth = chartWidth / trimL;
-        //不会绘制的X轴条数
-        int addItems = (int) (dpPxRight / itemWidth);
-        mXAxis.setAxisMaximum(trimL + addItems);
+//        long trimL = getLengthTime() / Constants.ISSUEINTERVAL;
+//        if (trimL <= 0) return;
+//        //有效绘制的X轴条数
+//        int chartWidth = mChartWidth - dpPxRight;
+//        float itemWidth = chartWidth / trimL;
+//        //不会绘制的X轴条数
+//        int addItems = (int) (dpPxRight / itemWidth);
+//        mXAxis.setAxisMaximum(trimL + addItems);
+
+        //绘制完成回调
+        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
+        float labelX = mChart.getFixedPosition();
+        float labelWidth = mChart.getLabelWidth();
+        float endX = labelX - labelWidth - dpPxRight;
+        float itemWidth = endX / X;
+        float addItem = (labelWidth + dpPxRight) / itemWidth;
+        mXAxis.setAxisMaximum(X + addItem);
     }
 
     @Override
@@ -155,10 +164,11 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected void startAddDataAnimation(ArrayList<T> entitys) {
         final int maxIndex = entitys.size() - 1;
         if (maxIndex < 0) return;
-        setAxisMaximum();//刷新X周显示条数
         isAnimation = true;
-        addCount = 0;
+        addCount = 1;
         mChartDatas.clear();
+        mChartDatas.add(entitys.get(0));
+        setAxisMaximum();//刷新X周显示条数
         staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {

@@ -2,6 +2,7 @@ package com.finance.linechartdata;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.finance.App;
 import com.finance.common.Constants;
@@ -22,12 +23,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.gson.JsonElement;
-import com.google.gson.internal.ConstructorConstructor;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import static com.finance.utils.TimerUtil.timerToLong;
 
@@ -56,11 +53,12 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     public Entry getEntry(String trim) {
         if (mChartDatas == null || mChartDatas.isEmpty()) return null;
         long trimL1 = timerToLong(trim);
-//        long trimL2 = timerToLong(((IndexMarkEntity) mChartDatas.get(0)).getTime());
-//        trimL1 = trimL1 - trimL2;
-//        int x = (int) (trimL1 / Constants.ISSUEINTERVAL);
-//        return new Entry(IndexMarkEntity.getETimeToUTC(trimL1), 0);
-        return new Entry(Constants.getIndexX(trimL1), 0);
+        long trimL2 = timerToLong(((IndexMarkEntity) mChartDatas.get(0)).getTime());
+//        long trimL2 = timerToLong(startTimer);
+        trimL1 = trimL1 - trimL2;
+        int x = (int) (trimL1 / Constants.ISSUEINTERVAL);
+        return new Entry(x, 0);
+//        return new Entry(Constants.getIndexX(trimL1), 0);
     }
 
     @Override
@@ -164,7 +162,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     @Override
     protected long getLengthTime() {
-        return issueLengthTime;
+//        return issueLengthTime;
+        return 0;
     }
 
     //添加历史数据
@@ -181,9 +180,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         isDraw = false;
         //刷新时长长度
 //        long timer1 = (long) entries.get(0).getX();
-        long timer1 = ((IndexMarkEntity) entries.get(0)).getTime();
-        long timer2 = timerToLong(issueEntity.getBonusTime());
-        issueLengthTime = timer2 - timer1;
+//        long timer1 = ((IndexMarkEntity) entries.get(0)).getTime();
+//        long timer2 = timerToLong(issueEntity.getBonusTime());
+//
+//        Log.d("123", "addHistoryDatas: " + TimerUtil.timerFormatStr(timer1));
+//        Log.d("123", "addHistoryDatas2: " + TimerUtil.timerFormatStr(timer2));
+//
+//        issueLengthTime = timer2 - timer1;
         startAddDataAnimation(entries);
     }
 
@@ -192,6 +195,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
             for (IndexMarkEntity entity : mIndexMarkEntities) {
                 //更新下标
+                entity.setX(entries.size());
                 entries.add(entity);
             }
             mIndexMarkEntities.clear();
@@ -205,6 +209,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
             mIndexMarkEntities.add(entity);
             return;
         }
+        entity.setX(mChartDatas.size());
         mChartDatas.add(entity);
         invalidateChart();//刷新数据
     }
@@ -268,8 +273,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 //                indexStrs.add(jsonElement.getAsString());
                 return;
             }
-            final IndexMarkEntity entity = mIndexUtil.parseExponentially(jsonElement.getAsString(), Constants.INDEXDIGIT);
-            if (isStop || entity.getTime() == -1) {//断开链接
+            final IndexMarkEntity entity = mIndexUtil.parseExponentially(0, jsonElement.getAsString(), Constants.INDEXDIGIT);
+            if (isStop /*|| entity.getTime() == -1*/) {//断开链接
                 return;
             }
             if (entity == null) return;
@@ -298,21 +303,21 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         @Override
         public void run() {
             if (isDiscarded || mLineChartData == null) return;
-            IndexMarkEntity entity = mIndexUtil.parseExponentially(strings.get(0), Constants.INDEXDIGIT);
-            Constants.setReferenceX(entity.getTime());//更新基准下标
+//            IndexMarkEntity entity = mIndexUtil.parseExponentially(strings.get(0), Constants.INDEXDIGIT);
+//            Constants.setReferenceX(entity.getTime());//更新基准下标
 //            添加时时推送的指数
             if (mLineChartData.mCallback != null && mLineChartData.mCallback.indexStrs != null) {
                 strings.addAll(mLineChartData.mCallback.indexStrs);
                 mLineChartData.mCallback.indexStrs.clear();
             }
-            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(strings, Constants.INDEXDIGIT);
+            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(0, strings, Constants.INDEXDIGIT);
 
-            Collections.sort(entities, new Comparator<IndexMarkEntity>() {
-                @Override
-                public int compare(IndexMarkEntity o1, IndexMarkEntity o2) {
-                    return o1.getTime() > o2.getTime() ? 1 : -1;
-                }
-            });
+//            Collections.sort(entities, new Comparator<IndexMarkEntity>() {
+//                @Override
+//                public int compare(IndexMarkEntity o1, IndexMarkEntity o2) {
+//                    return o1.getTime() > o2.getTime() ? 1 : -1;
+//                }
+//            });
 
             if (isDiscarded || mLineChartData == null) return;
             mLineChartData.isTimer = true;

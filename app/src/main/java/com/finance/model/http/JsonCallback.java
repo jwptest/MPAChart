@@ -23,6 +23,8 @@ public abstract class JsonCallback<T> extends BaseCallback {
     private Class<T> clazz;
     private Type type;
     private T t;
+    private ResponseEntity mEntity;
+    private boolean isInvalid = false;
 
     public JsonCallback(Class<T> clazz) {
         this.clazz = clazz;
@@ -38,6 +40,7 @@ public abstract class JsonCallback<T> extends BaseCallback {
 
     @Override
     public void onMessageReceived(JsonElement jsonElement) {
+        if (isInvalid) return;//当前对象已经完成一次请求
         //运行在子线程
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
@@ -61,19 +64,23 @@ public abstract class JsonCallback<T> extends BaseCallback {
             t = null;
             return;
         }
+        if (t instanceof ResponseEntity) {
+            mEntity = (ResponseEntity) t;
+            if (mEntity.getStatus() == Constants.DEFAULTCODE) return;
+        }
+        if (isInvalid) return;//当前对象已经完成一次请求
+        isInvalid = true;
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (t instanceof ResponseEntity) {
-                    ResponseEntity entity = (ResponseEntity) t;
-                    if (entity.getStatus() == Constants.DEFAULTCODE) return;
-                    if (entity.getStatus() != Constants.SUCCESSCODE) {
-                        failed(entity.getSourceCode(), entity.getMessage(), false);
+                if (mEntity != null) {
+                    if (mEntity.getStatus() != Constants.SUCCESSCODE) {
+                        failed(mEntity.getSourceCode(), mEntity.getMessage(), false);
                         return;
                     }
-                    Constants.SERVERCURRENTTIMER = TimerUtil.timerToLong(entity.getCurrDateTime());
+                    Constants.SERVERCURRENTTIMER = TimerUtil.timerToLong(mEntity.getCurrDateTime());
                     //成功
-                    successed(entity.getSourceCode(), entity.getMessage(), false, t);
+                    successed(mEntity.getSourceCode(), mEntity.getMessage(), false, t);
                     return;
                 }
                 successed(0, "请求成功", false, t);

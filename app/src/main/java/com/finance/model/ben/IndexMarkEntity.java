@@ -1,6 +1,5 @@
 package com.finance.model.ben;
 
-import com.finance.common.Constants;
 import com.github.mikephil.charting.data.Entry;
 
 import java.math.BigDecimal;
@@ -15,33 +14,24 @@ import java.util.TimeZone;
 public class IndexMarkEntity extends Entry {
 
     private int prod;
-    private long time;//时间戳
+    private String time;//时间戳
     private int isUpdatePoint;
     private String id;
 
-    public IndexMarkEntity(int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit, String data) {
+    public IndexMarkEntity(int x, int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit, String data) {
         this.prod = prod;
         this.isUpdatePoint = isUpdatePoint;
         this.id = data;
-        this.time = getTimeMillis(time);
-        setX(Constants.getIndexX(this.time));//将时间转换为下标
+        this.time = formatTime(time);
+        setX(x);//将时间转换为下标
         setY(managerExponentially((float) exponentially, decimalPointIndex, digit));
     }
-
-//    public IndexMarkEntity(int x, int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit, String data) {
-//        this.prod = prod;
-//        this.isUpdatePoint = isUpdatePoint;
-//        this.id = data;
-//        this.time = getTimeMillis(time);
-//        setX(getETimeToUTC(time));
-//        setY(managerExponentially((float) exponentially, decimalPointIndex, digit));
-//    }
 
     public int getProd() {
         return this.prod;
     }
 
-    public long getTime() {
+    public String getTime() {
         return time;
     }
 
@@ -85,22 +75,23 @@ public class IndexMarkEntity extends Entry {
         time -= 621355968000000000L;
         long str = time / 10000L;
         time = Long.parseLong(String.valueOf(str), 10);
-//        time = getETimeToUTC(time);
-//        getSimpleDateFormat();
-//        try {
-//            return sdf.parse(sdf.format(time)).getTime();
-//        } catch (ParseException | IllegalArgumentException e) {
-//            e.printStackTrace();
-//        }
+        time = getETimeToUTC(time);
+        getSimpleDateFormat();
+        try {
+            time = sdf.parse(sdf.format(time)).getTime();
+        } catch (ParseException | IllegalArgumentException e) {
+            e.printStackTrace();
+            time = -1;
+        }
         return time;
     }
 
     public static String formatTime(long time) {
 //        System.out.println(time);
-//        time -= 621355968000000000L;
-//        long str = time / 10000L;
-//        time = Long.parseLong(String.valueOf(str), 10);
-//        time -= 28800000L;
+        time -= 621355968000000000L;
+        long str = time / 10000L;
+        time = Long.parseLong(String.valueOf(str), 10);
+        time -= 28800000L;
         getSimpleDateFormat();
         String sd = sdf.format(Long.valueOf(time));
         return sd;
@@ -108,6 +99,7 @@ public class IndexMarkEntity extends Entry {
 
     private static SimpleDateFormat getSimpleDateFormat() {
         if (sdf == null) {
+//            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.FFF");
             sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         }

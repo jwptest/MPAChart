@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import com.finance.base.BaseActivity;
 import com.finance.common.Constants;
 import com.finance.common.UserShell;
 import com.finance.event.EventBus;
+import com.finance.event.IndexEvent;
+import com.finance.event.OpenPrizeEvent;
 import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
@@ -40,10 +43,10 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
 import com.finance.ui.dialog.OpenPrizeDialog;
-import com.finance.ui.dialog.StartDialog;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
+import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 
@@ -133,6 +136,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     TextView tvProfit;
     @BindView(R.id.tvInterestRate)
     TextView tvInterestRate;
+    @BindView(R.id.rlPurchaseView)
+    ViewGroup rlPurchaseView;
+    //
+
     //    @BindView(R.id.llRise)
 //    LinearLayout llRise;
 //    @BindView(R.id.llFall)
@@ -173,9 +180,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         initView();
         //初始化参数
         PurchaseViewEntity.initValue(this);
-        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
-        mDialog.show();
-//        mMainPresenter.getProduct();
+//        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
+//        mDialog.show();
+        mMainPresenter.getProduct();
         int a = ViewConfiguration.get(mActivity).getScaledDoubleTapSlop();//双击的最大间距
         int b = ViewConfiguration.get(mActivity).getScaledTouchSlop();//移动的最小距离
         Log.d("123", "最小滑动距离:" + a + ",:" + b);
@@ -234,7 +241,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setRightIAxisValueFormatter(mRightAxisValue)
                 .setXIAxisValueFormatter(mXAxisValue)
                 .initLineChart();
-        chartListener = new LineChartListener(mActivity, this, lineChart)
+        chartListener = new LineChartListener(mActivity, rlPurchaseView, this, lineChart)
                 .initListener()
                 .setIvIcon(ivIcon)
                 .setEndLine(vEndLine)
@@ -286,6 +293,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private void updateIssue() {
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
         chartListener.updateIssue(currentIssue);//更新期号
+        chartListener.updateProduct(currentProduct);//更新产品
         EventDistribution.getInstance().issue(currentIssue);
     }
 
@@ -356,8 +364,21 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Subscribe
     public void onEvent(UserLoginEvent event) {
+        if (event == null) return;
         mMainPresenter.getProduct();//获取产品信息
         initViewUser();
+    }
+
+    @Subscribe
+    public void onEvent(IndexEvent event) {
+        if (event == null) return;//获取开奖指数事件
+        mMainPresenter.getOpenIndex(currentProduct.getProductId(), currentIssue.getIssueName(), TimerUtil.formatStr(currentIssue.getBonusTime()));
+    }
+
+    @Subscribe
+    public void onEvent(OpenPrizeEvent event) {
+        if (event == null) return;//获取开奖结果事件
+
     }
 
     private void initViewUser() {
@@ -374,6 +395,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     private void initViewProduct(ProductEntity entity) {
+        if (entity == null || entity == currentProduct) return;
+        //清空开奖时间
         tvMoneyType.setText(entity.getProductName());
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
@@ -470,11 +493,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IndexMarkEntity markEntity = getIndexMarkEntity(entity.getHexIndexMark());
         if (markEntity == null) return;
         int money = (int) entity.getMoney();
+        markEntity.setData(entity.getBonusHexIndexMark());//设置当前点指数
         PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", entity.isResult());
-        viewEntity.setIndexMark(entity.getHexIndexMark());
-        viewEntity.setMoney(money);
-        viewEntity.setxValue(markEntity.getX());
+        viewEntity.setIndexMark(entity.getHexIndexMark());//购买指数
+        viewEntity.setMoney(money);//设置金额
+        viewEntity.setxValue(markEntity.getX());//设置坐标
         viewEntity.setyValue(markEntity.getY());
+        viewEntity.setOpenTimer(TimerUtil.timerToLong(entity.getTicks()));//设置开奖时间
+        viewEntity.setProductId(entity.getProductId());//设置产品
         chartListener.addPurchaseView(viewEntity);
     }
 
@@ -515,9 +541,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     public void onFinish() {
-        //结束开奖倒计时
-        //获取开奖结果
-        chartListener.clearPurchaseView();
+//        //结束开奖倒计时
+//        //获取开奖结果
+//        chartListener.clearPurchaseView();
     }
 
 

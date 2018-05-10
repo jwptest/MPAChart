@@ -41,11 +41,28 @@ public class PurchaseViewEntity {
     private int money;//当前点购买的金额
     private String indexMark;//购买指数
     private boolean isDisplay = false;//是否显示在布局上
-    private boolean isShow = true;//是否需要显示在布局上
+//    private boolean isShow = true;//是否需要显示在布局上
     private RelativeLayout.LayoutParams mRootParams;
     private RelativeLayout.LayoutParams mMoneyParams;
     private RelativeLayout.LayoutParams mIconParams;
+    private long openTimer;//开奖时间
+    private int ProductId;//购买的产品Id
 
+    public long getOpenTimer() {
+        return openTimer;
+    }
+
+    public void setOpenTimer(long openTimer) {
+        this.openTimer = openTimer;
+    }
+
+    public int getProductId() {
+        return ProductId;
+    }
+
+    public void setProductId(int productId) {
+        ProductId = productId;
+    }
 
     public String getIndexMark() {
         return (indexMark != null) ? indexMark : "";
@@ -55,13 +72,13 @@ public class PurchaseViewEntity {
         this.indexMark = indexMark;
     }
 
-    public boolean isShow() {
-        return isShow;
-    }
-
-    public void setShow(boolean show) {
-        isShow = show;
-    }
+//    public boolean isShow() {
+//        return isShow;
+//    }
+//
+//    public void setShow(boolean show) {
+//        isShow = show;
+//    }
 
     public RelativeLayout.LayoutParams getIconParams() {
         return mIconParams;

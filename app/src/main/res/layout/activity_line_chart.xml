@@ -31,85 +31,92 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-            <View
-                android:id="@+id/vEndLine"
-                android:layout_width="@dimen/dp_0.6"
-                android:layout_height="match_parent"
-                android:background="#696458"
-                tools:tooltipText="截止线"/>
-
-            <TextView
-                android:id="@+id/tvEndLineDes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/dp_3"
-                android:layout_marginTop="@dimen/home_line_describe_top"
-                android:rotation="90"
-                android:text="截止线描述"
-                android:textColor="#696458"
-                android:textSize="@dimen/sp_10"/>
-
-            <!--<ImageView-->
-            <!--android:id="@+id/ivEndLineIcon"-->
-            <!--android:layout_width="@dimen/dp_25"-->
-            <!--android:layout_height="@dimen/dp_25"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_marginBottom="@dimen/home_end_line_bottom"-->
-            <!--android:scaleType="centerInside"-->
-            <!--android:src="@drawable/end_line_icon"/>-->
-
-            <View
-                android:id="@+id/vSettlementLine"
-                android:layout_width="@dimen/dp_0.6"
-                android:layout_height="match_parent"
-                android:background="#D43625"
-                tools:tooltipText="结算线"/>
-
-            <TextView
-                android:id="@+id/tvSettlementDes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/dp_3"
-                android:layout_marginTop="@dimen/home_line_describe_top"
-                android:rotation="90"
-                android:text="结算线描述"
-                android:textColor="#D43625"
-                android:textSize="@dimen/sp_10"/>
-
-            <!--<ImageView-->
-            <!--android:id="@+id/ivSettlementIcon"-->
-            <!--android:layout_width="@dimen/dp_25"-->
-            <!--android:layout_height="@dimen/dp_25"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_marginBottom="@dimen/home_end_line_bottom"-->
-            <!--android:scaleType="centerInside"-->
-            <!--android:src="@drawable/settlement_line_icon"/>-->
-
-            <View
-                android:id="@+id/vTransverseContrast"
+            <RelativeLayout
+                android:id="@+id/rlPurchaseView"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_0.6"
-                android:background="#D4C495"
-                tools:tooltipText="横向对比线"/>
+                android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/ivIcon"
-                android:layout_width="@dimen/dp_80"
-                android:layout_height="@dimen/dp_80"
-                android:scaleType="centerInside"
-                tools:tooltipText="当前点图标"/>
+                <View
+                    android:id="@+id/vEndLine"
+                    android:layout_width="@dimen/dp_0.6"
+                    android:layout_height="match_parent"
+                    android:background="#696458"
+                    tools:tooltipText="截止线"/>
 
-            <TextView
-                android:id="@+id/tvTransverseContrastDes"
-                android:layout_width="@dimen/home_TransverseContrast_width"
-                android:layout_height="@dimen/home_TransverseContrast_height"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/tvtransversecontrastdes_icon"
-                android:gravity="center"
-                android:paddingLeft="@dimen/dp_10"
-                android:text="横向对比"
-                android:textColor="#444444"
-                android:textSize="11sp"/>
+                <TextView
+                    android:id="@+id/tvEndLineDes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dp_3"
+                    android:layout_marginTop="@dimen/home_line_describe_top"
+                    android:rotation="90"
+                    android:text="截止线描述"
+                    android:textColor="#696458"
+                    android:textSize="@dimen/sp_10"/>
+
+                <!--<ImageView-->
+                <!--android:id="@+id/ivEndLineIcon"-->
+                <!--android:layout_width="@dimen/dp_25"-->
+                <!--android:layout_height="@dimen/dp_25"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_marginBottom="@dimen/home_end_line_bottom"-->
+                <!--android:scaleType="centerInside"-->
+                <!--android:src="@drawable/end_line_icon"/>-->
+
+                <View
+                    android:id="@+id/vSettlementLine"
+                    android:layout_width="@dimen/dp_0.6"
+                    android:layout_height="match_parent"
+                    android:background="#D43625"
+                    tools:tooltipText="结算线"/>
+
+                <TextView
+                    android:id="@+id/tvSettlementDes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dp_3"
+                    android:layout_marginTop="@dimen/home_line_describe_top"
+                    android:rotation="90"
+                    android:text="结算线描述"
+                    android:textColor="#D43625"
+                    android:textSize="@dimen/sp_10"/>
+
+                <!--<ImageView-->
+                <!--android:id="@+id/ivSettlementIcon"-->
+                <!--android:layout_width="@dimen/dp_25"-->
+                <!--android:layout_height="@dimen/dp_25"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_marginBottom="@dimen/home_end_line_bottom"-->
+                <!--android:scaleType="centerInside"-->
+                <!--android:src="@drawable/settlement_line_icon"/>-->
+
+                <View
+                    android:id="@+id/vTransverseContrast"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_0.6"
+                    android:background="#D4C495"
+                    tools:tooltipText="横向对比线"/>
+
+                <TextView
+                    android:id="@+id/tvTransverseContrastDes"
+                    android:layout_width="@dimen/home_TransverseContrast_width"
+                    android:layout_height="@dimen/home_TransverseContrast_height"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/tvtransversecontrastdes_icon"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/dp_10"
+                    android:text="横向对比"
+                    android:textColor="#444444"
+                    android:textSize="11sp"/>
+
+                <ImageView
+                    android:id="@+id/ivIcon"
+                    android:layout_width="@dimen/dp_80"
+                    android:layout_height="@dimen/dp_80"
+                    android:scaleType="centerInside"
+                    tools:tooltipText="当前点图标"/>
+
+            </RelativeLayout>
 
         </RelativeLayout>
 

@@ -5,7 +5,7 @@ import android.os.CountDownTimer;
 import java.util.ArrayList;
 
 /**
- * 开奖倒计时
+ * 下一期倒计时
  */
 public class OpenCountDown {
 
@@ -29,6 +29,9 @@ public class OpenCountDown {
 
     public void startCountDown(long l) {
         stopCountDown();
+        for (ICallback callback : mICallbacks) {
+            callback.startTick();
+        }
         timer = new CountDownTimer(l, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {

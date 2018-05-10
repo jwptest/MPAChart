@@ -5,13 +5,18 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.PopupWindow;
 
+import com.finance.App;
 import com.finance.base.BasePresenter;
+import com.finance.common.Constants;
+import com.finance.event.IndexEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
 import com.finance.model.ben.ItemEntity;
+import com.finance.model.ben.OpenIndexEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
@@ -25,6 +30,7 @@ import com.finance.ui.popupwindow.IssuesPopupWindow;
 import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.ui.popupwindow.ProductPopupWindow;
 import com.finance.ui.popupwindow.RecyclerPopupWindow;
+import com.finance.utils.IndexUtil;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -144,6 +150,65 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     public void onFailed(int code, String msg, boolean isFromCache) {
                         if (mView == null || callback == null) return;
                         callback.onCallback(code, null, msg);
+                    }
+                });
+    }
+
+    //获取开奖数据
+    private void getOpenData(int ProductId, String Issue) {
+        BaseParams param = new BaseParams();
+        param.addParam("SourceCode", 210);
+        param.addParam("ProductId", ProductId);
+        param.addParam("Issue", Issue);
+        param.addParam("Second", 360);
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(200)
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(new JsonCallback<String>(String.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
+                        if (mActivity == null || mActivity.isFinishing()) return;
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (mActivity == null || mActivity.isFinishing()) return;
+                    }
+                });
+    }
+
+    @Override
+    public void getOpenIndex(final int ProductId, final String issue, String Time) {
+        BaseParams param = new BaseParams();
+        param.addParam("SourceCode", 12);
+        param.addParam("ProductId", ProductId);
+        param.addParam("Time", Time);//默认值
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(200)
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(new JsonCallback<OpenIndexEntity>(OpenIndexEntity.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, OpenIndexEntity result) {
+                        if (mActivity == null || mActivity.isFinishing()) return;
+                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
+                        if (indexEntity == null) return;
+                        App.getInstance().showErrorMsg(indexEntity.getId());//显示指数
+                        getOpenData(ProductId, issue);
+//                        if (mView == null) return;
+//                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
+//                        if (indexEntity == null) return;
+//                        mView.openIndex(result, msg);
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (mActivity == null || mActivity.isFinishing()) return;
                     }
                 });
     }

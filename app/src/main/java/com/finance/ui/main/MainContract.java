@@ -8,6 +8,7 @@ import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
+import com.finance.model.ben.OpenIndexEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
@@ -45,6 +46,8 @@ public interface MainContract {
         boolean isRefrshChartData();//是否在刷新走势图数据
 
         void placeOrder(PlaceOrderEntity entity, String msg);
+
+//        void openIndex(OpenIndexEntity entity, String msg);
     }
 
     interface Presenter extends IBasePresenter<View> {
@@ -57,6 +60,8 @@ public interface MainContract {
         void getProductIssue(int[] productIds);
 
         void getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback);
+
+        void getOpenIndex(int ProductId,String issue, String Time);
 
         HttpConnection getAlwaysIssues(int ProductId, final BaseCallback callback);
 

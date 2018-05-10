@@ -126,8 +126,8 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     public Entry getEntry(String trim) {
         if (mEntries == null || mEntries.isEmpty()) return null;
         long trimL1 = TimerUtil.timerToLong(trim);
-//        long trimL2 = TimerUtil.timerToLong(((IndexMarkEntity) mEntries.get(0)).getTime());
-        long trimL2 = ((IndexMarkEntity) mEntries.get(0)).getTime();
+        long trimL2 = TimerUtil.timerToLong(((IndexMarkEntity) mEntries.get(0)).getTime());
+//        long trimL2 = ((IndexMarkEntity) mEntries.get(0)).getTime();
 //        long trimL2 = ((IndexMarkEntity) mEntries.get(0)).getTime();
         trimL1 = trimL1 - trimL2;
         int x = (int) (trimL1 / Constants.ISSUEINTERVAL);
@@ -317,7 +317,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
                 return;
             }
             if (lineData == null) return;
-            final IndexMarkEntity entity = mIndexUtil.parseExponentially(jsonElement.getAsString(), Constants.INDEXDIGIT);
+            final IndexMarkEntity entity = mIndexUtil.parseExponentially(0,jsonElement.getAsString(), Constants.INDEXDIGIT);
             if (isStop) {//断开链接
                 stopNetwork();
                 return;
@@ -350,7 +350,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
             if (isDiscarded || mLineChartData == null) return;
 //            IndexMarkEntity entity = mIndexUtil.parseExponentially(strings.get(0), Constants.INDEXDIGIT);
 //            Constants.setReferenceX((long) entity.getX());//更新基准下标
-            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(strings, Constants.INDEXDIGIT);
+            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(0,strings, Constants.INDEXDIGIT);
             if (isDiscarded || mLineChartData == null) return;
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override

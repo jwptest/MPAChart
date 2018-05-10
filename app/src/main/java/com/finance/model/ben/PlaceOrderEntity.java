@@ -25,8 +25,16 @@ public class PlaceOrderEntity extends ResponseEntity {
      * Sign : null
      * CNYRate : 6.6155
      */
+
+    //{"OrderId":"OID-20180510213251-001","Ticks":"2018-05-10T21:34:00+08:00","Money":10.0,"OrderStatus":20,"Expects":79,
+    // "CreateTime":"2018-05-10T21:32:51.4626572+08:00","Result":true,"BonusMoney":0.0,"HexIndexMark":"6A08D5B6BD943EA1C06001237751",
+    // "BonusHexIndexMark":"0000000000000000000000000000","IsTest":true,"IssueType":0,"ProductId":106,"Issue":"00201805102587",
+    // "SubAccount":999,"TaskId":"00000000-0000-0000-0000-000000000000","MessageId":"3fc6bf1a-a7d1-4136-9ca5-5b304799b03c",
+    // "SourceCode":201,"Status":0,"Message":"购买成功","Url":null,"Sign":null,"RunTime":"0:00:00.4436998",
+    // "CurrDateTime":"2018-05-10T21:32:51.5095347+08:00","CNYRate":6.3775}
+
     private String OrderId;
-    private String Ticks;
+    private String Ticks;//开奖时间
     private double Money;//购买金额
     private int OrderStatus;
     private int Expects;
