@@ -47,6 +47,23 @@ public class PlaceOrderEntity extends ResponseEntity {
     private int ProductId;
     private String Issue;//购买的期数
     private String TaskId;
+    private String CreateTime;//订单创建时间
+
+    public boolean isTest() {
+        return IsTest;
+    }
+
+    public void setTest(boolean test) {
+        IsTest = test;
+    }
+
+    public String getCreateTime() {
+        return (CreateTime != null) ? CreateTime : "";
+    }
+
+    public void setCreateTime(String createTime) {
+        CreateTime = createTime;
+    }
 
     public String getOrderId() {
         return OrderId;
@@ -119,14 +136,6 @@ public class PlaceOrderEntity extends ResponseEntity {
 
     public void setBonusHexIndexMark(String BonusHexIndexMark) {
         this.BonusHexIndexMark = BonusHexIndexMark;
-    }
-
-    public boolean isIsTest() {
-        return IsTest;
-    }
-
-    public void setIsTest(boolean IsTest) {
-        this.IsTest = IsTest;
     }
 
     public int getIssueType() {

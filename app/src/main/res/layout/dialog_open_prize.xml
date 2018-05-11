@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llRootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dialog_open_prize_bg"
     android:orientation="horizontal"
     android:paddingLeft="@dimen/dp_30"
     android:paddingRight="@dimen/dp_30"
@@ -37,23 +37,24 @@
             style="@style/open_prize_product_value"
             android:layout_alignLeft="@+id/tvTitleType"
             android:layout_below="@+id/tvTitleType"
-            android:text="资产名称"/>
+            android:text="--"/>
 
         <TextView
             android:id="@+id/tvTitleMoneyValue"
             style="@style/open_prize_product_value"
             android:layout_alignLeft="@+id/tvTitleMoney"
             android:layout_below="@+id/tvTitleType"
-            android:text="投资"/>
+            android:text="--"/>
 
         <TextView
             android:id="@+id/tvTitleProfitValue"
             style="@style/open_prize_product_value"
             android:layout_alignLeft="@+id/tvTitleProfit"
             android:layout_below="@+id/tvTitleType"
-            android:text="收益"/>
+            android:text="--"/>
 
         <RelativeLayout
+            android:id="@+id/rlChart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/tvTitleTypeValue"

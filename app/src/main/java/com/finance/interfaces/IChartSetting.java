@@ -1,10 +1,19 @@
 package com.finance.interfaces;
 
+import com.finance.linechartview.LineChartSetting;
+import com.finance.widget.combinedchart.MCombinedChart;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+
 /**
  * MLineChart 初始化配置接口
  */
 public interface IChartSetting {
 
-    IChartSetting initLineChart();
+    IChartSetting initLineChart(MCombinedChart lineChart, boolean isOffsets);
+
+    LineChartSetting setRightIAxisValueFormatter(IAxisValueFormatter rightIAxisValueFormatter);
+
+
+    LineChartSetting setXIAxisValueFormatter(IAxisValueFormatter XIAxisValueFormatter);
 
 }

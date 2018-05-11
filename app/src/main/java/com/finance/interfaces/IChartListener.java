@@ -6,6 +6,8 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.github.mikephil.charting.data.Entry;
 
+import java.util.ArrayList;
+
 /**
  * MLineChart 事件处理
  */
@@ -22,4 +24,6 @@ public interface IChartListener extends IDestroy {
     void updateProduct(ProductEntity entity);
 
     void setIChartData(IChartData iChartData);
+
+    ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue);
 }

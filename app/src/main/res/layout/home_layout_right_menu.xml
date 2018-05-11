@@ -21,7 +21,8 @@
         android:layout_height="@dimen/dp_47"
         android:layout_marginLeft="@dimen/dp_5"
         android:layout_marginRight="@dimen/dp_5"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/ivMoneyReduce"
@@ -77,7 +78,8 @@
         android:layout_marginTop="@dimen/dp_30"
         android:text="预期收益"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_14"/>
+        android:textSize="@dimen/sp_14"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tvProfit"
@@ -108,7 +110,8 @@
         android:gravity="center"
         android:text="收益率-%"
         android:textColor="#AAFFFFFF"
-        android:textSize="@dimen/sp_12"/>
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/ivRise"

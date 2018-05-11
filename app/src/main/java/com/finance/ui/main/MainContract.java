@@ -6,12 +6,13 @@ import com.finance.base.IBaseView;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
+import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
-import com.finance.model.ben.OpenIndexEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
+import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.HttpConnection;
 
@@ -40,12 +41,18 @@ public interface MainContract {
 
         void showDynamicPopupWindow(IDismiss dismiss);
 
+        ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue);
+
         //刷新期号
         void refreshIessue();
+
+        String issueNameFormat(String issueName);//格式化期号
 
         boolean isRefrshChartData();//是否在刷新走势图数据
 
         void placeOrder(PlaceOrderEntity entity, String msg);
+
+        void openPrizeDialog(HistoryIssueEntity entity,String msg, IndexMarkEntity openIndex, int productId, String issue, String productName);
 
 //        void openIndex(OpenIndexEntity entity, String msg);
     }
@@ -61,11 +68,11 @@ public interface MainContract {
 
         void getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback);
 
-        void getOpenIndex(int ProductId,String issue, String Time);
+        void getOpenIndex(int ProductId,String productName, String issue, String Time);
 
         HttpConnection getAlwaysIssues(int ProductId, final BaseCallback callback);
 
-        void getOrderRecord();
+        void getOrderRecord(int PageSize, int Page, ICallback<OrdersEntity> callback);
 
         void getDynamicPopupWindow(ICallback<DynamicsEntity> iCallback);
 
@@ -80,6 +87,7 @@ public interface MainContract {
         void showDynamicPopWindow(android.view.View anchor, android.view.View leftView, int width, int y, IDismiss dismiss);
 
         void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark);
+
     }
 
 }

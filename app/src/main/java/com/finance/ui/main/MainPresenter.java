@@ -8,15 +8,16 @@ import android.widget.PopupWindow;
 import com.finance.App;
 import com.finance.base.BasePresenter;
 import com.finance.common.Constants;
-import com.finance.event.IndexEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
+import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
 import com.finance.model.ben.ItemEntity;
 import com.finance.model.ben.OpenIndexEntity;
+import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
@@ -155,7 +156,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     //获取开奖数据
-    private void getOpenData(int ProductId, String Issue) {
+    private void getOpenData(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName) {
         BaseParams param = new BaseParams();
         param.addParam("SourceCode", 210);
         param.addParam("ProductId", ProductId);
@@ -167,21 +168,23 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(new JsonCallback<String>(String.class) {
+                .execute(new JsonCallback<HistoryIssueEntity>(HistoryIssueEntity.class) {
                     @Override
-                    public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
-                        if (mActivity == null || mActivity.isFinishing()) return;
+                    public void onSuccessed(int code, String msg, boolean isFromCache, HistoryIssueEntity result) {
+                        if (mView == null) return;
+                        mView.openPrizeDialog(result, msg, indexEntity, ProductId, Issue, productName);
                     }
 
                     @Override
                     public void onFailed(int code, String msg, boolean isFromCache) {
-                        if (mActivity == null || mActivity.isFinishing()) return;
+                        if (mView == null) return;
+                        mView.openPrizeDialog(null, msg, indexEntity, ProductId, Issue, productName);
                     }
                 });
     }
 
     @Override
-    public void getOpenIndex(final int ProductId, final String issue, String Time) {
+    public void getOpenIndex(final int ProductId, final String productName, final String issue, String Time) {
         BaseParams param = new BaseParams();
         param.addParam("SourceCode", 12);
         param.addParam("ProductId", ProductId);
@@ -195,11 +198,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .execute(new JsonCallback<OpenIndexEntity>(OpenIndexEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, OpenIndexEntity result) {
-                        if (mActivity == null || mActivity.isFinishing()) return;
+                        if (mView == null) return;
                         IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
                         if (indexEntity == null) return;
                         App.getInstance().showErrorMsg(indexEntity.getId());//显示指数
-                        getOpenData(ProductId, issue);
+                        getOpenData(indexEntity, ProductId, issue, productName);
 //                        if (mView == null) return;
 //                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
 //                        if (indexEntity == null) return;
@@ -208,7 +211,8 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
                     @Override
                     public void onFailed(int code, String msg, boolean isFromCache) {
-                        if (mActivity == null || mActivity.isFinishing()) return;
+                        if (mView == null) return;
+                        App.getInstance().showErrorMsg(msg);
                     }
                 });
     }
@@ -230,8 +234,34 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     @Override
-    public void getOrderRecord() {
+    public void getOrderRecord(int PageSize, int Page, ICallback<OrdersEntity> iCallback) {
+        BaseParams param = new BaseParams();
+        param.addParam("SourceCode", 202);
+        param.addParam("Page", Page);
+        param.addParam("PageSize", PageSize);
+        param.addParam("ProductId", "");
+        param.addParam("ORderStatus", new int[]{20, 40});
+        param.addParam("OrderId", "");
+        param.addParam("BonusStatus", "");
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(200)
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(new JsonCallback<OrdersEntity>(OrdersEntity.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, OrdersEntity result) {
+                        if (iCallback != null)
+                            iCallback.onCallback(code, result, msg);
+                    }
 
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (iCallback != null)
+                            iCallback.onCallback(code, null, msg);
+                    }
+                });
     }
 
     @Override
@@ -331,7 +361,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void showOrderPopWindow(View anchor, View leftView, int width, int y, IDismiss dismiss) {
-        OrderPopupWindow mOrderPopupWindow = new OrderPopupWindow(mActivity, width, leftView.getWidth(), y);
+        OrderPopupWindow mOrderPopupWindow = new OrderPopupWindow(mActivity, this, width, leftView.getWidth(), y);
         mOrderPopupWindow.setOnDismiss(dismiss);
         mOrderPopupWindow.showPopupWindow(anchor);
     }

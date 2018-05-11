@@ -37,16 +37,68 @@ public class PurchaseViewEntity {
     private TextView tvBuyingMone;//金额显示图标
     private float xValue;//当前点的x和Y轴的值
     private float yValue;
-    private String id;//购买点的唯一标识
-    private int money;//当前点购买的金额
-    private String indexMark;//购买指数
     private boolean isDisplay = false;//是否显示在布局上
-//    private boolean isShow = true;//是否需要显示在布局上
+    //    private boolean isShow = true;//是否需要显示在布局上
     private RelativeLayout.LayoutParams mRootParams;
     private RelativeLayout.LayoutParams mMoneyParams;
     private RelativeLayout.LayoutParams mIconParams;
+
+    private String id;//购买点的唯一标识
+    private int money;//当前点购买的金额
+    private String indexMark;//购买指数
     private long openTimer;//开奖时间
     private int ProductId;//购买的产品Id
+    private int Expects;//预计收益
+    private String CreateTime;//订单创建时间
+    private String Issue;//购买起期数
+    private boolean Result;//涨跌
+
+    public PurchaseViewEntity copy() {
+        PurchaseViewEntity entity = new PurchaseViewEntity();
+        entity.id = id;
+        entity.money = money;
+        entity.indexMark = indexMark;
+        entity.openTimer = openTimer;
+        entity.ProductId = ProductId;
+        entity.Expects = Expects;
+        entity.CreateTime = CreateTime;
+        entity.Issue = Issue;
+        entity.Result = Result;
+        return entity;
+    }
+
+
+    public boolean isResult() {
+        return Result;
+    }
+
+    public void setResult(boolean result) {
+        Result = result;
+    }
+
+    public String getIssue() {
+        return (Issue != null) ? Issue : "";
+    }
+
+    public void setIssue(String issue) {
+        Issue = issue;
+    }
+
+    public String getCreateTime() {
+        return (CreateTime != null) ? CreateTime : "";
+    }
+
+    public void setCreateTime(String createTime) {
+        CreateTime = createTime;
+    }
+
+    public int getExpects() {
+        return Expects;
+    }
+
+    public void setExpects(int expects) {
+        Expects = expects;
+    }
 
     public long getOpenTimer() {
         return openTimer;

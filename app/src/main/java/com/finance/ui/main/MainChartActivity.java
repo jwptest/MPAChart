@@ -1,8 +1,5 @@
 package com.finance.ui.main;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -13,19 +10,20 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.finance.App;
 import com.finance.R;
 import com.finance.base.BaseActivity;
 import com.finance.common.Constants;
+import com.finance.common.UserCommon;
 import com.finance.common.UserShell;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
 import com.finance.event.OpenPrizeEvent;
 import com.finance.event.UserLoginEvent;
+import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
+import com.finance.interfaces.IChartSetting;
 import com.finance.interfaces.IDismiss;
 import com.finance.interfaces.IViewHandler;
 import com.finance.linechartdata.CandleChartData;
@@ -36,6 +34,7 @@ import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.listener.EventDistribution;
 import com.finance.listener.LineChartListener;
 import com.finance.listener.OpenCountDown;
+import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.PlaceOrderEntity;
@@ -154,6 +153,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     //数据处理接口
     private IChartData dataSetting;
+    //走势图参数配置接口
+    private IChartSetting mChartSetting;
     //数据处理
     private LineChartData1 mLineChartData;//折线图
     private CandleChartData mCandleData;//蜡烛图
@@ -237,10 +238,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);
         BaseAxisValueFormatter mXAxisValue = new XAxisValueFormatter();
 //        lineChart.setVisibility(View.GONE);
-        new LineChartSetting(this, lineChart)
+        mChartSetting = new LineChartSetting(mActivity);
+        mChartSetting
                 .setRightIAxisValueFormatter(mRightAxisValue)
                 .setXIAxisValueFormatter(mXAxisValue)
-                .initLineChart();
+                .initLineChart(lineChart, true);
         chartListener = new LineChartListener(mActivity, rlPurchaseView, this, lineChart)
                 .initListener()
                 .setIvIcon(ivIcon)
@@ -259,11 +261,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         centreMenu = new CentreMenu(this).onInit(llCentreMenu);
         //设置数据处理
         checkedChart(Constants.CHART_LINEFILL);//当前显示的走势图类型
+
         //设置背景图片
-        setBackground(rlTitleBar, R.drawable.title_bg);
-        setBackground(llRightMenu, R.drawable.right_bg);
-        setBackground(llLeftMenu, R.drawable.left_menu_bg);
-        setBackground(rlZst, R.drawable.zst_bg);
+        ViewUtil.setBackground(mActivity, rlTitleBar, R.drawable.title_bg);
+        ViewUtil.setBackground(mActivity, llRightMenu, R.drawable.right_bg);
+        ViewUtil.setBackground(mActivity, llLeftMenu, R.drawable.left_menu_bg);
+        ViewUtil.setBackground(mActivity, rlZst, R.drawable.zst_bg);
         initLayoutParam();
         initViewUser();
     }
@@ -326,21 +329,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //        });
     }
 
-    private void setBackground(final View view, int drawableId) {
-        Glide.with(this)
-                .load(drawableId)
-                .asBitmap()
-                .skipMemoryCache(true)
-                .dontAnimate()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
-                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                        view.setBackground(drawable);
-                    }
-                });
-    }
-
     @Override
     public void placeOrder(int money, boolean Result) {
         IndexMarkEntity entry = chartListener.getCurrentEntry();
@@ -372,7 +360,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Subscribe
     public void onEvent(IndexEvent event) {
         if (event == null) return;//获取开奖指数事件
-        mMainPresenter.getOpenIndex(currentProduct.getProductId(), currentIssue.getIssueName(), TimerUtil.formatStr(currentIssue.getBonusTime()));
+        mMainPresenter.getOpenIndex(currentProduct.getProductId(), currentProduct.getProductName(), currentIssue.getIssueName(), TimerUtil.formatStr(currentIssue.getBonusTime()));
     }
 
     @Subscribe
@@ -412,7 +400,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private void initViewIssue(int selIndex) {
         IssueEntity entity = currentIssues.get(selIndex);
         issuesSelectIndex = selIndex;
-        tvJZTimer.setText(mMainPresenter.issueNameFormat(entity.getBonusTime()));
+        tvJZTimer.setText(issueNameFormat(entity.getBonusTime()));
         currentIssue = entity;
         updateIssue();//更新走势图
     }
@@ -475,8 +463,18 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     @Override
+    public ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue) {
+        return chartListener.getPurchase(productId, issue);
+    }
+
+    @Override
     public void refreshIessue() {
         mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
+    }
+
+    @Override
+    public String issueNameFormat(String issueName) {
+        return mMainPresenter.issueNameFormat(issueName);
     }
 
     @Override
@@ -499,9 +497,31 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         viewEntity.setMoney(money);//设置金额
         viewEntity.setxValue(markEntity.getX());//设置坐标
         viewEntity.setyValue(markEntity.getY());
+        //购买点数据
         viewEntity.setOpenTimer(TimerUtil.timerToLong(entity.getTicks()));//设置开奖时间
         viewEntity.setProductId(entity.getProductId());//设置产品
+        viewEntity.setExpects(entity.getExpects());//预计收益
+        viewEntity.setIssue(entity.getIssue());//预计收益
+        viewEntity.setResult(entity.isResult());//涨跌
+        viewEntity.setCreateTime(entity.getCreateTime());//下单时间
         chartListener.addPurchaseView(viewEntity);
+        UserCommon.getUserInfo(mActivity, new ICallback<UserInfoEntity>() {
+            @Override
+            public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
+                if (userInfoEntity == null) return;
+                initViewUser();//刷新用户信息
+            }
+        });//刷新用户信息
+    }
+
+    @Override
+    public void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName) {
+        if (entity == null) {
+            App.getInstance().showErrorMsg(msg);
+            return;
+        }
+        //显示开奖对话框
+        new OpenPrizeDialog(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName).show();
     }
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
@@ -512,7 +532,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         switch (view.getId()) {
             case R.id.ivExitLogin:
-                new OpenPrizeDialog(mActivity).show();
+
                 break;
             case R.id.llMoney:
                 int[] location = new int[2];

@@ -2,7 +2,6 @@ package com.finance.linechartdata;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.finance.App;
 import com.finance.common.Constants;
@@ -16,7 +15,6 @@ import com.finance.model.http.HttpConnection;
 import com.finance.ui.main.MainContract;
 import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
-import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.data.Entry;
@@ -119,6 +117,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     @Override
     protected void updateData() {
+        if (issueEntity == null || productEntity == null) return;
         isRefrshChartData = true;
         if (mCallback != null) {
             mCallback.isStop = true;

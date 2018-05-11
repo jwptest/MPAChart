@@ -29,6 +29,33 @@ public class OrderEntity {
     private String UserName;//String 用户名
     private int Status;//状态
 
+
+//    private String UserId;
+//    private Object UserName;
+//    private int ProductId;
+//    private String ProductTxt;
+//    private int IssueType;
+//    private String Issue;
+//    private IndexMarkEntity IndexMark;
+//    private String HexIndexMark;
+//    private boolean Result;
+//    private int Expects;
+//    private double Money;
+//    private double BonusMoney;
+//    private double Balance;
+//    private String BonusTime;
+//    private BonusIndexMarkEntity BonusIndexMark;
+//    private String BonusHexIndexMark;
+//    private String CreateTime;
+//    private boolean IsTest;
+//    private boolean IsEmptyUser;
+//    private int Status;
+//    private int Platform;
+//    private int SubAccount;
+//    private int Currency;
+//    private String RiskGroup;
+//    private String TaskId;
+
     public long getOpenTimer() {
         return openTimer;
     }
@@ -189,4 +216,92 @@ public class OrderEntity {
     public void setStatus(int status) {
         Status = status;
     }
+
+
+    public static class BonusIndexMarkEntity {
+        /**
+         * ProductId : 106
+         * Ticks : 636616342200000000
+         * SellPrice : 1.1914
+         * BidPrice : 1.19125
+         * RealtimePrice : 1.191325
+         * Expects : 79
+         * Unnecessary : true
+         * IsLast : true
+         */
+
+        private int ProductId;//产品ID
+        private long Ticks;//时间戳
+        private double SellPrice;//卖出价格
+        private double BidPrice;//买入价格
+        private double RealtimePrice;//指数
+        private int Expects;//预计收益
+        private boolean Unnecessary;//是否为非必要数据
+        private boolean IsLast;//是否为上次相同点,该类型点不允许购买
+
+        public int getProductId() {
+            return ProductId;
+        }
+
+        public void setProductId(int ProductId) {
+            this.ProductId = ProductId;
+        }
+
+        public long getTicks() {
+            return Ticks;
+        }
+
+        public void setTicks(long Ticks) {
+            this.Ticks = Ticks;
+        }
+
+        public double getSellPrice() {
+            return SellPrice;
+        }
+
+        public void setSellPrice(double SellPrice) {
+            this.SellPrice = SellPrice;
+        }
+
+        public double getBidPrice() {
+            return BidPrice;
+        }
+
+        public void setBidPrice(double BidPrice) {
+            this.BidPrice = BidPrice;
+        }
+
+        public double getRealtimePrice() {
+            return RealtimePrice;
+        }
+
+        public void setRealtimePrice(double RealtimePrice) {
+            this.RealtimePrice = RealtimePrice;
+        }
+
+        public int getExpects() {
+            return Expects;
+        }
+
+        public void setExpects(int Expects) {
+            this.Expects = Expects;
+        }
+
+        public boolean isUnnecessary() {
+            return Unnecessary;
+        }
+
+        public void setUnnecessary(boolean Unnecessary) {
+            this.Unnecessary = Unnecessary;
+        }
+
+        public boolean isIsLast() {
+            return IsLast;
+        }
+
+        public void setIsLast(boolean IsLast) {
+            this.IsLast = IsLast;
+        }
+    }
+
 }

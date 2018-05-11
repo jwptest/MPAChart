@@ -95,10 +95,14 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ArrayList<PurchaseViewEntity> mPurchaseViewEntities;
     //临时用于存放购买的点的数组
     private ArrayList<PurchaseViewEntity> temporaryList;
+    //需要移除的购买点
+    private ArrayList<PurchaseViewEntity> removePurchaseViews;
     //获取结束点和开奖点
     private IChartData mIChartData;
     //画布的X轴
     private XAxis mXAxis;
+    //刷新购买点坐标工具类
+    private ViewUtil mViewUtil;
     private int childCount;
     private int dpPx10;
     private boolean isOrder = false;//是否有订单
@@ -110,7 +114,11 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         this.mXAxis = lineChart.getXAxis();
         mParent = rlPurchaseView;
         dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_15);
+        mViewUtil = new ViewUtil();
         childCount = mParent.getChildCount() - 1;
+        mPurchaseViewEntities = new ArrayList<>(4);
+        temporaryList = new ArrayList<>(4);
+        removePurchaseViews = new ArrayList<>(4);
     }
 
     @Override
@@ -332,11 +340,18 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         this.mIChartData = iChartData;
     }
 
+    @Override
+    public ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue) {
+        ArrayList<PurchaseViewEntity> entities = new ArrayList<>(4);
+        if (temporaryList == null || temporaryList.isEmpty())
+            return entities;
+        entities.addAll(temporaryList);
+        return entities;
+    }
+
     //添加需要显示的购买点
     @Override
     public void addPurchaseView(PurchaseViewEntity entity) {
-        if (mPurchaseViewEntities == null)
-            mPurchaseViewEntities = new ArrayList<>(4);
         entity.setDisplay(false);
         mPurchaseViewEntities.add(entity);
         //将布局添加到父控件
@@ -386,11 +401,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (entity.isDisplay()) {
             return;
         }
-        View rootView = entity.getRootView();
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, PurchaseViewEntity.viewHeight);
-        entity.setDisplay(true);
-        rootView.setLayoutParams(params);
-        viewGroup.addView(rootView, childCount + mPurchaseViewEntities.size() - 1);
+        mViewUtil.addPurchaseToView(viewGroup, entity, childCount + mPurchaseViewEntities.size() - 1);
     }
 
     //获取当前点的值
@@ -487,19 +498,21 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void updatePurchaseView() {
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
+            IndexMarkEntity indexMarkEntity = mView.getIndexMarkEntity(entity.getIndexMark());
+            if (indexMarkEntity == null) {
+                //设置不需要显示
+                ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
+                continue;
+            }
             if (mProductEntity.getProductId() == entity.getProductId()) {//是否是当前产品下购买的
-                IndexMarkEntity indexMarkEntity = mView.getIndexMarkEntity(entity.getIndexMark());
-                if (indexMarkEntity == null) {
-                    //设置不需要显示
-                    ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
-                    continue;
-                }
                 ViewUtil.setViewVisibility(entity.getRootView(), View.VISIBLE);//设置显示
                 entity.setxValue(indexMarkEntity.getX());
                 entity.setyValue(indexMarkEntity.getY());
+                indexMarkEntity.setData(entity.getId());
                 //启动动画
                 PurchaseViewAnimation.getCompleteAnimation(entity.getTvBuyingMone()).start();
             } else {
+                indexMarkEntity.setData(null);
                 //设置不需要显示
                 ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
             }
@@ -612,35 +625,31 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 2));
 ////            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 6));
 //        }
-
     }
-
 
     //刷新所有购买点的位置
     private void refreshPurchaseViews(IDataSet dataSet) {
         isOrder = false;
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
         long current = TimerUtil.timerToLong(currentEntry.getTime());
-        if (temporaryList == null) {
-            temporaryList = new ArrayList<>(4);
-        } else {
-            temporaryList.clear();
-        }
         boolean isIndex = false;
         //移除到达开奖点的购买点
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             if (entity.getOpenTimer() <= current) {
-                isIndex = entity.getProductId() == mProductEntity.getProductId();
                 entity.getRootView().clearAnimation();
                 mParent.removeView(entity.getRootView());
-                continue;//移除掉
+                if (entity.getProductId() == mProductEntity.getProductId()) {
+                    isIndex = true;
+                    temporaryList.add(entity.copy());
+                }
+                removePurchaseViews.add(entity);
             }
-            temporaryList.add(entity);
         }
-        mPurchaseViewEntities.clear();//清除掉数据
-        if (!temporaryList.isEmpty()) {
-            //将购买点从新放入数组
-            mPurchaseViewEntities.addAll(temporaryList);
+        //移除到期的购买点
+        if (!removePurchaseViews.isEmpty()) {
+            for (PurchaseViewEntity entity : removePurchaseViews) {
+                mPurchaseViewEntities.remove(entity);
+            }
         }
         //刷新购买点的位置
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
@@ -651,63 +660,12 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         }
     }
 
-    private ViewGroup.LayoutParams layoutParams;
-    private RelativeLayout.LayoutParams layoutParams1;
-    private ViewGroup.LayoutParams layoutParams2;
-    private RelativeLayout.LayoutParams layoutParams3;
-    private ViewGroup.LayoutParams layoutParams4;
-    private RelativeLayout.LayoutParams layoutParams5;
-    private View rootView;
-
     //刷新购买点的位置
     private void refreshPurchaseView(PurchaseViewEntity entity, IDataSet dataSet) {
         if (entity.getRootView().getVisibility() != View.VISIBLE) return;//不需要显示在布局上
         if (!entity.isDisplay()) return;//已经显示在布局上
         isOrder = true;
-        //获取布局的LayoutParams
-        layoutParams1 = entity.getRootParams();
-        rootView = entity.getRootView();
-        if (layoutParams1 == null) {
-            layoutParams = rootView.getLayoutParams();
-            if (layoutParams == null) return;
-            layoutParams1 = (RelativeLayout.LayoutParams) layoutParams;
-            entity.setRootParams(layoutParams1);
-        }
-        //获取点的坐标
-        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, entity.getxValue(), entity.getyValue());
-        //设置布局Y的坐标
-        layoutParams1.topMargin = (int) (pointD.y - PurchaseViewEntity.viewHeight / 2);
-
-        //获取icon的LayoutParams
-        layoutParams5 = entity.getIconParams();
-        if (layoutParams5 == null) {
-            layoutParams4 = entity.getIvZD().getLayoutParams();
-            if (layoutParams4 == null) return;
-            layoutParams5 = (RelativeLayout.LayoutParams) layoutParams4;
-            entity.setIconParams(layoutParams5);
-        }
-
-        //设置金额显示控件的X坐标
-        layoutParams5.leftMargin = (int) (pointD.x - PurchaseViewEntity.iconWidth / 2);
-
-        //获取购买金额控件的LayoutParams
-        layoutParams3 = entity.getMoneyParams();
-        if (layoutParams3 == null) {
-            layoutParams2 = entity.getTvBuyingMone().getLayoutParams();
-            if (layoutParams2 == null) return;
-            layoutParams3 = (RelativeLayout.LayoutParams) layoutParams2;
-            entity.setMoneyParams(layoutParams3);
-        }
-        //设置金额显示控件的X坐标
-        layoutParams3.leftMargin = layoutParams5.leftMargin - PurchaseViewEntity.leftWidth;
-
-        layoutParams = null;
-        layoutParams1 = null;
-        layoutParams2 = null;
-        layoutParams3 = null;
-        layoutParams4 = null;
-        layoutParams5 = null;
-        rootView = null;
+        mViewUtil.refreshPurchaseView(mChart, entity, dataSet);
     }
 
     //绘制完成执行

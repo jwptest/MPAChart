@@ -18,24 +18,24 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 public class LineChartSetting implements IChartSetting {
 
     private Activity mActivity;
-    private MCombinedChart mChart;
     private YAxis leftAxis, rightAxis;
     private XAxis xAxis;
     private IAxisValueFormatter mXIAxisValueFormatter;//X轴标签显示格式化
     private IAxisValueFormatter mRightIAxisValueFormatter;//右边轴标签显示格式化
 
-    public LineChartSetting(Activity activity, MCombinedChart lineChart) {
+    public LineChartSetting(Activity activity) {
         this.mActivity = activity;
-        this.mChart = lineChart;
     }
 
     //在调用initLineChart之前调用才会生效
+    @Override
     public LineChartSetting setRightIAxisValueFormatter(IAxisValueFormatter rightIAxisValueFormatter) {
         mRightIAxisValueFormatter = rightIAxisValueFormatter;
         return this;
     }
 
     //在调用initLineChart之前调用才会生效
+    @Override
     public LineChartSetting setXIAxisValueFormatter(IAxisValueFormatter XIAxisValueFormatter) {
         mXIAxisValueFormatter = XIAxisValueFormatter;
         return this;
@@ -44,7 +44,7 @@ public class LineChartSetting implements IChartSetting {
     /***************************初始化LineChart******************************/
 
     @Override
-    public LineChartSetting initLineChart() {
+    public LineChartSetting initLineChart(MCombinedChart mChart, boolean isOffsets) {
         mChart.setDrawGridBackground(false);//设置是否画网格背景
         mChart.setDragDecelerationEnabled(false);//继续滚动后润色
         mChart.getDescription().setEnabled(true);//描述文本
@@ -59,8 +59,10 @@ public class LineChartSetting implements IChartSetting {
 //        mChart.setPinchZoom(false);
         //偏移量
 //        mChart.setExtraOffsets(0, 0, 0, 0);
-        int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
-        mChart.setViewPortOffsets(0, top, 0, 0);
+        if (isOffsets) {
+            int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
+            mChart.setViewPortOffsets(0, top, 0, 0);
+        }
 //        mChart.setPinchZoom(true);//放缩 作用同上
         mChart.setDrawBorders(false);
 //        mChart.setGridBackgroundColor(Color.WHITE);
@@ -76,9 +78,9 @@ public class LineChartSetting implements IChartSetting {
         l.setForm(Legend.LegendForm.NONE);
         //图标描述文字颜色
         l.setTextColor(mActivity.getResources().getColor(R.color.transparent));
-        initLeftAxis();//初始化左轴
-        initRightAxis();//初始化右轴
-        initXAxis();//初始化X轴
+        initLeftAxis(mChart);//初始化左轴
+        initRightAxis(mChart);//初始化右轴
+        initXAxis(mChart);//初始化X轴
         initMarkerView();//初始化MarkerView
         return this;
     }
@@ -93,7 +95,7 @@ public class LineChartSetting implements IChartSetting {
 
     /***************************初始化线******************************/
 
-    private void initLeftAxis() {
+    private void initLeftAxis(MCombinedChart mChart) {
         leftAxis = mChart.getAxisLeft();
         leftAxis.setEnabled(false);
 //        leftAxis.setAxisLineWidth(1f);//边框的宽度
@@ -122,7 +124,7 @@ public class LineChartSetting implements IChartSetting {
 //        leftAxis.resetAxisMinimum();//最大值重置
     }
 
-    private void initRightAxis() {
+    private void initRightAxis(MCombinedChart mChart) {
         rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(true);
         rightAxis.setDrawAxisLine(false);
@@ -144,7 +146,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setAxisLineColor(getColor(R.color.transparent));
     }
 
-    private void initXAxis() {
+    private void initXAxis(MCombinedChart mChart) {
         xAxis = mChart.getXAxis();
         //禁用x轴，设置为false后该轴任何部分都不会绘制,所以即使再设置xAxis.setDrawAxisLine(true);也不会被绘制
         xAxis.setEnabled(true);//是否绘制X轴线

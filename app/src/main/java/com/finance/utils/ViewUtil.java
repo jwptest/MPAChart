@@ -1,20 +1,27 @@
 package com.finance.utils;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.finance.R;
-import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.PurchaseViewEntity;
+import com.finance.widget.combinedchart.MCombinedChart;
 import com.finance.widget.roundview.RoundTextView;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.YAxis;
@@ -52,6 +59,21 @@ public class ViewUtil {
      * @return 返回PurchaseViewEntity
      */
     public static PurchaseViewEntity getPurchase(Context context, String text, boolean isAdd) {
+        PurchaseViewEntity viewEntity = new PurchaseViewEntity();
+        getPurchase(context, viewEntity, text, isAdd);
+        return viewEntity;
+    }
+
+    /**
+     * 获取购买成功后显示的布局
+     *
+     * @param context 上下文
+     * @param text    购买的金额
+     * @param isAdd   是否是买涨
+     * @return 返回PurchaseViewEntity
+     */
+    public static void getPurchase(Context context, PurchaseViewEntity viewEntity, String text, boolean isAdd) {
+        if (viewEntity == null || context == null) return;
         View view = LayoutInflater.from(context).inflate(R.layout.home_layout_buyingpoint, null);
         View line = view.findViewById(R.id.line);//#20CF56跌，涨#EE4F3C
         RoundTextView tvBuyingMoney = view.findViewById(R.id.tvBuyingMoney);
@@ -67,12 +89,33 @@ public class ViewUtil {
             tvBuyingMoney.getDelegate().setBackgroundColor(Color.parseColor("#20CF56"));
             ivZD.setImageResource(R.drawable.fall_icon);
         }
-        PurchaseViewEntity viewEntity = new PurchaseViewEntity();
         viewEntity.setRootView(view);
         viewEntity.setLine(line);
         viewEntity.setIvZD(ivZD);
         viewEntity.setTvBuyingMone(tvBuyingMoney);
-        return viewEntity;
+    }
+
+
+    public static void setBackground(Activity activity, final View view, int drawableId) {
+        setBackground(Glide.with(activity), activity, view, drawableId);
+    }
+
+    public static void setBackground(Context context, final View view, int drawableId) {
+        setBackground(Glide.with(context), context, view, drawableId);
+    }
+
+    private static void setBackground(RequestManager manager, Context context, final View view, int drawableId) {
+        manager.load(drawableId)
+                .asBitmap()
+                .skipMemoryCache(true)
+                .dontAnimate()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
+                        Drawable drawable = new BitmapDrawable(context.getResources(), bitmap);
+                        view.setBackground(drawable);
+                    }
+                });
     }
 
     public static void dd(View view) {
@@ -95,7 +138,6 @@ public class ViewUtil {
             }
         });
     }
-
 
     public static LineDataSet createLineDataSet(Context context, ArrayList<Entry> entries) {
         LineDataSet set = new LineDataSet(entries, "");
@@ -136,5 +178,70 @@ public class ViewUtil {
         return set;
     }
 
+    //将布局添加到控件
+    public void addPurchaseToView(ViewGroup viewGroup, PurchaseViewEntity entity, int index) {
+        View rootView = entity.getRootView();
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, PurchaseViewEntity.viewHeight);
+        entity.setDisplay(true);
+        rootView.setLayoutParams(params);
+        viewGroup.addView(rootView, index);
+    }
+
+
+    private ViewGroup.LayoutParams layoutParams;
+    private RelativeLayout.LayoutParams layoutParams1;
+    private ViewGroup.LayoutParams layoutParams2;
+    private RelativeLayout.LayoutParams layoutParams3;
+    private ViewGroup.LayoutParams layoutParams4;
+    private RelativeLayout.LayoutParams layoutParams5;
+    private View rootView;
+
+    //刷新购买点的位置
+    public void refreshPurchaseView(MCombinedChart mChart, PurchaseViewEntity entity, IDataSet dataSet) {
+        //获取布局的LayoutParams
+        layoutParams1 = entity.getRootParams();
+        rootView = entity.getRootView();
+        if (layoutParams1 == null) {
+            layoutParams = rootView.getLayoutParams();
+            if (layoutParams == null) return;
+            layoutParams1 = (RelativeLayout.LayoutParams) layoutParams;
+            entity.setRootParams(layoutParams1);
+        }
+        //获取点的坐标
+        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, entity.getxValue(), entity.getyValue());
+        //设置布局Y的坐标
+        layoutParams1.topMargin = (int) (pointD.y - PurchaseViewEntity.viewHeight / 2);
+
+        //获取icon的LayoutParams
+        layoutParams5 = entity.getIconParams();
+        if (layoutParams5 == null) {
+            layoutParams4 = entity.getIvZD().getLayoutParams();
+            if (layoutParams4 == null) return;
+            layoutParams5 = (RelativeLayout.LayoutParams) layoutParams4;
+            entity.setIconParams(layoutParams5);
+        }
+
+        //设置金额显示控件的X坐标
+        layoutParams5.leftMargin = (int) (pointD.x - PurchaseViewEntity.iconWidth / 2);
+
+        //获取购买金额控件的LayoutParams
+        layoutParams3 = entity.getMoneyParams();
+        if (layoutParams3 == null) {
+            layoutParams2 = entity.getTvBuyingMone().getLayoutParams();
+            if (layoutParams2 == null) return;
+            layoutParams3 = (RelativeLayout.LayoutParams) layoutParams2;
+            entity.setMoneyParams(layoutParams3);
+        }
+        //设置金额显示控件的X坐标
+        layoutParams3.leftMargin = layoutParams5.leftMargin - PurchaseViewEntity.leftWidth;
+
+        layoutParams = null;
+        layoutParams1 = null;
+        layoutParams2 = null;
+        layoutParams3 = null;
+        layoutParams4 = null;
+        layoutParams5 = null;
+        rootView = null;
+    }
 
 }

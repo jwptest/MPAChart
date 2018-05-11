@@ -8,7 +8,6 @@ import android.view.ViewTreeObserver;
 
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
-import com.finance.common.Constants;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.interfaces.IChartData;
@@ -42,6 +41,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected IssueEntity issueEntity;//当前期号
     protected long duration = 2000;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
+    private ValueAnimator valueAnimator;//当前执行动画
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
         this.mContext = context;
@@ -62,7 +62,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         });
         combinedData = new CombinedData();
         onInit();
-
     }
 
     @Override
@@ -132,9 +131,10 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected void startRemoveDataAnimation() {
         final int maxIndex = mChartDatas.size() - 1;
         if (maxIndex < 0) return;
+        if (valueAnimator != null)
+            valueAnimator.cancel();
         isAnimation = true;
         removeCount = 0;
-
         //清除数据
         mChartDatas.clear();
         invalidateChart();
@@ -162,6 +162,16 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //启动添加数据动画
     protected void startAddDataAnimation(ArrayList<T> entitys) {
+//        final int maxIndex = entitys.size() - 1;
+//        if (maxIndex < 0) return;
+//        mChartDatas.clear();
+//        mChartDatas.addAll(entitys);
+//        invalidateChart();
+//        stopRemoveAnimation();
+//        isAnimation = false;
+        if (valueAnimator != null)
+            valueAnimator.cancel();
+
         final int maxIndex = entitys.size() - 1;
         if (maxIndex < 0) return;
         isAnimation = true;
@@ -182,7 +192,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         }, true, 0, maxIndex);
     }
 
-    private void staetValueAnimator(ValueAnimator.AnimatorUpdateListener listener, final boolean isAddAnimation, int... values) {
+    private ValueAnimator staetValueAnimator(ValueAnimator.AnimatorUpdateListener listener, final boolean isAddAnimation, int... values) {
         ValueAnimator valueAnimator = ValueAnimator.ofInt(values);
         valueAnimator.setDuration(duration);
         valueAnimator.addUpdateListener(listener);
@@ -202,6 +212,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             }
         });
         valueAnimator.start();
+        return valueAnimator;
     }
 
     //初始化操作
