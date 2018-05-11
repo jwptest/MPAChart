@@ -19,6 +19,7 @@ import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected boolean isAnimation = false;//是否在执行动画
     protected ProductEntity productEntity;//当前产品
     protected IssueEntity issueEntity;//当前期号
-    protected long duration = 2000;//动画执行时间
+    protected long duration = 160;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
 
@@ -131,8 +132,10 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected void startRemoveDataAnimation() {
         final int maxIndex = mChartDatas.size() - 1;
         if (maxIndex < 0) return;
-        if (valueAnimator != null)
+        mChart.isStopDraw(false);
+        if (valueAnimator != null) {
             valueAnimator.cancel();
+        }
         isAnimation = true;
         removeCount = 0;
         //清除数据
@@ -163,15 +166,25 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     //启动添加数据动画
     protected void startAddDataAnimation(ArrayList<T> entitys) {
 //        final int maxIndex = entitys.size() - 1;
-//        if (maxIndex < 0) return;
 //        mChartDatas.clear();
-//        mChartDatas.addAll(entitys);
-//        invalidateChart();
+//        if (maxIndex > 0) {
+//            mChartDatas.addAll(entitys);
+//            setAxisMaximum();//刷新X周显示条数
+//        }
+//        if (combinedData == null) {
+//            combinedData = new CombinedData();
+//            combinedData.setData(getLineData());
+//            mChart.setData(combinedData);
+//        } else {
+//            invalidateChart();
+//        }
 //        stopRemoveAnimation();
 //        isAnimation = false;
-        if (valueAnimator != null)
-            valueAnimator.cancel();
 
+        mChart.isStopDraw(false);
+        if (valueAnimator != null) {
+            valueAnimator.cancel();
+        }
         final int maxIndex = entitys.size() - 1;
         if (maxIndex < 0) return;
         isAnimation = true;
@@ -179,6 +192,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChartDatas.clear();
         mChartDatas.add(entitys.get(0));
         setAxisMaximum();//刷新X周显示条数
+        mChart.isStopDraw(true);
         staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -229,5 +243,10 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //获取当前数据的总时长
     protected abstract long getLengthTime();
+
+    //
+    protected LineData getLineData() {
+        return null;
+    }
 
 }

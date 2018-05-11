@@ -32,6 +32,7 @@ import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.ui.popupwindow.ProductPopupWindow;
 import com.finance.ui.popupwindow.RecyclerPopupWindow;
 import com.finance.utils.IndexUtil;
+import com.finance.utils.TimerUtil;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -321,21 +322,12 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         mProductPopupWindow.showPopupWindow(view);
     }
 
-    @Override
-    public String issueNameFormat(String issueName) {
-        //2018-05-05T10:40:00+08:00
-        int index = TextUtils.isEmpty(issueName) ? -1 : issueName.indexOf('T');
-        if (index < 0) return issueName;
-        if (issueName.length() < index + 5) return issueName;
-        return issueName.substring(index + 1, index + 6);
-    }
-
     private ArrayList<ItemEntity<IssueEntity>> getIssues(ArrayList<IssueEntity> entities) {
         ArrayList<ItemEntity<IssueEntity>> issues = new ArrayList<ItemEntity<IssueEntity>>(entities.size());
         for (IssueEntity entity : entities) {
             ItemEntity<IssueEntity> p = new ItemEntity<IssueEntity>();
             p.setData(entity);
-            p.setTitle(issueNameFormat(entity.getBonusTime()));
+            p.setTitle(TimerUtil.getTimer(entity.getBonusTime()));
             issues.add(p);
         }
         return issues;

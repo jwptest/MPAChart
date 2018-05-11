@@ -1,15 +1,13 @@
-package com.finance.ui.dialog;
+package com.finance.ui.popupwindow;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.os.Bundle;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.finance.R;
@@ -25,6 +23,7 @@ import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
 import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
+import com.finance.widget.animation.BaseAnimatorSet;
 import com.finance.widget.combinedchart.MLineChart2;
 import com.finance.widget.combinedchart.OnDrawCompletion;
 import com.finance.widget.commonadapter.RecyclerAdapter;
@@ -36,13 +35,12 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * 开奖对话框
  */
-public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
+public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawCompletion {
 
     //
     @BindView(R.id.llRootView)
@@ -79,8 +77,9 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
     private String profitTMoney;//收益总金额
     private int productId;
     private String issue;
+    private ViewUtil mViewUtil;
 
-    private boolean isBack = false;//是否可以返回关闭对话框
+    private boolean isAddPurchase = false;//是否可以返回关闭对话框
 
     /**
      * 开奖对话框
@@ -89,10 +88,11 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
      * @param entity    历史期数
      * @param openIndex 开奖指数
      */
-    public OpenPrizeDialog(@NonNull Activity context, MainContract.View view, IChartSetting mChartSetting,
-                           HistoryIssueEntity entity, IndexMarkEntity openIndex,
-                           int productId, String issue, String productName) {
-        super(context, R.style.noBackDialog);
+    public OpenPrizePopWindow(@NonNull Activity context, MainContract.View view, IChartSetting mChartSetting,
+                              HistoryIssueEntity entity, IndexMarkEntity openIndex,
+                              int productId, String issue, String productName, int screenWidth, int screenHeight) {
+
+        super(context, (int) (screenWidth * 0.8f), (int) (screenHeight * 0.8f), (int) (screenWidth * 0.1f), (int) (screenHeight * 0.1));
         this.mContext = context;
         this.mChartSetting = mChartSetting;
         this.mView = view;
@@ -101,6 +101,28 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
         this.productId = productId;
         this.issue = issue;
         this.productName = productName;
+        this.mViewUtil = new ViewUtil();
+        ViewUtil.setBackground(mContext, llRootView, R.drawable.dialog_open_prize_bg);
+
+        //界面显示出来再处理数据
+//        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                if (mLineChart.getWidth() <= 0) return;
+//                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//            }
+//        });
+
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.dialog_open_prize;
+    }
+
+    @Override
+    protected int getBackColor() {
+        return Color.parseColor("#80000000");
     }
 
     private void initData(final HistoryIssueEntity entity, final IndexMarkEntity openIndex) {
@@ -123,7 +145,6 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
                             indexMarkEntity.setData(indexMarkEntity.getId());
                             break;
                         }
-                        indexMarkEntity.setY(2.0f);
                     }
                     if (indexMarkEntity != null && indexMarkEntity.getData() != null) {
                         //列表数据
@@ -150,12 +171,12 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
                         viewEntity.setyValue(indexMarkEntity.getY());
                     }
                 }
-                if (!OpenPrizeDialog.this.isShowing()) return;
-                OpenPrizeDialog.this.orderTMoney = "￥" + orderTMoney;
-                OpenPrizeDialog.this.profitTMoney = "￥" + profitTMoney;
-                OpenPrizeDialog.this.mOrderEntities = mOrderEntities;
-                OpenPrizeDialog.this.mMarkEntities = entities;
-                OpenPrizeDialog.this.viewEntities = viewEntities;
+                if (!OpenPrizePopWindow.this.isShowing()) return;
+                OpenPrizePopWindow.this.orderTMoney = "￥" + orderTMoney;
+                OpenPrizePopWindow.this.profitTMoney = "￥" + profitTMoney;
+                OpenPrizePopWindow.this.mOrderEntities = mOrderEntities;
+                OpenPrizePopWindow.this.mMarkEntities = entities;
+                OpenPrizePopWindow.this.viewEntities = viewEntities;
                 HandlerUtil.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -164,29 +185,6 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
                 });
             }
         }.start();
-    }
-
-    private String getOrderDate(String createTime) {//2018-05-07T12:04:08.4289928+08:00
-        if (TextUtils.isEmpty(createTime) || createTime.length() < 10) return "-";
-        createTime = createTime.substring(5, 10);
-        return createTime;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_open_prize);
-        ButterKnife.bind(this);
-        ViewUtil.setBackground(mContext, llRootView, R.drawable.dialog_open_prize_bg);
-        //界面显示出来再处理数据
-        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (mLineChart.getWidth() <= 0) return;
-                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-            }
-        });
     }
 
     @OnClick(R.id.tvTitleType)
@@ -198,7 +196,6 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
         mTvTitleTypeValue.setText(productName);
         mTvTitleMoneyValue.setText(orderTMoney);
         mTvTitleProfitValue.setText(profitTMoney);
-
         RecyclerAdapter<OpenOrderEntity> adapter = new RecyclerAdapter<OpenOrderEntity>(R.layout.layout_item_open_prize, mOrderEntities) {
             @Override
             protected void onBindData(RecyclerViewHolder viewHolder, int position, OpenOrderEntity item) {
@@ -227,28 +224,45 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
 
     @Override
     public void completion(IndexMarkEntity lastEntry, IDataSet dataSet) {
-        isBack = true;
         //绘制购买点
-        ViewUtil mViewUtil = new ViewUtil();
-        int index = 0;
+        int index = 1;
         //刷新购买点的位置
         for (PurchaseViewEntity entity : viewEntities) {
             ViewUtil.getPurchase(mContext, entity, entity.getMoney() + "", entity.isResult());
-            //添加到走势图
-            mViewUtil.addPurchaseToView(rlChart, entity, index);
+            if (!isAddPurchase) {//已经添加就不重复添加
+                //添加到走势图
+                mViewUtil.addPurchaseToView(rlChart, entity, index);
+                index++;
+            }
             //刷新位置
             mViewUtil.refreshPurchaseView(mLineChart, entity, dataSet);
             //启动动画
             PurchaseViewAnimation.getCompleteAnimation(entity.getTvBuyingMone()).start();
-            index++;
         }
         //刷新位置
         rlChart.requestLayout();
+        isAddPurchase = true;
     }
 
     @Override
-    public void onBackPressed() {
-        if (!isBack) return;
-        super.onBackPressed();
+    protected boolean isAnimation() {
+        return false;
     }
+
+    @Override
+    protected boolean isBindView() {
+        return true;
+    }
+
+    @Override
+    protected BaseAnimatorSet getShowAs() {
+        return null;
+    }
+
+    @Override
+    protected BaseAnimatorSet getDismissAs() {
+        return null;
+    }
+
+
 }

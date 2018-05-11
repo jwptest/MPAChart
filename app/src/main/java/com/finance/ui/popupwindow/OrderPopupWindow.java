@@ -12,11 +12,13 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
+import com.finance.listener.EventDistribution;
 import com.finance.model.ben.OrderEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.model.datasource.DataSource;
 import com.finance.ui.adapters.OrderAdapter;
 import com.finance.ui.main.MainContract;
+import com.finance.utils.TimerUtil;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersDecoration;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import butterknife.OnClick;
 /**
  * 订单PopupWindow
  */
-public class OrderPopupWindow extends LeftToRightPopupWindow {
+public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDistribution.IPurchase {
 
     @BindView(R.id.tvTitle)
     TextView tvTitle;
@@ -40,12 +42,11 @@ public class OrderPopupWindow extends LeftToRightPopupWindow {
     @BindView(R.id.rvOrder)
     RecyclerView rvOrder;
 
-
     private Activity mActivity;
     private MainContract.Presenter mPresenter;
 
     private OrderAdapter mAdapter;
-    private OrdersEntity ordersEntity;
+//    private OrdersEntity ordersEntity;
 
     private CountDownTimer timer;//倒计时
     private long serviceTimer;//服务器时间
@@ -65,20 +66,6 @@ public class OrderPopupWindow extends LeftToRightPopupWindow {
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
         tvTitle.setText("交易订单");
         tvEmptyText.setText("暂无购买记录");
-//        OrdersEntity entity = new OrdersEntity();
-//        ArrayList<OrderEntity> entities = new ArrayList<>(10);
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entities.add(new OrderEntity());
-//        entity.setOrders(entities);
-//        setOrdersEntity(entity);
     }
 
     @Override
@@ -96,13 +83,13 @@ public class OrderPopupWindow extends LeftToRightPopupWindow {
         rvOrder.setVisibility(View.VISIBLE);
         if (mAdapter == null) {
             mAdapter = new OrderAdapter(orderEntities);
+            mAdapter.setServiceTimer(serviceTimer);
             mAdapter.setServiceTimer(System.currentTimeMillis());
             final LinearLayoutManager manager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
             rvOrder.setLayoutManager(manager);
             rvOrder.setAdapter(mAdapter);
             StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(mAdapter);
             rvOrder.addItemDecoration(headersDecor);
-
             rvOrder.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -114,26 +101,35 @@ public class OrderPopupWindow extends LeftToRightPopupWindow {
                 }
             });
         } else {
+            mAdapter.setServiceTimer(serviceTimer);//刷新服务器时间
             mAdapter.clear();
             mAdapter.addAll(orderEntities);
         }
     }
 
-    private void startCountDown(final long l) {
+    private void stopCountDown() {
         if (timer != null) timer.cancel();
+    }
+
+    private void startCountDown(final long l) {
+        stopCountDown();
         timer = new CountDownTimer(l, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                serviceTimer = serviceTimer + (l - millisUntilFinished);
-                mAdapter.setServiceTimer(serviceTimer);
-                if (isShowing()) {
-                    mAdapter.notifyDataSetChanged();
+                if (!isShowing()) {
+                    stopCountDown();
+                    return;
                 }
+                serviceTimer -= 1000;
+                if (mAdapter == null) return;
+                mAdapter.setServiceTimer(serviceTimer);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFinish() {
-                dismiss();
+                if (!isShowing()) return;
+                mDataSource.refresh();//刷新数据
             }
         };
         timer.start();
@@ -163,9 +159,22 @@ public class OrderPopupWindow extends LeftToRightPopupWindow {
         mDataSource.refresh();//加载数据
     }
 
+    @Override
+    public void stopPurchase(boolean isOrder) {
+//        if (isOrder)return;
+    }
+
+    @Override
+    public void openPrize(boolean isOrder) {
+        if (isOrder) return;
+        stopCountDown();
+        dismiss();
+    }
+
     private class OrderDataSource extends DataSource implements ICallback<OrdersEntity> {
 
-        ArrayList<OrderEntity> mOrderEntities = new ArrayList<>(20);
+        private ArrayList<OrderEntity> mOrderEntities = new ArrayList<>(20);
+        private long maxOpenTimer;//最大开奖时间
 
         public void refresh() {
             super.refresh();
@@ -179,12 +188,19 @@ public class OrderPopupWindow extends LeftToRightPopupWindow {
 
         @Override
         public void onCallback(int code, OrdersEntity ordersEntity, String message) {
+            if (!isShowing()) return;
             if (ordersEntity == null || ordersEntity.getOrders().isEmpty()) {
                 loadFail();
                 return;
             }
+            serviceTimer = TimerUtil.timerToLong(ordersEntity.getCurrDateTime());
             mOrderEntities.addAll(ordersEntity.getOrders());
+            maxOpenTimer = 0;
+            for (OrderEntity entity : mOrderEntities) {
+                if (maxOpenTimer < entity.getOpenTimer()) maxOpenTimer = entity.getOpenTimer();
+            }
             initData(mOrderEntities);
+            startCountDown(maxOpenTimer);//启动倒计时
         }
     }
 

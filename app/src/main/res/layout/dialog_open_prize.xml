@@ -60,7 +60,7 @@
             android:layout_below="@+id/tvTitleTypeValue"
             android:layout_marginTop="@dimen/dp_5">
 
-            <com.finance.widget.combinedchart.MCombinedChart
+            <com.finance.widget.combinedchart.MLineChart2
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

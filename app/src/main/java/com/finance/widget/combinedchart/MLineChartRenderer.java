@@ -9,11 +9,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
-import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-
-import static android.R.attr.min;
 
 /**
  * 绘制走势图控件
@@ -32,6 +29,8 @@ public class MLineChartRenderer extends LineChartRenderer {
     private int maxTimer = 100;//最长处理时间
     private int minTimer = 100;//处理的间隔最小时长
     private boolean isCountDown = false;//是否倒计时
+
+    private boolean isDraw = true;//是否绘制
 
     @Override
     protected void drawCubicBezier(ILineDataSet dataSet) {
@@ -154,6 +153,7 @@ public class MLineChartRenderer extends LineChartRenderer {
             if (step > 0) {
                 boolean p = true;
                 for (int j = mXBounds.min + 1; j <= size; j++) {
+                    if (!isDraw) return;
                     prevPrev = prev;
                     prev = cur;
                     cur = nextIndex == j ? next : dataSet.getEntryForIndex(j);
@@ -178,6 +178,7 @@ public class MLineChartRenderer extends LineChartRenderer {
                 }
             } else {
                 for (int j = mXBounds.min + 1; j <= size; j++) {
+                    if (!isDraw) return;
                     prevPrev = prev;
                     prev = cur;
                     cur = nextIndex == j ? next : dataSet.getEntryForIndex(j);
@@ -258,6 +259,7 @@ public class MLineChartRenderer extends LineChartRenderer {
 
             boolean p = true;
             for (int j = mXBounds.min + step; j <= length; j += step) {
+                if (!isDraw) return;
                 if (p && j + step > length) {
                     j = length - step;
                     p = false;
@@ -311,6 +313,7 @@ public class MLineChartRenderer extends LineChartRenderer {
                 boolean p = true;
                 int j = 0;
                 for (int x = mXBounds.min + step; x <= length; x += step) {
+                    if (!isDraw) return;
                     if (p && x + step > length) {
                         x = length - step;
                         p = false;
@@ -367,5 +370,9 @@ public class MLineChartRenderer extends LineChartRenderer {
         previous = null;
         if (maxTimer < minTimer)
             maxTimer = minTimer;
+    }
+
+    public void setDraw(boolean draw) {
+        isDraw = draw;
     }
 }

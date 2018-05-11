@@ -2,6 +2,7 @@ package com.finance.interfaces;
 
 import com.finance.linechartview.LineChartSetting;
 import com.finance.widget.combinedchart.MCombinedChart;
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 /**
@@ -9,7 +10,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
  */
 public interface IChartSetting {
 
-    IChartSetting initLineChart(MCombinedChart lineChart, boolean isOffsets);
+    IChartSetting initLineChart(BarLineChartBase lineChart, boolean isOffsets);
 
     LineChartSetting setRightIAxisValueFormatter(IAxisValueFormatter rightIAxisValueFormatter);
 

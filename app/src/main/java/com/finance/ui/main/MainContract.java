@@ -1,6 +1,8 @@
 package com.finance.ui.main;
 
 
+import android.view.View;
+
 import com.finance.base.IBasePresenter;
 import com.finance.base.IBaseView;
 import com.finance.interfaces.ICallback;
@@ -46,13 +48,11 @@ public interface MainContract {
         //刷新期号
         void refreshIessue();
 
-        String issueNameFormat(String issueName);//格式化期号
-
         boolean isRefrshChartData();//是否在刷新走势图数据
 
         void placeOrder(PlaceOrderEntity entity, String msg);
 
-        void openPrizeDialog(HistoryIssueEntity entity,String msg, IndexMarkEntity openIndex, int productId, String issue, String productName);
+        void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName);
 
 //        void openIndex(OpenIndexEntity entity, String msg);
     }
@@ -76,11 +76,9 @@ public interface MainContract {
 
         void getDynamicPopupWindow(ICallback<DynamicsEntity> iCallback);
 
-        String issueNameFormat(String issueName);
+        void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities);
 
-        void showProductPopWindow(android.view.View view, int x, int y, ArrayList<ProductEntity> entities);
-
-        void showIssuePopWindow(android.view.View view, int x, int y, ArrayList<IssueEntity> entities, int selIndex);
+        void showIssuePopWindow(android.view.View anchor, int x, int y, ArrayList<IssueEntity> entities, int selIndex);
 
         void showOrderPopWindow(android.view.View anchor, android.view.View leftView, int width, int y, IDismiss dismiss);
 

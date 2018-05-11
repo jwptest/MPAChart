@@ -21,7 +21,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.finance.R;
 import com.finance.model.ben.PurchaseViewEntity;
-import com.finance.widget.combinedchart.MCombinedChart;
 import com.finance.widget.roundview.RoundTextView;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.YAxis;
@@ -197,7 +196,7 @@ public class ViewUtil {
     private View rootView;
 
     //刷新购买点的位置
-    public void refreshPurchaseView(MCombinedChart mChart, PurchaseViewEntity entity, IDataSet dataSet) {
+    public void refreshPurchaseView(BarLineChartBase mChart, PurchaseViewEntity entity, IDataSet dataSet) {
         //获取布局的LayoutParams
         layoutParams1 = entity.getRootParams();
         rootView = entity.getRootView();

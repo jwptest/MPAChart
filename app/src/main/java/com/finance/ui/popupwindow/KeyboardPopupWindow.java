@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.view.View;
 
 import com.finance.R;
-import com.finance.utils.PhoneUtil;
 import com.finance.widget.animation.BaseAnimatorSet;
 
 import butterknife.OnClick;
@@ -15,15 +14,15 @@ import butterknife.OnClick;
 public class KeyboardPopupWindow extends BasePopupWindow {
 
     private IKeyListener mKeyListener;
-    private int minX;
-    private int maxX;
+//    private int minX;
+//    private int maxX;
 
     public KeyboardPopupWindow(Activity activity, int width, int height, int x, int y) {
         super(activity, width, height, x, y);
         setTouchable(true);
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
-        this.minX = x;
-        this.maxX = PhoneUtil.getScreenHeight(activity) + width;
+//        this.minX = x;
+//        this.maxX = PhoneUtil.getScreenHeight(activity) + width;
     }
 
     @Override

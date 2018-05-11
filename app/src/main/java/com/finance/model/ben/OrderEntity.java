@@ -1,5 +1,7 @@
 package com.finance.model.ben;
 
+import com.finance.utils.TimerUtil;
+
 /**
  * 订单
  */
@@ -9,10 +11,13 @@ public class OrderEntity {
     //    BonusIndexMark IndexMark ;//中奖指数
     private double BonusMoney;//Decimal 中奖金额
     private String BonusTime;// DateTime 开奖时间
-    transient private long openTimer;//开奖时间
+    transient private long openTimer = 0;//开奖时间
+    transient private String data;
+    transient private String timer;
     private String CreateTime;//DateTime 创建时间
     private double DecIndexMark;// Decimal 数值型指数
     private int Expects;//Int32 预计收益
+    transient private String ExpectsStr;//预计收益字符串
     private String HexIndexMark;// String 购买指数
     //    IndexMark ;//IndexMark 指数
     private boolean IsEmptyUser;//Boolean 是否为未登录用户订单
@@ -56,7 +61,40 @@ public class OrderEntity {
 //    private String RiskGroup;
 //    private String TaskId;
 
+
+    public String getExpectsStr() {
+        if (ExpectsStr == null)
+            ExpectsStr = (100 + Expects) * Money / 100 + "";
+        return ExpectsStr;
+    }
+
+    public void setExpectsStr(String expectsStr) {
+        ExpectsStr = expectsStr;
+    }
+
+    public String getData() {
+        if (data == null)
+            data = TimerUtil.getDate(CreateTime);
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getTimer() {
+        if (timer == null)
+            timer = TimerUtil.getTimer(CreateTime);
+        return timer;
+    }
+
+    public void setTimer(String timer) {
+        this.timer = timer;
+    }
+
     public long getOpenTimer() {
+        if (openTimer == 0)
+            openTimer = TimerUtil.timerToLong(BonusTime);
         return openTimer;
     }
 

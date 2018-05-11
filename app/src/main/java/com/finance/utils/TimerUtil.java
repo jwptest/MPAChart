@@ -34,4 +34,22 @@ public class TimerUtil {
         return formatter.format(new Date(timer));
     }
 
+    //获取日期05:40
+    public static String getDate(String timerStr) {
+        //2018-05-05T10:40:00+08:00
+        if (TextUtils.isEmpty(timerStr) || timerStr.length() < 10) return "-";
+        timerStr = timerStr.substring(5, 10);
+        return timerStr;
+    }
+
+    //获取时间05-05
+    public static String getTimer(String timerStr) {
+        //2018-05-05T10:40:00+08:00
+        int index = TextUtils.isEmpty(timerStr) ? -1 : timerStr.indexOf('T');
+        if (index < 0) return timerStr;
+        if (timerStr.length() < index + 5) return timerStr;
+        return timerStr.substring(index + 1, index + 6);
+    }
+
+
 }

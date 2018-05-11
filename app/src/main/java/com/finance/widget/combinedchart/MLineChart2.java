@@ -5,9 +5,12 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.finance.model.ben.IndexMarkEntity;
 import com.github.mikephil.charting.charts.BarLineChartBase;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
 
 /**
@@ -28,6 +31,8 @@ public class MLineChart2 extends BarLineChartBase<LineData> implements LineDataP
     public MLineChart2(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+
+    private OnDrawCompletion drawCompletion;
 
     @Override
     protected void init() {
@@ -60,10 +65,22 @@ public class MLineChart2 extends BarLineChartBase<LineData> implements LineDataP
         //没有显示则不刷新
         if (getVisibility() != View.VISIBLE) return;
         super.onDraw(canvas);
+        //绘制完成，刷新其他控件
+        if (drawCompletion == null) return;
+        IDataSet iDataSet = getLineData().getDataSets().get(0);
+        if (iDataSet == null || iDataSet.getEntryCount() <= 0) return;
+        Entry entry1 = iDataSet.getEntryForIndex(iDataSet.getEntryCount() - 1);//开奖点
+        if (entry1 == null) return;
+        if (entry1 instanceof IndexMarkEntity)
+            drawCompletion.completion((IndexMarkEntity) entry1, iDataSet);
     }
 
     public MLineChartRenderer getMLineChartRenderer() {
         return mcombinedchartRenderer;
+    }
+
+    public void setOnDrawCompletion(OnDrawCompletion drawCompletion) {
+        this.drawCompletion = drawCompletion;
     }
 
 }

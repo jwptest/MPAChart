@@ -74,6 +74,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private IndexMarkEntity currentEntry;
     //当前点的值
     private Entry endEntry, openEntry;
+    private long endTimer, openTimer;//截止时间和开奖时间
     private ProductEntity mProductEntity;//当前产品
     //当前期号
     private IssueEntity mIssueEntity;
@@ -106,6 +107,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private int childCount;
     private int dpPx10;
     private boolean isOrder = false;//是否有订单
+    private long currentTimer;//当前点转换为时间
 
     public LineChartListener(Activity activity, ViewGroup rlPurchaseView, MainContract.View view, MCombinedChart lineChart) {
         this.mActivity = activity;
@@ -119,6 +121,11 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mPurchaseViewEntities = new ArrayList<>(4);
         temporaryList = new ArrayList<>(4);
         removePurchaseViews = new ArrayList<>(4);
+    }
+
+    @Override
+    public void onResume(String type) {
+
     }
 
     @Override
@@ -346,6 +353,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (temporaryList == null || temporaryList.isEmpty())
             return entities;
         entities.addAll(temporaryList);
+        temporaryList.clear();
         return entities;
     }
 
@@ -528,6 +536,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             if (mIChartData != null && mIssueEntity != null) {
                 endEntry = mIChartData.getEntry(mIssueEntity.getStopTime());
                 openEntry = mIChartData.getEntry(mIssueEntity.getBonusTime());
+                endTimer = TimerUtil.timerToLong(mIssueEntity.getStopTime()) + 2000;
+                openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime()) + 2000;
             }
             updatePurchaseView();//刷新购买点的坐标点
         } else {
@@ -548,6 +558,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //        Log.d("123", "Xmax: " + mXAxis.getAxisMaximum());
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;
+        currentTimer = TimerUtil.timerToLong(currentEntry.getTime());
         //刷新购买点的位置
         refreshPurchaseViews(dataSet);
         //开奖
@@ -631,11 +642,10 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void refreshPurchaseViews(IDataSet dataSet) {
         isOrder = false;
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
-        long current = TimerUtil.timerToLong(currentEntry.getTime());
         boolean isIndex = false;
         //移除到达开奖点的购买点
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
-            if (entity.getOpenTimer() <= current) {
+            if (entity.getOpenTimer() <= currentTimer) {
                 entity.getRootView().clearAnimation();
                 mParent.removeView(entity.getRootView());
                 if (entity.getProductId() == mProductEntity.getProductId()) {
@@ -674,19 +684,32 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         EventDistribution.getInstance().onDraw(currentEntry);
         //截止购买和开奖
         if (openEntry != null && endEntry != null) {
-            if (currentEntry.getX() == endEntry.getX()) {
+            if (Math.abs(currentTimer - endTimer) < 500) {
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
                 if (isOrder) {
-                    long end = TimerUtil.timerToLong(mIssueEntity.getStopTime());
+                    long end = TimerUtil.timerToLong(currentEntry.getTime());
                     long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
                     if (open - end > 0)//开始倒计时
                         OpenCountDown.getInstance().startCountDown(open - end);
                 }
-            } else if (currentEntry.getX() >= openEntry.getX()) {
+            } else if (Math.abs(currentTimer - openTimer) < 500) {
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖
                 if (isOrder)
                     OpenCountDown.getInstance().stopCountDown();//停止倒计时
             }
+//            if (currentEntry.getX() == endEntry.getX()) {
+//                EventDistribution.getInstance().purchase(false, isOrder);//截止购买
+//                if (isOrder) {
+//                    long end = TimerUtil.timerToLong(currentEntry.getTime());
+//                    long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
+//                    if (open - end > 0)//开始倒计时
+//                        OpenCountDown.getInstance().startCountDown(open - end);
+//                }
+//            } else if (currentEntry.getX() >= openEntry.getX()) {
+//                EventDistribution.getInstance().purchase(true, isOrder);//开奖
+//                if (isOrder)
+//                    OpenCountDown.getInstance().stopCountDown();//停止倒计时
+//            }
         }
     }
 

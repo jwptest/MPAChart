@@ -13,6 +13,8 @@ import java.util.ArrayList;
  */
 public interface IChartListener extends IDestroy {
 
+    void onResume(String type);
+
     IChartListener initListener();
 
     IndexMarkEntity getCurrentEntry();

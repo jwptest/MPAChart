@@ -7,6 +7,7 @@ import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.interfaces.IChartSetting;
 import com.finance.widget.combinedchart.MCombinedChart;
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -44,7 +45,7 @@ public class LineChartSetting implements IChartSetting {
     /***************************初始化LineChart******************************/
 
     @Override
-    public LineChartSetting initLineChart(MCombinedChart mChart, boolean isOffsets) {
+    public LineChartSetting initLineChart(BarLineChartBase mChart, boolean isOffsets) {
         mChart.setDrawGridBackground(false);//设置是否画网格背景
         mChart.setDragDecelerationEnabled(false);//继续滚动后润色
         mChart.getDescription().setEnabled(true);//描述文本
@@ -95,7 +96,7 @@ public class LineChartSetting implements IChartSetting {
 
     /***************************初始化线******************************/
 
-    private void initLeftAxis(MCombinedChart mChart) {
+    private void initLeftAxis(BarLineChartBase mChart) {
         leftAxis = mChart.getAxisLeft();
         leftAxis.setEnabled(false);
 //        leftAxis.setAxisLineWidth(1f);//边框的宽度
@@ -124,7 +125,7 @@ public class LineChartSetting implements IChartSetting {
 //        leftAxis.resetAxisMinimum();//最大值重置
     }
 
-    private void initRightAxis(MCombinedChart mChart) {
+    private void initRightAxis(BarLineChartBase mChart) {
         rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(true);
         rightAxis.setDrawAxisLine(false);
@@ -146,7 +147,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setAxisLineColor(getColor(R.color.transparent));
     }
 
-    private void initXAxis(MCombinedChart mChart) {
+    private void initXAxis(BarLineChartBase mChart) {
         xAxis = mChart.getXAxis();
         //禁用x轴，设置为false后该轴任何部分都不会绘制,所以即使再设置xAxis.setDrawAxisLine(true);也不会被绘制
         xAxis.setEnabled(true);//是否绘制X轴线

@@ -46,17 +46,19 @@ public abstract class BasePopupWindow extends PopupWindow {
         rootView.setOrientation(LinearLayout.VERTICAL);
         if (isAnimation()) {//添加执行动画布局
             LinearLayout animation = new LinearLayout(context);
-            LinearLayout.LayoutParams paramAnimation = new LinearLayout.LayoutParams(width, height);
-            animation.addView(contentView, paramAnimation);
+            animation.addView(contentView, getContentLayoutParams(width, height));
             contentView = animation;
         }
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
+        LinearLayout.LayoutParams params = getContentLayoutParams(width, height);
         params.leftMargin = x;
         params.topMargin = y;
         rootView.addView(contentView, params);
         setContentView(rootView);
         if (isBindView()) {
             ButterKnife.bind(this, contentView);
+        }
+        if (getBackColor() != 0) {
+            rootView.setBackgroundColor(getBackColor());
         }
         mAminationView = contentView;
     }
@@ -76,6 +78,15 @@ public abstract class BasePopupWindow extends PopupWindow {
     protected abstract BaseAnimatorSet getShowAs();
 
     protected abstract BaseAnimatorSet getDismissAs();
+
+    protected LinearLayout.LayoutParams getContentLayoutParams(int width, int height) {
+        return new LinearLayout.LayoutParams(width, height);
+    }
+
+    //设置最外层view的背景颜色
+    protected int getBackColor() {
+        return 0;
+    }
 
     public void setDismiss(IDismiss dismiss) {
         this.dismiss = dismiss;

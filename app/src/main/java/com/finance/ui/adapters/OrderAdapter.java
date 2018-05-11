@@ -48,6 +48,7 @@ import java.util.ArrayList;
 public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
 
     private long serviceTimer;//服务器时间
+    private ICallback mICallback;
 
     public OrderAdapter(ArrayList<OrderEntity> mlist) {
         addAll(mlist);
@@ -59,22 +60,30 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         return new ItemHolder(view);
     }
 
+    private int progressBar;
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemHolder itemHolder = (ItemHolder) holder;
         OrderEntity entity = getItem(position);
         if (isOpen(entity, position)) {//开奖完成
             itemHolder.cvProgressBar.setVisibility(View.GONE);
-//            itemHolder.tvTimer.setText(entity.getCreateTime());
-//            itemHolder.tvDate.setText(entity.getCreateTime());
+            itemHolder.tvTimer.setText(entity.getTimer());
+            itemHolder.tvDate.setText(entity.getData());
             itemHolder.llTimer.setVisibility(View.VISIBLE);
         } else {//交易中
             itemHolder.cvProgressBar.setVisibility(View.VISIBLE);
             itemHolder.llTimer.setVisibility(View.GONE);
+            progressBar = (int) (entity.getOpenTimer() - serviceTimer / 1000);
+            if (progressBar <= -2) {
+                progressBar = 0;
+                if (mICallback != null) mICallback.openPrize();
+            }
 //            计算进度
-            itemHolder.cvProgressBar.setProgress(30);
+            itemHolder.cvProgressBar.setProgress(progressBar);
         }
 
+        itemHolder.tvName.setText(entity.getProductTxt());
         if (entity.isResult()) {//涨
             itemHolder.ivRiseFall.setImageResource(R.drawable.add_icon_item);
             itemHolder.tvExplain.setText("看涨");
@@ -82,12 +91,12 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
             itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon_item);
             itemHolder.tvExplain.setText("看跌");
         }
-//
-//        itemHolder.tvName.setText(entity.getProductTxt());
-//        itemHolder.tvPurchase.setText(entity.getBonusHexIndexMark());
-//        itemHolder.tvMoney.setText(entity.getBonusMoney() + "");
-//        itemHolder.tvPurchase2.setText("指数");
-//        itemHolder.tvName.setText(entity.getMoney() + "");
+
+        itemHolder.tvPurchase.setText(entity.getHexIndexMark());//购买指数
+        itemHolder.tvPurchase2.setText(entity.getDecIndexMark() + "");
+
+        itemHolder.tvMoney.setText(entity.getExpectsStr() + "");//金额
+        itemHolder.tvMoney2.setText(entity.getMoney() + "");
     }
 
     @Override
@@ -167,5 +176,12 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         }
     }
 
+    public void setICallback(ICallback ICallback) {
+        mICallback = ICallback;
+    }
+
+    public interface ICallback {
+        void openPrize();//有到开奖时间的订单
+    }
 
 }

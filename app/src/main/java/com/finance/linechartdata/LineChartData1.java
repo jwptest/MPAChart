@@ -87,6 +87,15 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     }
 
     @Override
+    public LineData getLineData() {
+        if (lineData == null) {
+            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+            lineData = new LineData(set);
+        }
+        return lineData;
+    }
+
+    @Override
     public void onResume(String type) {
         super.onResume(type);
         EventDistribution.getInstance().addChartDraws(this);
@@ -130,13 +139,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         stopNetwork();//停止以前的网络请求
         isTimer = false;//设置不可以转换时间
         topStartTimer = 0;
+        startRemoveDataAnimation();//启动删除动画
         long timer = timerToLong(issueEntity.getBonusTime()) - Constants.SERVERCURRENTTIMER;
         //获取期号
         mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), this);
         //获取时时数据
 //        mHttpConnection = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
         mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
-        startRemoveDataAnimation();//启动删除动画
     }
 
     @Override

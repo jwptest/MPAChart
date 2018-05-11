@@ -41,7 +41,7 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
-import com.finance.ui.dialog.OpenPrizeDialog;
+import com.finance.ui.popupwindow.OpenPrizePopWindow;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -400,7 +400,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private void initViewIssue(int selIndex) {
         IssueEntity entity = currentIssues.get(selIndex);
         issuesSelectIndex = selIndex;
-        tvJZTimer.setText(issueNameFormat(entity.getBonusTime()));
+        tvJZTimer.setText(TimerUtil.getTimer(entity.getBonusTime()));
         currentIssue = entity;
         updateIssue();//更新走势图
     }
@@ -473,11 +473,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     @Override
-    public String issueNameFormat(String issueName) {
-        return mMainPresenter.issueNameFormat(issueName);
-    }
-
-    @Override
     public boolean isRefrshChartData() {
         return dataSetting == null || dataSetting.isRefrshChartData();
     }
@@ -520,8 +515,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             App.getInstance().showErrorMsg(msg);
             return;
         }
+        int width = PhoneUtil.getScreenWidth(mActivity);
+        int height = PhoneUtil.getScreenHeight(mActivity);
         //显示开奖对话框
-        new OpenPrizeDialog(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName).show();
+        new OpenPrizePopWindow(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName, width, height).showPopupWindow(rlTitleBar);
     }
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})

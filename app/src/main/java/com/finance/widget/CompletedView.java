@@ -114,8 +114,7 @@ public class CompletedView extends View {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setColor(Color.parseColor("#FFFFFF"));
-        mTextPaint.setTextSize(10);
-
+        mTextPaint.setTextSize(12);
         Paint.FontMetrics fm = mTextPaint.getFontMetrics();
         mTxtHeight = (int) Math.ceil(fm.descent - fm.ascent);
     }
