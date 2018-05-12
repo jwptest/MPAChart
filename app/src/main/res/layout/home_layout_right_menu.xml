@@ -18,29 +18,29 @@
     <RelativeLayout
         android:id="@+id/rlEdit"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_47"
+        android:layout_height="@dimen/dp_40"
         android:layout_marginLeft="@dimen/dp_5"
         android:layout_marginRight="@dimen/dp_5"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/ivMoneyReduce"
-            android:layout_width="@dimen/dp_35"
-            android:layout_height="@dimen/dp_35"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
             android:layout_centerVertical="true"
             android:clickable="true"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:src="@drawable/home_money_fall_button"/>
 
         <!--宽高比1.53-->
         <ImageView
             android:id="@+id/ivEditBg"
             android:layout_width="@dimen/dp_61"
-            android:layout_height="@dimen/dp_35"
+            android:layout_height="@dimen/dp_30"
             android:layout_centerInParent="true"
             android:layout_marginLeft="@dimen/dp_2"
             android:layout_marginRight="@dimen/dp_2"
+            android:scaleType="fitXY"
             android:src="@drawable/money_edit_bg"/>
 
         <TextView
@@ -60,12 +60,12 @@
 
         <ImageView
             android:id="@+id/ivMoneyAdd"
-            android:layout_width="@dimen/dp_35"
-            android:layout_height="@dimen/dp_35"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:clickable="true"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:src="@drawable/home_money_add_button"/>
 
     </RelativeLayout>
@@ -75,11 +75,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="@dimen/dp_10"
-        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_20"
         android:text="预期收益"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_14"
-        android:visibility="gone"/>
+        android:textSize="@dimen/sp_14"/>
 
     <TextView
         android:id="@+id/tvProfit"
@@ -106,27 +105,83 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/dp_30"
+        android:layout_marginBottom="@dimen/dp_20"
         android:gravity="center"
         android:text="收益率-%"
         android:textColor="#AAFFFFFF"
-        android:textSize="@dimen/sp_12"
-        android:visibility="gone"/>
+        android:textSize="@dimen/sp_12"/>
 
-    <ImageView
-        android:id="@+id/ivRise"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:src="@drawable/home_add_button"/>
+    <!--<ImageView-->
+    <!--android:id="@+id/ivRise"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:scaleType="centerInside"-->
+    <!--android:src="@drawable/home_add_button"-->
+    <!--android:visibility="gone"/>-->
 
-    <ImageView
-        android:id="@+id/ivFall"
+    <!--<ImageView-->
+    <!--android:id="@+id/ivFall"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="@dimen/dp_10"-->
+    <!--android:scaleType="centerInside"-->
+    <!--android:src="@drawable/home_fall_button"-->
+    <!--android:visibility="gone"/>-->
+
+    <LinearLayout
+        android:id="@+id/llRise"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginRight="@dimen/dp_10"
+        android:background="@drawable/home_add_button"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/dp_12"
+            android:layout_height="@dimen/dp_20"
+            android:layout_marginRight="@dimen/dp_3"
+            android:scaleType="centerInside"
+            android:src="@drawable/rise_button_icon"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_3"
+            android:text="看涨"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFall"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginRight="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
-        android:scaleType="centerInside"
-        android:src="@drawable/home_fall_button"/>
+        android:background="@drawable/home_fall_button"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/dp_12"
+            android:layout_height="@dimen/dp_20"
+            android:layout_marginRight="@dimen/dp_3"
+            android:scaleType="centerInside"
+            android:src="@drawable/fall_button_icon"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_3"
+            android:text="看跌"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/llRightNext"
@@ -150,7 +205,7 @@
             android:layout_marginBottom="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_15"
             android:text="12"
-            android:textColor="#00ff00"
+            android:textColor="#fff601"
             android:textSize="@dimen/sp_20"/>
 
         <ImageView
@@ -161,54 +216,5 @@
             android:src="@drawable/right_button_next"/>
     </LinearLayout>
 
-    <!--<LinearLayout-->
-    <!--android:id="@+id/llRise"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="60dp"-->
-    <!--android:layout_marginLeft="10dp"-->
-    <!--android:layout_marginRight="10dp"-->
-    <!--android:background="@drawable/home_add_button"-->
-    <!--android:clickable="true"-->
-    <!--android:gravity="center"-->
-    <!--android:orientation="horizontal">-->
-
-    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="20dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="40dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_marginRight="7dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:scaleType="centerInside"/>&ndash;&gt;-->
-
-    <!--&lt;!&ndash;<TextView&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_marginLeft="7dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:text="看涨"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textColor="@color/white"/>&ndash;&gt;-->
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-    <!--android:id="@+id/llFall"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="60dp"-->
-    <!--android:layout_marginLeft="10dp"-->
-    <!--android:layout_marginRight="10dp"-->
-    <!--android:background="@drawable/home_fall_button"-->
-    <!--android:clickable="true"-->
-    <!--android:gravity="center"-->
-    <!--android:orientation="horizontal">-->
-
-    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="20dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="40dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_marginRight="7dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:scaleType="centerInside"/>&ndash;&gt;-->
-
-    <!--&lt;!&ndash;<TextView&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_marginLeft="7dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:text="看跌"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textColor="@color/white"/>&ndash;&gt;-->
-    <!--</LinearLayout>-->
 
 </LinearLayout>

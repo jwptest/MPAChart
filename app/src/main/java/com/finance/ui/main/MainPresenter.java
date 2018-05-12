@@ -16,6 +16,7 @@ import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.IssuesEntity;
 import com.finance.model.ben.ItemEntity;
+import com.finance.model.ben.NotesMessage;
 import com.finance.model.ben.OpenIndexEntity;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
@@ -305,7 +306,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     private int productSelectIndex;
 
     @Override
-    public void showProductPopWindow(View view, int x, int y, ArrayList<ProductEntity> entities) {
+    public void showProductPopWindow(View view, int x, int y, ArrayList<ProductEntity> entities, IDismiss dismiss) {
         if (entities == null || entities.isEmpty()) return;
         ArrayList<ItemEntity<ProductEntity>> arrayList = getProducts(entities);
         final ProductPopupWindow mProductPopupWindow = new ProductPopupWindow(mActivity, view.getWidth(), x, y, arrayList);
@@ -318,6 +319,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 mProductPopupWindow.dismiss();
             }
         });
+        mProductPopupWindow.setDismiss(dismiss);
         mProductPopupWindow.setSelectIndex(productSelectIndex);
         mProductPopupWindow.showPopupWindow(view);
     }
@@ -334,7 +336,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     @Override
-    public void showIssuePopWindow(View view, int x, int y, ArrayList<IssueEntity> entities, int selIndex) {
+    public void showIssuePopWindow(View view, int x, int y, ArrayList<IssueEntity> entities, int selIndex, IDismiss dismiss) {
         if (entities == null || entities.isEmpty()) return;
         ArrayList<ItemEntity<IssueEntity>> arrayList = getIssues(entities);
         IssuesPopupWindow mIssuesPopupWindow = new IssuesPopupWindow(mActivity, view.getWidth(), x, y, arrayList);
@@ -346,6 +348,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 mIssuesPopupWindow.dismiss();
             }
         });
+        mIssuesPopupWindow.setDismiss(dismiss);
         mIssuesPopupWindow.setSelectIndex(selIndex);
         mIssuesPopupWindow.showPopupWindow(view);
     }
@@ -401,6 +404,37 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     public void onFailed(int code, String msg, boolean isFromCache) {
                         if (mView == null) return;
                         mView.placeOrder(null, msg);
+                    }
+                });
+    }
+
+    @Override
+    public void notesMessage(final ICallback<NotesMessage> callback) {
+        BaseParams baseParams = new BaseParams();
+        baseParams.addParam("SourceCode", 138);
+        baseParams.addParam("Begin", "2018-05-11T11:24:30+08:00");//开始时间
+        baseParams.addParam("End", "2018-05-12T17:24:30+08:00");//结束时间
+        baseParams.addParam("Page", 1);
+        baseParams.addParam("PageSize", 20);
+        baseParams.addParam("StatusMsg", 0);
+        baseParams.addParam("TypeMsg", new int[]{0,1, 2});
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(200)
+                .setToken(baseParams.getToken())
+                .setParams(baseParams)
+                .execute(new JsonCallback<String>(String.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
+                        if (mView == null || callback == null) return;
+                        callback.onCallback(code, null, msg);
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (mView == null || callback == null) return;
+                        callback.onCallback(code, null, msg);
                     }
                 });
     }

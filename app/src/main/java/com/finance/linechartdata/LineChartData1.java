@@ -2,6 +2,7 @@ package com.finance.linechartdata;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.finance.App;
 import com.finance.common.Constants;
@@ -42,8 +43,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     private long issueLengthTime;//当前期显示的数据时间长度
     private boolean isTimer = false;//是否可以转换时间
 
-    public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
-        super(context, view, chart, presenter);
+    public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter, View animView) {
+        super(context, view, chart, presenter,animView);
         this.mIndexMarkEntities = new ArrayList<>(6);
     }
 
@@ -150,6 +151,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     @Override
     protected void stopAddAnimation() {
+        super.stopAddAnimation();
         //添加数据动画执行完成
         addAlwaysDatas(mChartDatas);
         int startIndex = -1;

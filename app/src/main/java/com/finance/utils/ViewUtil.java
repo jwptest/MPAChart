@@ -39,7 +39,7 @@ public class ViewUtil {
 
     //设置控件状态
     public static void setViewVisibility(View view, int visibility) {
-        if (view.getVisibility() != visibility)
+        if (view != null && view.getVisibility() != visibility)
             view.setVisibility(visibility);
     }
 

@@ -39,7 +39,7 @@ public class DynamicPopupWindow extends LeftToRightPopupWindow implements ICallb
     @BindView(R.id.rvOrder)
     RecyclerView rvOrder;
     private Activity mActivity;
-    private MainContract.Presenter mPresenter;
+    //    private MainContract.Presenter mPresenter;
     private IDismiss dismiss;
 
     private DynamicAdapter mAdapter;
@@ -48,11 +48,12 @@ public class DynamicPopupWindow extends LeftToRightPopupWindow implements ICallb
     public DynamicPopupWindow(Activity activity, MainContract.Presenter presenter, int width, int x, int y) {
         super(activity, width, LinearLayout.LayoutParams.MATCH_PARENT, x, y);
         mActivity = activity;
-        this.mPresenter = presenter;
+//        this.mPresenter = presenter;
         setTouchable(true);
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
         tvTitle.setText("交易动态");
         tvEmptyText.setText("暂无动态记录");
+        initData();
         if (presenter != null)
             presenter.getDynamicPopupWindow(this);
     }

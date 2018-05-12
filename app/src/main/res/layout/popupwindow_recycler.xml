@@ -5,11 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--android:background="@drawable/product_bg"-->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/product_bg"
+        android:background="#24201b"
+        android:paddingBottom="@dimen/dp_m_1"
         android:scrollbars="none"/>
 
 </LinearLayout>

@@ -386,13 +386,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //    }
 
     @Override
-    public void updateIssue(IssueEntity entity) {
-        mIssueEntity = entity;
-    }
-
-    @Override
-    public void updateProduct(ProductEntity entity) {
-        mProductEntity = entity;
+    public void updateProductIssue(ProductEntity productEntity, IssueEntity issueEntity) {
+        mProductEntity = productEntity;
+        mIssueEntity = issueEntity;
     }
 
 //    //将所有布局添加到控件

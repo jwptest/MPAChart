@@ -21,9 +21,7 @@ public interface IChartListener extends IDestroy {
 
     void addPurchaseView(PurchaseViewEntity entity);
 
-    void updateIssue(IssueEntity entity);
-
-    void updateProduct(ProductEntity entity);
+    void updateProductIssue(ProductEntity productEntity,IssueEntity issueEntity);
 
     void setIChartData(IChartData iChartData);
 

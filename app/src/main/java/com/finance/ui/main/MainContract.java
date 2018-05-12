@@ -11,6 +11,7 @@ import com.finance.model.ben.DynamicsEntity;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
+import com.finance.model.ben.NotesMessage;
 import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
@@ -76,15 +77,17 @@ public interface MainContract {
 
         void getDynamicPopupWindow(ICallback<DynamicsEntity> iCallback);
 
-        void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities);
+        void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities, IDismiss dismiss);
 
-        void showIssuePopWindow(android.view.View anchor, int x, int y, ArrayList<IssueEntity> entities, int selIndex);
+        void showIssuePopWindow(android.view.View anchor, int x, int y, ArrayList<IssueEntity> entities, int selIndex, IDismiss dismiss);
 
         void showOrderPopWindow(android.view.View anchor, android.view.View leftView, int width, int y, IDismiss dismiss);
 
         void showDynamicPopWindow(android.view.View anchor, android.view.View leftView, int width, int y, IDismiss dismiss);
 
         void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark);
+
+        void notesMessage(ICallback<NotesMessage> callback);
 
     }
 

@@ -264,7 +264,7 @@
 	<dimen name="dp_280">313.60dp</dimen>
 	<dimen name="dp_300">336.00dp</dimen>
 	<dimen name="home_left_menu_width">84.00dp</dimen>
-	<dimen name="home_right_menu_width">168.00dp</dimen>
+	<dimen name="home_right_menu_width">150.00dp</dimen>
 	<dimen name="home_right_top">11.20dp</dimen>
 	<dimen name="home_line_describe_top">36.96dp</dimen>
 	<dimen name="home_puy_item_height">22.40dp</dimen>

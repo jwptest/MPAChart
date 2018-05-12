@@ -35,10 +35,10 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     ImageView ivEditBg;
     @BindView(R.id.rlEdit)
     View rlEdit;
-    @BindView(R.id.ivRise)
-    View ivRise;
-    @BindView(R.id.ivFall)
-    View ivFall;
+    @BindView(R.id.llRise)
+    View llRise;
+    @BindView(R.id.llFall)
+    View llFall;
     @BindView(R.id.ivMoneyReduce)
     ImageView ivMoneyReduce;
     @BindView(R.id.tvProfit)
@@ -62,7 +62,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     private ProductEntity mProductEntity;//当前产品
     private IssueEntity mIssueEntity;//当前期号
 
-    private int sept = 2;//金额步长
+    private int sept = 10;//金额步长
     private int minMoney = 10;//最少投资金额
     private int maxMoney = 400;//最多投资金额
 
@@ -132,7 +132,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         OpenCountDown.getInstance().removeCallback(this);
     }
 
-    @OnClick({R.id.ivMoneyAdd, R.id.ivMoneyReduce, R.id.ivRise, R.id.ivFall, R.id.ivEditBg, R.id.ivRightNext})
+    @OnClick({R.id.ivMoneyAdd, R.id.ivMoneyReduce, R.id.llFall, R.id.llRise, R.id.ivEditBg, R.id.ivRightNext})
     public void onViewClicked(View view) {
         if (BtnClickUtil.isFastDoubleClick(view.getId())) {
             //防止双击
@@ -145,10 +145,10 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
             case R.id.ivMoneyReduce://金额减
                 deliveryUpdate(-sept);
                 break;
-            case R.id.ivRise://涨
+            case R.id.llRise://涨
                 rise();
                 break;
-            case R.id.ivFall://跌
+            case R.id.llFall://跌
                 fall();
                 break;
             case R.id.ivEditBg://打开键盘
@@ -167,9 +167,11 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         rlEdit.getLocationInWindow(location);
         int y1 = location[1];
         int x1 = location[0];
-        ivRise.getLocationInWindow(location);
-        int dp3 = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_5);
-        final KeyboardPopupWindow popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), location[1] - y1 - rlEdit.getHeight() - dp3, x1, y1 - mView.getStatusBarHigh() + rlEdit.getHeight());
+        llRise.getLocationInWindow(location);
+        int dp5 = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_5);
+        int height = location[1] - y1 - rlEdit.getHeight() - dp5;
+        int y = y1 - mView.getStatusBarHigh() + rlEdit.getHeight();
+        final KeyboardPopupWindow popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), height, x1, y);
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
@@ -273,12 +275,12 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 
     private void buttonChecked(boolean isNext) {
         if (isNext) {
-            ivRise.setVisibility(View.GONE);
-            ivFall.setVisibility(View.GONE);
+            llRise.setVisibility(View.GONE);
+            llFall.setVisibility(View.GONE);
             llRightNext.setVisibility(View.VISIBLE);
         } else {
-            ivRise.setVisibility(View.VISIBLE);
-            ivFall.setVisibility(View.VISIBLE);
+            llRise.setVisibility(View.VISIBLE);
+            llFall.setVisibility(View.VISIBLE);
             llRightNext.setVisibility(View.GONE);
         }
     }

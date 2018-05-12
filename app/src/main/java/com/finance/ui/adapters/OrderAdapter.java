@@ -49,6 +49,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 
     private long serviceTimer;//服务器时间
     private ICallback mICallback;
+    private int progressBar;//进度，计算方式不明
 
     public OrderAdapter(ArrayList<OrderEntity> mlist) {
         addAll(mlist);
@@ -60,13 +61,11 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         return new ItemHolder(view);
     }
 
-    private int progressBar;
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemHolder itemHolder = (ItemHolder) holder;
         OrderEntity entity = getItem(position);
-        if (isOpen(entity, position)) {//开奖完成
+        if (isOpen(entity)) {//开奖完成
             itemHolder.cvProgressBar.setVisibility(View.GONE);
             itemHolder.tvTimer.setText(entity.getTimer());
             itemHolder.tvDate.setText(entity.getData());
@@ -102,7 +101,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
     @Override
     public long getHeaderId(int position) {
         OrderEntity entity = getItem(position);
-        if (isOpen(entity, position)) {
+        if (isOpen(entity)) {
             return 1;
         }
         return 0;
@@ -120,7 +119,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         ImageView icon = holder.itemView.findViewById(R.id.ivStateIcon);//.setimage
         TextView textView = holder.itemView.findViewById(R.id.tvTransaction);
         OrderEntity entity = getItem(position);
-        if (isOpen(entity, position)) {
+        if (isOpen(entity)) {
             icon.setImageResource(R.drawable.complete_icon);
             textView.setText("交易完成订单");
         } else {
@@ -129,13 +128,12 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         }
     }
 
-    private boolean isOpen(OrderEntity entity, int i) {
-        return i > 5;
-//        if (serviceTimer > entity.getOpenTimer()) {
-//            return true;
-//        } else {
-//            return false;
-//        }
+    private boolean isOpen(OrderEntity entity) {
+        if (serviceTimer > entity.getOpenTimer()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void setServiceTimer(long serviceTimer) {

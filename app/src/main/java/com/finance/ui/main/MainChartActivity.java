@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,6 +43,7 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.ui.dialog.StartDialog;
 import com.finance.ui.popupwindow.OpenPrizePopWindow;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.PhoneUtil;
@@ -97,8 +100,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     ImageView ivKM;
     @BindView(R.id.llMoney)
     View llMoney;
+    @BindView(R.id.ivMoneyIcon)
+    ImageView ivMoneyIcon;
     @BindView(R.id.llTimer)
     View llTimer;
+    @BindView(R.id.ivTimerIcon)
+    ImageView ivTimerIcon;
     @BindView(R.id.ivRefresh)
     ImageView ivRefresh;
     @BindView(R.id.tvMoneyType)
@@ -137,7 +144,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     TextView tvInterestRate;
     @BindView(R.id.rlPurchaseView)
     ViewGroup rlPurchaseView;
-    //
+    @BindView(R.id.vAnimation)
+    View vAnimation;
 
     //    @BindView(R.id.llRise)
 //    LinearLayout llRise;
@@ -181,8 +189,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         initView();
         //初始化参数
         PurchaseViewEntity.initValue(this);
-//        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
-//        mDialog.show();
+        StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
+        mDialog.show();
         mMainPresenter.getProduct();
         int a = ViewConfiguration.get(mActivity).getScaledDoubleTapSlop();//双击的最大间距
         int b = ViewConfiguration.get(mActivity).getScaledTouchSlop();//移动的最小距离
@@ -230,9 +238,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //                    rlTitleBar.getPaddingRight(), rlTitleBar.getPaddingBottom());
             //设置titleBar的高度
             rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_height);
-//            ViewUtil.setTitleLineLocation(findViewById(R.id.vTitleLine1), ivExitLogin);
-//            ViewUtil.setTitleLineLocation(findViewById(R.id.vTitleLine2), llMoney);
-//            ViewUtil.setTitleLineLocation(findViewById(R.id.vTitleLine3), llTimer);
         }
         //右边轴value显示格式类
         BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);
@@ -258,7 +263,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setXAxisValueFormatter(mXAxisValue);
         leftMenu = new LeftMenu(mActivity, this, mMainPresenter).onInit(llLeftMenu);
         rightMenu = new RightMenu(mActivity, this, this).onInit(llRightMenu);
-        centreMenu = new CentreMenu(this).onInit(llCentreMenu);
+        centreMenu = new CentreMenu(this, mMainPresenter).onInit(llCentreMenu);
         //设置数据处理
         checkedChart(Constants.CHART_LINEFILL);//当前显示的走势图类型
 
@@ -267,6 +272,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         ViewUtil.setBackground(mActivity, llRightMenu, R.drawable.right_bg);
         ViewUtil.setBackground(mActivity, llLeftMenu, R.drawable.left_menu_bg);
         ViewUtil.setBackground(mActivity, rlZst, R.drawable.zst_bg);
+        ViewUtil.setBackground(mActivity, vAnimation, R.drawable.zst_bg);
         initLayoutParam();
         initViewUser();
     }
@@ -276,7 +282,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IChartData dataSetting = null;
         if (TextUtils.equals(type, Constants.CHART_LINEFILL) || TextUtils.equals(type, Constants.CHART_LINE)) {
             if (mLineChartData == null) {
-                mLineChartData = new LineChartData1(mActivity, this, lineChart, mMainPresenter);
+                mLineChartData = new LineChartData1(mActivity, this, lineChart, mMainPresenter, vAnimation);
             }
             dataSetting = mLineChartData;
         } else if (TextUtils.equals(type, Constants.CHART_CANDLE)) {
@@ -294,9 +300,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     //更新期号
     private void updateIssue() {
+        chartListener.updateProductIssue(currentProduct, currentIssue);//更新产品和期号
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
-        chartListener.updateIssue(currentIssue);//更新期号
-        chartListener.updateProduct(currentProduct);//更新产品
         EventDistribution.getInstance().issue(currentIssue);
     }
 
@@ -521,6 +526,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         new OpenPrizePopWindow(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName, width, height).showPopupWindow(rlTitleBar);
     }
 
+    Animation animation;
+
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
     public void onClickListener(View view) {
         if (BtnClickUtil.isFastDoubleClick(view.getId())) {
@@ -529,19 +536,45 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         switch (view.getId()) {
             case R.id.ivExitLogin:
-
                 break;
             case R.id.llMoney:
+                if (mProductEntities == null || mProductEntities.isEmpty()) return;
+                ivMoneyIcon.setImageResource(R.drawable.xialaax);
                 int[] location = new int[2];
                 llMoney.getLocationOnScreen(location);
-                mMainPresenter.showProductPopWindow(llMoney, location[0], rlTitleBar.getHeight() - statusBarHigh, mProductEntities);
+                mMainPresenter.showProductPopWindow(llMoney, location[0], rlTitleBar.getHeight() - statusBarHigh, mProductEntities, new IDismiss() {
+                    @Override
+                    public void onDismiss() {
+                        ivMoneyIcon.setImageResource(R.drawable.xiala);
+                    }
+                });
                 break;
             case R.id.llTimer:
+                if (currentIssues == null || currentIssues.isEmpty()) return;
                 int[] location1 = new int[2];
                 llTimer.getLocationOnScreen(location1);
-                mMainPresenter.showIssuePopWindow(llTimer, location1[0], rlTitleBar.getHeight() - statusBarHigh, currentIssues, issuesSelectIndex);
+                ivTimerIcon.setImageResource(R.drawable.xialaax);
+                mMainPresenter.showIssuePopWindow(llTimer, location1[0], rlTitleBar.getHeight() - statusBarHigh, currentIssues, issuesSelectIndex, new IDismiss() {
+                    @Override
+                    public void onDismiss() {
+                        ivTimerIcon.setImageResource(R.drawable.xiala);
+                    }
+                });
                 break;
             case R.id.ivRefresh:
+                if (animation == null) {
+                    animation = AnimationUtils.loadAnimation(mActivity, R.anim.animation_refresh_userinfo);
+                }
+                ivRefresh.startAnimation(animation);
+                UserCommon.getUserInfo(mActivity, new ICallback<UserInfoEntity>() {
+                    @Override
+                    public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
+                        ivRefresh.clearAnimation();
+                        if (userInfoEntity == null) return;
+                        initViewUser();//刷新用户信息
+                        App.getInstance().showErrorMsg("刷新余额成功！");
+                    }
+                });//刷新用户信息
                 break;
         }
     }

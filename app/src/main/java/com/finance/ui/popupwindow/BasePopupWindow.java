@@ -2,6 +2,7 @@ package com.finance.ui.popupwindow;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,7 @@ public abstract class BasePopupWindow extends PopupWindow {
 
     //设置最外层view的背景颜色
     protected int getBackColor() {
+//        return Color.parseColor("#50000000");
         return 0;
     }
 

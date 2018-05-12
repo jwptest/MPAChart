@@ -3,8 +3,11 @@ package com.finance.linechartdata;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
@@ -15,6 +18,7 @@ import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.ui.main.MainContract;
+import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.CombinedData;
@@ -43,8 +47,14 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected long duration = 160;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
+    protected View animView;//执行加载动画的view
+    private Animation mAnimation;//执行动画
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
+        this(context, view, chart, presenter, null);
+    }
+
+    public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter, View animView) {
         this.mContext = context;
         this.mView = view;
         this.mChart = chart;
@@ -52,6 +62,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         this.mXAxis = mChart.getXAxis();
         this.mChartDatas = new ArrayList<>(100);
         this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_30);
+        this.animView = animView;
         minsPacing = ViewConfiguration.get(context).getScaledTouchSlop();
         this.mChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -84,6 +95,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         }
         this.productEntity = productEntity;
         this.issueEntity = issueEntity;
+        ViewUtil.setViewVisibility(animView, View.VISIBLE);
         updateData();
     }
 
@@ -221,12 +233,44 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             @Override
             public void onAnimationCancel(Animator animation) {
                 isAnimation = false;
-                if (isAddAnimation) stopAddAnimation();
-                else stopRemoveAnimation();
+                if (isAddAnimation) {
+                    stopAddAnimation();
+                } else stopRemoveAnimation();
             }
         });
         valueAnimator.start();
         return valueAnimator;
+    }
+
+    //添加动画执行完成
+    protected void stopAddAnimation() {
+        if (animView == null) return;
+        if (mAnimation == null) {
+            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
+            mAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    animView.clearAnimation();
+                    ViewUtil.setViewVisibility(animView, View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+        animView.startAnimation(mAnimation);
+    }
+
+    //删除动画执行完成
+    protected void stopRemoveAnimation() {
+
     }
 
     //初始化操作
@@ -234,12 +278,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //刷新数据
     protected abstract void updateData();
-
-    //添加动画执行完成
-    protected abstract void stopAddAnimation();
-
-    //删除动画执行完成
-    protected abstract void stopRemoveAnimation();
 
     //获取当前数据的总时长
     protected abstract long getLengthTime();

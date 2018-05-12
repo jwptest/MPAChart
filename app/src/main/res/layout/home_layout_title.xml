@@ -22,6 +22,7 @@
         android:id="@+id/vTitleLine1"
         android:layout_width="@dimen/dp_0.6"
         android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/dp_m_1"
         android:background="#35000000"/>
 
     <ImageView
@@ -118,6 +119,7 @@
         android:id="@+id/vTitleLine3"
         android:layout_width="@dimen/dp_0.6"
         android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/dp_m_2"
         android:background="#35000000"/>
 
     <View
@@ -139,6 +141,7 @@
         android:layout_height="@dimen/home_titleBar_height"
         android:layout_marginLeft="@dimen/dp_5"
         android:layout_marginRight="@dimen/dp_10"
+        android:gravity="center"
         android:text="用户名称"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_12"/>
@@ -147,6 +150,7 @@
         android:id="@+id/tvMoney"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/home_titleBar_height"
+        android:gravity="center"
         android:text="￥8888.00"
         android:textColor="@color/red"
         android:textSize="@dimen/sp_12"/>
