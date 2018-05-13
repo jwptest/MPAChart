@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.finance.R;
+import com.finance.common.Constants;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
@@ -544,6 +545,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     @Override
     public void completion(IndexMarkEntity lastEntry, IDataSet dataSet) {
+        currentTimer = TimerUtil.timerToLong(lastEntry.getTime());
+        Constants.SERVERCURRENTTIMER = currentTimer;//服务器当前时间
         if (!isRefresh) return;
         currentEntry = lastEntry;
         currentDataSet = dataSet;
@@ -554,7 +557,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //        Log.d("123", "Xmax: " + mXAxis.getAxisMaximum());
         currentX = (int) pointD.x;
         currentY = (int) pointD.y;
-        currentTimer = TimerUtil.timerToLong(currentEntry.getTime());
         //刷新购买点的位置
         refreshPurchaseViews(dataSet);
         //开奖

@@ -7,19 +7,22 @@ import com.finance.utils.TimerUtil;
  */
 public class OrderEntity {
 
+    transient private float bonusHexIndex = 0;//开奖指数
     private String BonusHexIndexMark;//String 中奖指数
-    //    BonusIndexMark IndexMark ;//中奖指数
+    private BonusIndexMarkEntity BonusIndexMark;//中奖指数
     private double BonusMoney;//Decimal 中奖金额
     private String BonusTime;// DateTime 开奖时间
     transient private long openTimer = 0;//开奖时间
+    transient private float itemTimer = 0;//总时长
     transient private String data;
     transient private String timer;
     private String CreateTime;//DateTime 创建时间
     private double DecIndexMark;// Decimal 数值型指数
     private int Expects;//Int32 预计收益
     transient private String ExpectsStr;//预计收益字符串
+    transient private float hexIndex = 0;//购买指数
     private String HexIndexMark;// String 购买指数
-    //    IndexMark ;//IndexMark 指数
+    private BonusIndexMarkEntity IndexMark;//IndexMark 指数
     private boolean IsEmptyUser;//Boolean 是否为未登录用户订单
     private String Issue;//String 期号
     private int IssueType;//Int32 期号类型
@@ -62,9 +65,49 @@ public class OrderEntity {
 //    private String TaskId;
 
 
+    public float getBonusHexIndex() {
+        return bonusHexIndex;
+    }
+
+    public void setBonusHexIndex(float bonusHexIndex) {
+        this.bonusHexIndex = bonusHexIndex;
+    }
+
+    public float getHexIndex() {
+        return hexIndex;
+    }
+
+    public void setHexIndex(float hexIndex) {
+        this.hexIndex = hexIndex;
+    }
+
+    public float getItemTimer() {
+        return itemTimer;
+    }
+
+    public void setItemTimer(float itemTimer) {
+        this.itemTimer = itemTimer;
+    }
+
+    public BonusIndexMarkEntity getBonusIndexMark() {
+        return BonusIndexMark;
+    }
+
+    public void setBonusIndexMark(BonusIndexMarkEntity bonusIndexMark) {
+        BonusIndexMark = bonusIndexMark;
+    }
+
+    public BonusIndexMarkEntity getIndexMark() {
+        return IndexMark;
+    }
+
+    public void setIndexMark(BonusIndexMarkEntity indexMark) {
+        IndexMark = indexMark;
+    }
+
     public String getExpectsStr() {
         if (ExpectsStr == null)
-            ExpectsStr = (100 + Expects) * Money / 100 + "";
+            ExpectsStr = "￥" + ((100 + Expects) * Money / 100);
         return ExpectsStr;
     }
 
@@ -137,7 +180,6 @@ public class OrderEntity {
     public double getDecIndexMark() {
         return DecIndexMark;
     }
-
 
     public void setDecIndexMark(double decIndexMark) {
         DecIndexMark = decIndexMark;

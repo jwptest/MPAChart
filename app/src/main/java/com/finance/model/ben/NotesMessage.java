@@ -7,17 +7,17 @@ import java.util.ArrayList;
  */
 public class NotesMessage {
 
-    private ArrayList<NoteMessage> NotesList;
+    private ArrayList<NoteMessage> Trends;
     private int Page;// Int32 页码
     private int PageSize;// Int32 每页记录条数
     private int Total;//Int32 总记录条数
 
-    public ArrayList<NoteMessage> getNotesList() {
-        return NotesList;
+    public ArrayList<NoteMessage> getTrends() {
+        return Trends;
     }
 
-    public void setNotesList(ArrayList<NoteMessage> notesList) {
-        NotesList = notesList;
+    public void setTrends(ArrayList<NoteMessage> trends) {
+        Trends = trends;
     }
 
     public int getPage() {

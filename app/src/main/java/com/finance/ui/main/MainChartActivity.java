@@ -43,6 +43,7 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.ui.dialog.ExitAppDialog;
 import com.finance.ui.dialog.StartDialog;
 import com.finance.ui.popupwindow.OpenPrizePopWindow;
 import com.finance.utils.BtnClickUtil;
@@ -170,10 +171,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     private ArrayList<ProductEntity> mProductEntities;
     private ArrayList<IssueEntity> mIssueEntities;
-
-    private ProductEntity currentProduct;
-    private ArrayList<IssueEntity> currentIssues;
-    private IssueEntity currentIssue;
+    private Animation animation;//更新余额动画
+    private ProductEntity currentProduct;//当前显示的产品
+    private ArrayList<IssueEntity> currentIssues;//当前可供选折的期号
+    private IssueEntity currentIssue;//当前选中的期号
     private int issuesSelectIndex = 0;
     private int statusBarHigh = 0;
 
@@ -226,8 +227,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-//        new ExitAppDialog(this).show();
+//        super.onBackPressed();
+        new ExitAppDialog(this).show();
     }
 
     //初始化控件
@@ -526,7 +527,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         new OpenPrizePopWindow(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName, width, height).showPopupWindow(rlTitleBar);
     }
 
-    Animation animation;
+    @Override
+    public IssueEntity getIssue(int productId, String issue) {
+        return mMainPresenter.getIssue(productId, issue, mIssueEntities);
+    }
+
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
     public void onClickListener(View view) {
@@ -536,6 +541,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         switch (view.getId()) {
             case R.id.ivExitLogin:
+//                int width = PhoneUtil.getScreenWidth(mActivity);
+//                int height = PhoneUtil.getScreenHeight(mActivity);
+//                //显示开奖对话框
+//                new OpenPrizePopWindow(mActivity, this, mChartSetting, null, null, 0, null, null, width, height).showPopupWindow(rlTitleBar);
                 break;
             case R.id.llMoney:
                 if (mProductEntities == null || mProductEntities.isEmpty()) return;
@@ -572,7 +581,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                         ivRefresh.clearAnimation();
                         if (userInfoEntity == null) return;
                         initViewUser();//刷新用户信息
-                        App.getInstance().showErrorMsg("刷新余额成功！");
+                        App.getInstance().showErrorMsg("余额已更新！");
                     }
                 });//刷新用户信息
                 break;

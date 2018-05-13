@@ -1,6 +1,7 @@
 package com.finance.linechartdata;
 
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -24,6 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.finance.utils.TimerUtil.timerToLong;
 
@@ -44,7 +46,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     private boolean isTimer = false;//是否可以转换时间
 
     public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter, View animView) {
-        super(context, view, chart, presenter,animView);
+        super(context, view, chart, presenter, animView);
         this.mIndexMarkEntities = new ArrayList<>(6);
     }
 
@@ -228,7 +230,40 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         isRefrshChartData = false;
         if (entities == null || entities.isEmpty()) return;
         mHistoryIndexMarks = entities;
+//        ArrayList<IndexMarkEntity> indexMarkEntities = new ArrayList<>(entities);
         addHistoryDatas();
+//        startTestData(indexMarkEntities);
+    }
+
+    private CountDownTimer timer;//倒计时
+    private Random rand = new Random();
+
+    private void startTestData(ArrayList<IndexMarkEntity> entities) {
+        stopCountDown();
+        int l = entities.size() * 500;
+        timer = new CountDownTimer(l, 500) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int index = (int) ((l - millisUntilFinished) / 500);
+                IndexMarkEntity entity = entities.get(index).copy();
+                entity.setX(mChartDatas.size());
+                float y = rand.nextInt(5) + 1;
+                entity.setY(entity.getY() + y / 10000000f);
+                updateAlwaysData(entity);
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+        timer.start();
+    }
+
+    private void stopCountDown() {
+        if (timer == null) return;
+        timer.cancel();
+        timer = null;
     }
 
     private long topStartTimer = 0;

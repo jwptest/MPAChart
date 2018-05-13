@@ -3,7 +3,6 @@ package com.finance.ui.main;
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.PopupWindow;
 
 import com.finance.App;
 import com.finance.base.BasePresenter;
@@ -291,6 +290,18 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 });
     }
 
+    @Override
+    public IssueEntity getIssue(int productId, String issue, ArrayList<IssueEntity> issueEntities) {
+        if (productId == 0 || TextUtils.isEmpty(issue) || issueEntities == null || issueEntities.isEmpty())
+            return null;
+        for (IssueEntity entity : issueEntities) {
+            if (entity.getProductId() == productId && TextUtils.equals(issue, entity.getIssueName())) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
     private ArrayList<ItemEntity<ProductEntity>> getProducts(ArrayList<ProductEntity> entities) {
         ArrayList<ItemEntity<ProductEntity>> products = new ArrayList<ItemEntity<ProductEntity>>(entities.size());
         for (ProductEntity entity : entities) {
@@ -353,26 +364,25 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         mIssuesPopupWindow.showPopupWindow(view);
     }
 
-
     @Override
     public void showOrderPopWindow(View anchor, View leftView, int width, int y, IDismiss dismiss) {
-        OrderPopupWindow mOrderPopupWindow = new OrderPopupWindow(mActivity, this, width, leftView.getWidth(), y);
-        mOrderPopupWindow.setOnDismiss(dismiss);
+        OrderPopupWindow mOrderPopupWindow = new OrderPopupWindow(mActivity, mView, this, width, leftView.getWidth(), y);
+        mOrderPopupWindow.setDismiss(dismiss);
         mOrderPopupWindow.showPopupWindow(anchor);
     }
 
     @Override
     public void showDynamicPopWindow(View anchor, View leftView, int width, int y, IDismiss dismiss) {
         DynamicPopupWindow mDynamicPopupWindow = new DynamicPopupWindow(mActivity, this, width, leftView.getWidth(), y);
-        mDynamicPopupWindow.setOnDismiss(dismiss);
+        mDynamicPopupWindow.setDismiss(dismiss);
         mDynamicPopupWindow.showPopupWindow(anchor);
     }
-
-    //关闭对话框
-    private void dismiss(PopupWindow popupWindow) {
-        if (popupWindow != null && popupWindow.isShowing())
-            popupWindow.dismiss();
-    }
+//
+//    //关闭对话框
+//    private void dismiss(PopupWindow popupWindow) {
+//        if (popupWindow != null && popupWindow.isShowing())
+//            popupWindow.dismiss();
+//    }
 
     @Override
     public void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark) {
@@ -411,13 +421,13 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     @Override
     public void notesMessage(final ICallback<NotesMessage> callback) {
         BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 138);
-        baseParams.addParam("Begin", "2018-05-11T11:24:30+08:00");//开始时间
-        baseParams.addParam("End", "2018-05-12T17:24:30+08:00");//结束时间
-        baseParams.addParam("Page", 1);
-        baseParams.addParam("PageSize", 20);
-        baseParams.addParam("StatusMsg", 0);
-        baseParams.addParam("TypeMsg", new int[]{0,1, 2});
+        baseParams.addParam("SourceCode", 206);
+//        baseParams.addParam("Begin", "2018-05-11T11:24:30+08:00");//开始时间
+//        baseParams.addParam("End", "2018-05-12T17:24:30+08:00");//结束时间
+//        baseParams.addParam("Page", 1);
+//        baseParams.addParam("PageSize", 20);
+//        baseParams.addParam("StatusMsg", 0);
+//        baseParams.addParam("TypeMsg", new int[]{0,1, 2});
         NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)

@@ -94,7 +94,7 @@ public class ViewUtil {
         viewEntity.setTvBuyingMone(tvBuyingMoney);
     }
 
-
+    //尽量调用此方法加载图片
     public static void setBackground(Activity activity, final View view, int drawableId) {
         setBackground(Glide.with(activity), activity, view, drawableId);
     }

@@ -39,8 +39,6 @@ public class DynamicPopupWindow extends LeftToRightPopupWindow implements ICallb
     @BindView(R.id.rvOrder)
     RecyclerView rvOrder;
     private Activity mActivity;
-    //    private MainContract.Presenter mPresenter;
-    private IDismiss dismiss;
 
     private DynamicAdapter mAdapter;
     private DynamicsEntity mEntity;
@@ -94,16 +92,16 @@ public class DynamicPopupWindow extends LeftToRightPopupWindow implements ICallb
         return true;
     }
 
-    @Override
-    public void dismiss() {
-        super.dismiss();
-        if (dismiss != null)
-            dismiss.onDismiss();
-    }
-
-    public void setOnDismiss(IDismiss dismiss) {
-        this.dismiss = dismiss;
-    }
+//    @Override
+//    public void dismiss() {
+//        super.dismiss();
+//        if (dismiss != null)
+//            dismiss.onDismiss();
+//    }
+//
+//    public void setOnDismiss(IDismiss dismiss) {
+//        this.dismiss = dismiss;
+//    }
 
     @Override
     public void onCallback(int code, DynamicsEntity dynamicsEntity, String message) {

@@ -55,6 +55,8 @@ public interface MainContract {
 
         void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName);
 
+        IssueEntity getIssue(int productId, String issue);
+
 //        void openIndex(OpenIndexEntity entity, String msg);
     }
 
@@ -76,6 +78,8 @@ public interface MainContract {
         void getOrderRecord(int PageSize, int Page, ICallback<OrdersEntity> callback);
 
         void getDynamicPopupWindow(ICallback<DynamicsEntity> iCallback);
+
+        IssueEntity getIssue(int productId, String issue,ArrayList<IssueEntity> issueEntities);
 
         void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities, IDismiss dismiss);
 

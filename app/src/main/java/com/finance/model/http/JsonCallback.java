@@ -69,7 +69,7 @@ public abstract class JsonCallback<T> extends BaseCallback {
             if (mEntity.getStatus() == Constants.DEFAULTCODE) return;
         }
         if (isInvalid) return;//当前对象已经完成一次请求
-//        isInvalid = true;
+        isInvalid = true;
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {

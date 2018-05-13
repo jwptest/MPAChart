@@ -44,7 +44,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected boolean isAnimation = false;//是否在执行动画
     protected ProductEntity productEntity;//当前产品
     protected IssueEntity issueEntity;//当前期号
-    protected long duration = 160;//动画执行时间
+    protected long duration = 320;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
     protected View animView;//执行加载动画的view
@@ -100,7 +100,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     }
 
     //刷新X轴显示的最大值
-    protected void setAxisMaximum() {
+    protected void setAxisMaximum(int count) {
 //        long trimL = getLengthTime() / Constants.ISSUEINTERVAL;
 //        if (trimL <= 0) return;
 //        //有效绘制的X轴条数
@@ -110,14 +110,17 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        int addItems = (int) (dpPxRight / itemWidth);
 //        mXAxis.setAxisMaximum(trimL + addItems);
 
-        //绘制完成回调
-        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
-        float labelX = mChart.getFixedPosition();
-        float labelWidth = mChart.getLabelWidth();
-        float endX = labelX - labelWidth - dpPxRight;
-        float itemWidth = endX / X;
-        float addItem = (labelWidth + dpPxRight) / itemWidth;
-        mXAxis.setAxisMaximum(X + addItem);
+//        //绘制完成回调
+//        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
+//        float labelX = mChart.getFixedPosition();
+//        float labelWidth = mChart.getLabelWidth();
+//        float endX = labelX - labelWidth - dpPxRight;
+//        float itemWidth = endX / X;
+//        float addItem = (labelWidth + dpPxRight) / itemWidth;
+//        mXAxis.setAxisMaximum(X + addItem);
+
+
+        mXAxis.setAxisMaximum(count + 120);
     }
 
     @Override
@@ -156,7 +159,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         isAnimation = false;
         stopRemoveAnimation();
 
-//        staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
+//        valueAnimator = staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
 //            @Override
 //            public void onAnimationUpdate(ValueAnimator animation) {
 //                int endIndex = (int) animation.getAnimatedValue();
@@ -181,7 +184,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        mChartDatas.clear();
 //        if (maxIndex > 0) {
 //            mChartDatas.addAll(entitys);
-//            setAxisMaximum();//刷新X周显示条数
+//            setAxisMaximum(maxIndex + 1);//刷新X周显示条数
 //        }
 //        if (combinedData == null) {
 //            combinedData = new CombinedData();
@@ -190,7 +193,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        } else {
 //            invalidateChart();
 //        }
-//        stopRemoveAnimation();
+//        stopAddAnimation();
 //        isAnimation = false;
 
         mChart.isStopDraw(false);
@@ -203,9 +206,9 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         addCount = 1;
         mChartDatas.clear();
         mChartDatas.add(entitys.get(0));
-        setAxisMaximum();//刷新X周显示条数
+        setAxisMaximum(entitys.size());//刷新X轴显示条数
         mChart.isStopDraw(true);
-        staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
+        valueAnimator = staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int endIndex = (int) animation.getAnimatedValue();

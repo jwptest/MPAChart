@@ -1,7 +1,7 @@
 package com.finance.ui.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.finance.R;
+import com.finance.utils.ViewUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +20,8 @@ import butterknife.OnClick;
  */
 public class ExitAppDialog extends Dialog {
 
+    @BindView(R.id.rlContent)
+    View rlContent;
     @BindView(R.id.tvEdit)
     TextView mTvEdit;
     @BindView(R.id.vLine)
@@ -28,8 +31,11 @@ public class ExitAppDialog extends Dialog {
     @BindView(R.id.ivClose)
     ImageView mIvClose;
 
-    public ExitAppDialog(@NonNull Context context) {
-        super(context, R.style.noBackDialog);
+    private Activity mActivity;
+
+    public ExitAppDialog(@NonNull Activity activity) {
+        super(activity, R.style.noBackDialog);
+        mActivity = activity;
     }
 
     @Override
@@ -37,6 +43,7 @@ public class ExitAppDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_exit_app);
         ButterKnife.bind(this);
+        ViewUtil.setBackground(mActivity, rlContent, R.drawable.dialog_ts_bg);
     }
 
     @OnClick({R.id.tvEdit, R.id.tvCancel, R.id.ivClose})
@@ -51,7 +58,5 @@ public class ExitAppDialog extends Dialog {
             case R.id.ivClose:
                 break;
         }
-
-
     }
 }

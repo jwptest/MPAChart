@@ -18,6 +18,9 @@ public class IndexMarkEntity extends Entry {
     private int isUpdatePoint;
     private String id;
 
+    private IndexMarkEntity() {
+    }
+
     public IndexMarkEntity(int x, int prod, long time, int exponentially, int isUpdatePoint, int decimalPointIndex, int digit, String data) {
         this.prod = prod;
         this.isUpdatePoint = isUpdatePoint;
@@ -45,6 +48,17 @@ public class IndexMarkEntity extends Entry {
 
     public String getId() {
         return id;
+    }
+
+    public IndexMarkEntity copy() {
+        IndexMarkEntity entity = new IndexMarkEntity();
+        entity.time = time;
+        entity.prod = prod;
+        entity.isUpdatePoint = isUpdatePoint;
+        entity.id = id;
+        entity.setX(getX());
+        entity.setY(getY());
+        return entity;
     }
 
     public static float managerExponentially(double exponentially, int decimalPointIndex, int digit) {

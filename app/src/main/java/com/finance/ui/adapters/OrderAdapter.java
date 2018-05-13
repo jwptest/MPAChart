@@ -35,7 +35,10 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.StickyBaseAdapter;
+import com.finance.common.Constants;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.OrderEntity;
+import com.finance.utils.IndexUtil;
 import com.finance.widget.CompletedView;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersAdapter;
@@ -47,11 +50,12 @@ import java.util.ArrayList;
  */
 public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
 
-    private long serviceTimer;//服务器时间
-    private ICallback mICallback;
-    private int progressBar;//进度，计算方式不明
+    private ICallback mICallback;//回调接口必须设置
+    private long progressBar;//进度，计算方式不明
+    private IndexUtil mIndexUtil;
 
     public OrderAdapter(ArrayList<OrderEntity> mlist) {
+        mIndexUtil = new IndexUtil();
         addAll(mlist);
     }
 
@@ -65,21 +69,79 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemHolder itemHolder = (ItemHolder) holder;
         OrderEntity entity = getItem(position);
+
+        //购买指数
+        if (entity.getHexIndex() == 0) {
+            IndexMarkEntity markEntity = mIndexUtil.parseExponentially(0, entity.getHexIndexMark(), Constants.INDEXDIGIT);
+            if (markEntity == null) {
+                entity.setHexIndex(1);
+            } else {
+                entity.setHexIndex(markEntity.getY());
+            }
+        }
+        itemHolder.tvPurchase.setText(entity.getHexIndex() + "");//购买指数
+        itemHolder.tvMoney2.setText(entity.getMoney() + "");//购买金额
+
         if (isOpen(entity)) {//开奖完成
             itemHolder.cvProgressBar.setVisibility(View.GONE);
             itemHolder.tvTimer.setText(entity.getTimer());
             itemHolder.tvDate.setText(entity.getData());
             itemHolder.llTimer.setVisibility(View.VISIBLE);
+//            OrderEntity.BonusIndexMarkEntity bonusEntity = entity.getBonusIndexMark();
+//            if (bonusEntity != null) {
+//                itemHolder.tvPurchase2.setText(bonusEntity.getSellPrice() + "");//卖出价格
+//            } else {
+//                itemHolder.tvPurchase2.setText("--");//卖出价格
+//            }
+            //开奖指数
+            if (entity.getBonusHexIndex() == 0) {
+                IndexMarkEntity markEntity = mIndexUtil.parseExponentially(0, entity.getBonusHexIndexMark(), Constants.INDEXDIGIT);
+                if (markEntity == null) {
+                    entity.setBonusHexIndex(1);
+                } else {
+                    entity.setBonusHexIndex(markEntity.getY());
+                }
+            }
+
+            if (entity.isResult() && entity.getHexIndex()< entity.getBonusHexIndex()) {
+                itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
+            } else if (!entity.isResult() && entity.getHexIndex() > entity.getBonusHexIndex()) {
+                itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
+            } else {//买输了
+                itemHolder.tvMoney.setText("￥0");//收益金额
+            }
+
+            itemHolder.tvPurchase2.setText(entity.getBonusHexIndex() + "");//卖出价格
+
         } else {//交易中
             itemHolder.cvProgressBar.setVisibility(View.VISIBLE);
             itemHolder.llTimer.setVisibility(View.GONE);
-            progressBar = (int) (entity.getOpenTimer() - serviceTimer / 1000);
-            if (progressBar <= -2) {
+
+            //计算开奖时间和这期的总时长
+            if (entity.getOpenTimer() == 0 || entity.getItemTimer() == 0) {
+                long[] openTotalTime = mICallback.getIssueOpenTotalTime(entity.getProductId(), entity.getIssue());
+                entity.setOpenTimer(openTotalTime[0]);
+                entity.setItemTimer(openTotalTime[1] / 100f);
+            }
+            //设置进度
+            progressBar = (entity.getOpenTimer() - mICallback.getServerTimer());
+            if (progressBar < 0) {
                 progressBar = 0;
                 if (mICallback != null) mICallback.openPrize();
             }
-//            计算进度
-            itemHolder.cvProgressBar.setProgress(progressBar);
+            progressBar = (int) (progressBar * entity.getItemTimer());
+            //计算进度
+            itemHolder.cvProgressBar.setProgress((int) progressBar);
+
+            //时时指数
+            OrderEntity.BonusIndexMarkEntity bonusEntity = entity.getIndexMark();
+            //指数
+            if (bonusEntity != null) {
+                itemHolder.tvPurchase2.setText(bonusEntity.getSellPrice() + "");//卖出价格
+            } else {
+                itemHolder.tvPurchase2.setText("--");//卖出价格
+            }
+            itemHolder.tvMoney.setText(entity.getExpectsStr() + "");//预计收益金额
         }
 
         itemHolder.tvName.setText(entity.getProductTxt());
@@ -90,12 +152,6 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
             itemHolder.ivRiseFall.setImageResource(R.drawable.fall_icon_item);
             itemHolder.tvExplain.setText("看跌");
         }
-
-        itemHolder.tvPurchase.setText(entity.getHexIndexMark());//购买指数
-        itemHolder.tvPurchase2.setText(entity.getDecIndexMark() + "");
-
-        itemHolder.tvMoney.setText(entity.getExpectsStr() + "");//金额
-        itemHolder.tvMoney2.setText(entity.getMoney() + "");
     }
 
     @Override
@@ -129,15 +185,11 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
     }
 
     private boolean isOpen(OrderEntity entity) {
-        if (serviceTimer > entity.getOpenTimer()) {
+        if (mICallback.getServerTimer() > entity.getOpenTimer()) {
             return true;
         } else {
             return false;
         }
-    }
-
-    public void setServiceTimer(long serviceTimer) {
-        this.serviceTimer = serviceTimer;
     }
 
     public class ItemHolder extends RecyclerViewHolder {
@@ -179,7 +231,14 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
     }
 
     public interface ICallback {
-        void openPrize();//有到开奖时间的订单
+        //有到开奖时间的订单
+        void openPrize();
+
+        //获取开奖时间和总时长0=开奖时间，1=总时长
+        long[] getIssueOpenTotalTime(int productId, String issueName);
+
+        //服务器当前时间
+        long getServerTimer();
     }
 
 }

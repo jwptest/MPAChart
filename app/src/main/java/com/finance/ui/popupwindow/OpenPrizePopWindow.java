@@ -43,8 +43,8 @@ import butterknife.OnClick;
 public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawCompletion {
 
     //
-    @BindView(R.id.llRootView)
-    View llRootView;
+    @BindView(R.id.llContent)
+    View llContent;
     @BindView(R.id.tvTitleType)
     TextView mTvTitleType;
     @BindView(R.id.tvTitleMoney)
@@ -92,7 +92,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                               HistoryIssueEntity entity, IndexMarkEntity openIndex,
                               int productId, String issue, String productName, int screenWidth, int screenHeight) {
 
-        super(context, (int) (screenWidth * 0.8f), (int) (screenHeight * 0.8f), (int) (screenWidth * 0.1f), (int) (screenHeight * 0.1));
+        super(context, (int) (screenWidth * 0.6f), (int) (screenHeight * 0.6f), (int) (screenWidth * 0.2f), (int) (screenHeight * 0.2));
         this.mContext = context;
         this.mChartSetting = mChartSetting;
         this.mView = view;
@@ -102,7 +102,9 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         this.issue = issue;
         this.productName = productName;
         this.mViewUtil = new ViewUtil();
-        ViewUtil.setBackground(mContext, llRootView, R.drawable.dialog_open_prize_bg);
+        setTouchable(true);
+        setOutsideTouchable(false);   //设置外部点击关闭ppw窗口
+        ViewUtil.setBackground(mContext, llContent, R.drawable.dialog_open_prize_bg);
 
         //界面显示出来再处理数据
 //        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -112,7 +114,6 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 //                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 //            }
 //        });
-
     }
 
     @Override
@@ -122,7 +123,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 
     @Override
     protected int getBackColor() {
-        return Color.parseColor("#80000000");
+        return Color.parseColor("#A0000000");
     }
 
     private void initData(final HistoryIssueEntity entity, final IndexMarkEntity openIndex) {
@@ -190,6 +191,11 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
     @OnClick(R.id.tvTitleType)
     public void onClickListener() {
         initData(mHistoryIssueEntity, openIndex);
+    }
+
+    @OnClick(R.id.ivClose)
+    public void onClickListenerClose() {
+        dismiss();
     }
 
     private void initView() {

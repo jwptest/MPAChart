@@ -53,7 +53,7 @@ public class CentreMenu extends BaseViewHandle implements ICallback<NotesMessage
 
     @Override
     public void onCallback(int code, NotesMessage notesMessage, String message) {
-        ArrayList<NoteMessage> noteMessages = notesMessage == null ? null : notesMessage.getNotesList();
+        ArrayList<NoteMessage> noteMessages = notesMessage == null ? null : notesMessage.getTrends();
         if (noteMessages == null || noteMessages.isEmpty()) return;
         this.noteMessages = noteMessages;
         rtvTip.setText("开启倒计时");

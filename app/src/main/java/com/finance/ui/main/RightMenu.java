@@ -169,9 +169,9 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         int x1 = location[0];
         llRise.getLocationInWindow(location);
         int dp5 = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_5);
-        int height = location[1] - y1 - rlEdit.getHeight() - dp5;
+        int height = location[1] - y1 - rlEdit.getHeight() - dp5 - dp5;
         int y = y1 - mView.getStatusBarHigh() + rlEdit.getHeight();
-        final KeyboardPopupWindow popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), height, x1, y);
+        final KeyboardPopupWindow popupWindow = new KeyboardPopupWindow(mActivity, rlEdit.getWidth(), height, x1, y + dp5);
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
