@@ -75,8 +75,9 @@ dependencies {
 //    compile 'org.java-websocket:Java-WebSocket:1.3.0'
     //json处理
     compile rootProject.ext.dependencies["gson"]
-
     //other
     compile rootProject.ext.dependencies["logger"]
+    //错误统计
+    compile rootProject.ext.dependencies["bugly-crashreport"]
 
 }

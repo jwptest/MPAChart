@@ -7,6 +7,7 @@ import android.view.View;
 import com.finance.App;
 import com.finance.base.BasePresenter;
 import com.finance.common.Constants;
+import com.finance.common.UserShell;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
@@ -26,6 +27,7 @@ import com.finance.model.http.BaseParams;
 import com.finance.model.http.HttpConnection;
 import com.finance.model.http.JsonCallback;
 import com.finance.model.imps.NetworkRequest;
+import com.finance.ui.dialog.UpdateUserInfoDialog;
 import com.finance.ui.popupwindow.DynamicPopupWindow;
 import com.finance.ui.popupwindow.IssuesPopupWindow;
 import com.finance.ui.popupwindow.OrderPopupWindow;
@@ -124,7 +126,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     @Override
-    public void getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback) {
+    public HttpConnection getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback) {
         BaseParams param = new BaseParams(true);
         param.addParam("T", 20);
         param.addParam("D", ProductId + ":300");
@@ -133,7 +135,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         param.addParam("times", timer);//默认值
         param.addParam("Token", "");
 //        param.addParam("Token", UserShell.getInstance().getUserToken());
-        NetworkRequest.getInstance()
+        return NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)
                 .setT(20)
@@ -386,6 +388,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark) {
+        if (UserShell.getInstance().getUserMoney() < Money) {
+            //余额不足
+            new UpdateUserInfoDialog(mActivity).show();
+            return;
+        }
         BaseParams baseParams = new BaseParams();
         baseParams.addParam("SourceCode", 201);
 //        baseParams.addParam("IndexMark", IndexMark);

@@ -1,13 +1,11 @@
 package com.finance.ui.main;
 
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -20,7 +18,9 @@ import com.finance.common.UserCommon;
 import com.finance.common.UserShell;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
+import com.finance.event.NetWorkStateEvent;
 import com.finance.event.OpenPrizeEvent;
+import com.finance.event.UpdateUserInfoEvent;
 import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IChartData;
@@ -47,6 +47,7 @@ import com.finance.ui.dialog.ExitAppDialog;
 import com.finance.ui.dialog.StartDialog;
 import com.finance.ui.popupwindow.OpenPrizePopWindow;
 import com.finance.utils.BtnClickUtil;
+import com.finance.utils.NetWorkUtils;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
 import com.finance.utils.TimerUtil;
@@ -155,8 +156,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     //    private ILineChartSetting chartSetting;
     private IChartListener chartListener;
     private IViewHandler leftMenu, rightMenu, centreMenu;
-
     private MainContract.Presenter mMainPresenter;
+    private boolean isNetWork = true;//是否有网络连接
 
     private boolean isResume;
 
@@ -167,7 +168,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     //数据处理
     private LineChartData1 mLineChartData;//折线图
     private CandleChartData mCandleData;//蜡烛图
-    private String chartType;//当前显示图像类型
+    private int chartType;//当前显示图像类型
 
     private ArrayList<ProductEntity> mProductEntities;
     private ArrayList<IssueEntity> mIssueEntities;
@@ -188,14 +189,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         EventBus.register(this);
         mMainPresenter = new MainPresenter(mActivity, this);
         initView();
+        isNetWork = NetWorkUtils.isNetworkConnected();
         //初始化参数
         PurchaseViewEntity.initValue(this);
         StartDialog mDialog = new StartDialog(this, R.drawable.start_bg);
         mDialog.show();
-        mMainPresenter.getProduct();
-        int a = ViewConfiguration.get(mActivity).getScaledDoubleTapSlop();//双击的最大间距
-        int b = ViewConfiguration.get(mActivity).getScaledTouchSlop();//移动的最小距离
-        Log.d("123", "最小滑动距离:" + a + ",:" + b);
+//        int a = ViewConfiguration.get(mActivity).getScaledDoubleTapSlop();//双击的最大间距
+//        int b = ViewConfiguration.get(mActivity).getScaledTouchSlop();//移动的最小距离
+//        Log.d("123", "最小滑动距离:" + a + ",:" + b);
     }
 
     @Override
@@ -204,6 +205,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         isResume = true;
         if (dataSetting != null) dataSetting.onResume(chartType);
         OpenCountDown.getInstance().addCallback(this);
+        //刷新产品、期号、走势图
+        mMainPresenter.getProduct();
     }
 
     @Override
@@ -279,14 +282,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     //获取数据处理类
-    private IChartData getChartData(String type) {
+    private IChartData getChartData(int type) {
         IChartData dataSetting = null;
-        if (TextUtils.equals(type, Constants.CHART_LINEFILL) || TextUtils.equals(type, Constants.CHART_LINE)) {
+        if (type == Constants.CHART_LINEFILL || type == Constants.CHART_LINE) {
             if (mLineChartData == null) {
                 mLineChartData = new LineChartData1(mActivity, this, lineChart, mMainPresenter, vAnimation);
             }
             dataSetting = mLineChartData;
-        } else if (TextUtils.equals(type, Constants.CHART_CANDLE)) {
+        } else if (type == Constants.CHART_CANDLE) {
             //蜡烛图
             if (mCandleData == null) {
                 mCandleData = new CandleChartData(this, lineChart);
@@ -344,8 +347,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     @Override
-    public void checkedChart(String chartType) {
-        if (TextUtils.equals(this.chartType, chartType)) {
+    public void checkedChart(int chartType) {
+        if (this.chartType == chartType) {
             return;
         }
         if (dataSetting != null) {
@@ -353,7 +356,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         this.chartType = chartType;
         dataSetting = getChartData(chartType);
-        updateIssue();//更新走势图
+//        updateIssue();//更新走势图
     }
 
     @Subscribe
@@ -372,7 +375,34 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Subscribe
     public void onEvent(OpenPrizeEvent event) {
         if (event == null) return;//获取开奖结果事件
+    }
 
+    @Subscribe
+    public void onEvent(UpdateUserInfoEvent event) {
+        if (event == null) return;
+        UserCommon.getUserInfo(mActivity, new ICallback<UserInfoEntity>() {
+            @Override
+            public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
+                if (userInfoEntity == null) return;
+                initViewUser();//刷新用户信息
+                if (!event.isTip()) return;
+                App.getInstance().showErrorMsg(event.getMsg());
+            }
+        });//刷新用户信息
+    }
+
+    @Subscribe
+    public void onEvent(NetWorkStateEvent event) {
+        if (event == null) return;
+        if (!event.isNetWork()) {//没有网络
+            if (dataSetting != null) dataSetting.stopNetwork();//关闭网络连接
+        } else if (isNetWork) {//当前网络为连接，上次状态也为连接不处理
+            return;
+        } else {//网络重新连接上，刷新数据
+            //刷新产品、期号、走势图
+            mMainPresenter.getProduct();
+        }
+        isNetWork = event.isNetWork();
     }
 
     private void initViewUser() {
@@ -506,14 +536,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         viewEntity.setResult(entity.isResult());//涨跌
         viewEntity.setCreateTime(entity.getCreateTime());//下单时间
         chartListener.addPurchaseView(viewEntity);
-        UserCommon.getUserInfo(mActivity, new ICallback<UserInfoEntity>() {
-            @Override
-            public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
-                if (userInfoEntity == null) return;
-                initViewUser();//刷新用户信息
-            }
-        });//刷新用户信息
+        onEvent(new UpdateUserInfoEvent(false));
     }
+
+
+    private OpenPrizePopWindow prizePopWindow;//开奖对话框
 
     @Override
     public void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName) {
@@ -521,10 +548,20 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             App.getInstance().showErrorMsg(msg);
             return;
         }
+        if (prizePopWindow != null) {
+            return;
+        }
         int width = PhoneUtil.getScreenWidth(mActivity);
         int height = PhoneUtil.getScreenHeight(mActivity);
         //显示开奖对话框
-        new OpenPrizePopWindow(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName, width, height).showPopupWindow(rlTitleBar);
+        prizePopWindow = new OpenPrizePopWindow(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName, width, height);
+        prizePopWindow.showPopupWindow(rlTitleBar);
+        prizePopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                prizePopWindow = null;
+            }
+        });
     }
 
     @Override
@@ -575,15 +612,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                     animation = AnimationUtils.loadAnimation(mActivity, R.anim.animation_refresh_userinfo);
                 }
                 ivRefresh.startAnimation(animation);
-                UserCommon.getUserInfo(mActivity, new ICallback<UserInfoEntity>() {
-                    @Override
-                    public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
-                        ivRefresh.clearAnimation();
-                        if (userInfoEntity == null) return;
-                        initViewUser();//刷新用户信息
-                        App.getInstance().showErrorMsg("余额已更新！");
-                    }
-                });//刷新用户信息
+                onEvent(new UpdateUserInfoEvent(true));
                 break;
         }
     }

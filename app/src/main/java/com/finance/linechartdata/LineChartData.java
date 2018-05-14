@@ -78,7 +78,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     }
 
     @Override
-    public void onResume(String type) {
+    public void onResume(int type) {
         //X轴显示最大值
 //        mXAxis.setAxisMaximum(data.getDataSets().get(0).getEntryCount() + 300);
 //        LineDataSet dataSet = (LineDataSet) data.getDataSetByIndex(0);
@@ -263,7 +263,8 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         mChart.invalidate();
     }
 
-    private void stopNetwork() {
+    @Override
+    public void stopNetwork() {
         if (mHttpConnection != null) {
             mHttpConnection.stop();
             mHttpConnection = null;
@@ -317,7 +318,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
                 return;
             }
             if (lineData == null) return;
-            final IndexMarkEntity entity = mIndexUtil.parseExponentially(0,jsonElement.getAsString(), Constants.INDEXDIGIT);
+            final IndexMarkEntity entity = mIndexUtil.parseExponentially(0, jsonElement.getAsString(), Constants.INDEXDIGIT);
             if (isStop) {//断开链接
                 stopNetwork();
                 return;
@@ -330,6 +331,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
                     updateData(entity);
                 }
             });
+        }
+
+        @Override
+        public void noNetworkConnected() {
+
         }
     }
 
@@ -350,7 +356,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
             if (isDiscarded || mLineChartData == null) return;
 //            IndexMarkEntity entity = mIndexUtil.parseExponentially(strings.get(0), Constants.INDEXDIGIT);
 //            Constants.setReferenceX((long) entity.getX());//更新基准下标
-            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(0,strings, Constants.INDEXDIGIT);
+            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(0, strings, Constants.INDEXDIGIT);
             if (isDiscarded || mLineChartData == null) return;
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override

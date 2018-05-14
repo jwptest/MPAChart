@@ -111,9 +111,10 @@
 
                 <ImageView
                     android:id="@+id/ivIcon"
-                    android:layout_width="@dimen/dp_80"
-                    android:layout_height="@dimen/dp_80"
+                    android:layout_width="@dimen/dp_60"
+                    android:layout_height="@dimen/dp_60"
                     android:scaleType="centerInside"
+                    android:src="@drawable/current_icon"
                     tools:tooltipText="当前点图标"/>
 
             </RelativeLayout>

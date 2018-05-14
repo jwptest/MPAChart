@@ -40,7 +40,7 @@ public abstract class JsonCallback<T> extends BaseCallback {
 
     @Override
     public void onMessageReceived(JsonElement jsonElement) {
-        if (isInvalid) return;//当前对象已经完成一次请求
+        if (isInvalid || isDiscarded) return;//当前对象已经完成一次请求
         //运行在子线程
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
@@ -86,6 +86,11 @@ public abstract class JsonCallback<T> extends BaseCallback {
                 successed(0, "请求成功", false, t);
             }
         });
+    }
+
+    public void noNetworkConnected() {
+        //没有网络
+        failed(mEntity.getSourceCode(), "没有网络！", false);
     }
 
     //设置tag

@@ -22,6 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = this;
+//        ActivityStackUtil.getInstance().addActivity(mActivity);
         if (getLayoutId() != 0) {
             setContentView(getLayoutId());
             mUnbinder = ButterKnife.bind(this);
@@ -60,6 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (isEvent) unregisterEvent();
         if (mUnbinder != null && mUnbinder != Unbinder.EMPTY)
             mUnbinder.unbind();
+//        ActivityStackUtil.getInstance().removeActivity(mActivity);
         super.onDestroy();
     }
 

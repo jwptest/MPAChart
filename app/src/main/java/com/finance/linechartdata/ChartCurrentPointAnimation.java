@@ -15,6 +15,7 @@ public class ChartCurrentPointAnimation {
     private float cX, cY;//移动点的速率
     private Entry current;
     private IinvalidateChart mChart;
+    private ValueAnimator mValueAnimator;
 
     public ChartCurrentPointAnimation() {
     }
@@ -41,6 +42,13 @@ public class ChartCurrentPointAnimation {
                 mChart.invalidateChart();
             }
         });
+    }
+
+    public void stopAnimation() {
+        if (mValueAnimator != null) {
+            mValueAnimator.cancel();
+            mValueAnimator = null;
+        }
     }
 
     public interface IinvalidateChart {

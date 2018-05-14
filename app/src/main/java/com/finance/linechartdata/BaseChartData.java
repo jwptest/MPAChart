@@ -44,7 +44,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected boolean isAnimation = false;//是否在执行动画
     protected ProductEntity productEntity;//当前产品
     protected IssueEntity issueEntity;//当前期号
-    protected long duration = 320;//动画执行时间
+    protected long duration = 160;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
     protected View animView;//执行加载动画的view
@@ -77,7 +77,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     }
 
     @Override
-    public void onResume(String type) {
+    public void onResume(int type) {
         EventDistribution.getInstance().addPurchase(this);
     }
 
@@ -111,27 +111,28 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        mXAxis.setAxisMaximum(trimL + addItems);
 
 //        //绘制完成回调
-//        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
-//        float labelX = mChart.getFixedPosition();
-//        float labelWidth = mChart.getLabelWidth();
-//        float endX = labelX - labelWidth - dpPxRight;
-//        float itemWidth = endX / X;
-//        float addItem = (labelWidth + dpPxRight) / itemWidth;
-//        mXAxis.setAxisMaximum(X + addItem);
+        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
+        float labelX = mChart.getFixedPosition();
+        float labelWidth = mChart.getLabelWidth();
+        float endX = labelX - labelWidth - dpPxRight;
+        float itemWidth = endX / X;
+        float addItem = (labelWidth + dpPxRight) / itemWidth;
+        mXAxis.setAxisMaximum(X + addItem);
 
-
-        mXAxis.setAxisMaximum(count + 120);
+//        mXAxis.setAxisMaximum(count + 120);
     }
 
     @Override
     public void stopPurchase(boolean isOrder) {
         if (isOrder) return;
         mView.refreshIessue();//刷新期号
+        stopNetwork();
     }
 
     @Override
     public void openPrize(boolean isOrder) {
         mView.refreshIessue();//刷新期号
+        stopNetwork();
     }
 
     //刷新走势图
@@ -141,7 +142,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChart.invalidate();
     }
 
-    private int removeCount = 0;//已经删除的个数
+//    private int removeCount = 0;//已经删除的个数
 
     //启动删除数据动画
     protected void startRemoveDataAnimation() {
@@ -152,7 +153,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             valueAnimator.cancel();
         }
         isAnimation = true;
-        removeCount = 0;
+//        removeCount = 0;
         //清除数据
         mChartDatas.clear();
         invalidateChart();

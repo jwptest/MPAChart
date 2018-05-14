@@ -279,7 +279,7 @@
     <dimen name="home_end_money_paddLeft">20dp</dimen>
     <dimen name="home_end_line_bottom">30dp</dimen>
     <dimen name="home_titleBar_height">40dp</dimen>
-    <dimen name="home_centre_height">30dp</dimen>
+    <dimen name="home_centre_height">25dp</dimen>
 
     <!--2.76-->
     <dimen name="home_TransverseContrast_width">63dp</dimen>

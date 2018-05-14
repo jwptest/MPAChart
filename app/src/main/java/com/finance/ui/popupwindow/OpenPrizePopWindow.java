@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.finance.R;
@@ -107,13 +108,14 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         ViewUtil.setBackground(mContext, llContent, R.drawable.dialog_open_prize_bg);
 
         //界面显示出来再处理数据
-//        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                if (mLineChart.getWidth() <= 0) return;
-//                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//            }
-//        });
+        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (mLineChart.getWidth() <= 0) return;
+                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                initData(mHistoryIssueEntity, openIndex);
+            }
+        });
     }
 
     @Override
@@ -188,10 +190,10 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         }.start();
     }
 
-    @OnClick(R.id.tvTitleType)
-    public void onClickListener() {
-        initData(mHistoryIssueEntity, openIndex);
-    }
+//    @OnClick(R.id.tvTitleType)
+//    public void onClickListener() {
+//        initData(mHistoryIssueEntity, openIndex);
+//    }
 
     @OnClick(R.id.ivClose)
     public void onClickListenerClose() {

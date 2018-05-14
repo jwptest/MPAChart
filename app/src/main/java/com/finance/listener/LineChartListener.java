@@ -2,10 +2,11 @@ package com.finance.listener;
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,11 +32,7 @@ import com.finance.widget.combinedchart.MCombinedChart;
 import com.finance.widget.combinedchart.OnDrawCompletion;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.github.mikephil.charting.listener.ChartTouchListener;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.MPPointD;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -93,6 +90,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private int settDesWidth, settDesHight;
     private int endIconWidth, endIconHight;
     private int settIconWidth, settIconHight;
+    private Animation mAnimator;//当前点的动画
     //当前购买的点的实体集合
     private ArrayList<PurchaseViewEntity> mPurchaseViewEntities;
     //临时用于存放购买的点的数组
@@ -115,6 +113,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         this.mView = view;
         this.mChart = lineChart;
         this.mXAxis = lineChart.getXAxis();
+        mAnimator = AnimationUtils.loadAnimation(activity, R.anim.animation_chart_current_point);
         mParent = rlPurchaseView;
         dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_15);
         mViewUtil = new ViewUtil();
@@ -126,7 +125,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     @Override
     public void onResume(String type) {
-
     }
 
     @Override
@@ -147,60 +145,60 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                 initViewHight();
             }
         });
-        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-//                Log.d("123", "X:" + h.getDrawX() + ",Y:" + h.getDrawY());
-//                Log.d("123", "X:" + h.getX() + ",Y:" + h.getY());
-//                Log.d("123", "X:" + h.getXPx() + ",Y:" + h.getYPx());
-            }
-
-            @Override
-            public void onNothingSelected() {
-
-            }
-        });
-        mChart.setOnChartGestureListener(new OnChartGestureListener() {
-            @Override
-            public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-                //开始手势
-            }
-
-            @Override
-            public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-                //手势结束
-            }
-
-            @Override
-            public void onChartLongPressed(MotionEvent me) {
-                //长按
-            }
-
-            @Override
-            public void onChartDoubleTapped(MotionEvent me) {
-                //双击
-            }
-
-            @Override
-            public void onChartSingleTapped(MotionEvent me) {
-                //单击
-            }
-
-            @Override
-            public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
-                //快速滑动
-            }
-
-            @Override
-            public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
-                //手势放缩
-            }
-
-            @Override
-            public void onChartTranslate(MotionEvent me, float dX, float dY) {
-                //手势滑动
-            }
-        });
+//        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+//            @Override
+//            public void onValueSelected(Entry e, Highlight h) {
+////                Log.d("123", "X:" + h.getDrawX() + ",Y:" + h.getDrawY());
+////                Log.d("123", "X:" + h.getX() + ",Y:" + h.getY());
+////                Log.d("123", "X:" + h.getXPx() + ",Y:" + h.getYPx());
+//            }
+//
+//            @Override
+//            public void onNothingSelected() {
+//
+//            }
+//        });
+//        mChart.setOnChartGestureListener(new OnChartGestureListener() {
+//            @Override
+//            public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+//                //开始手势
+//            }
+//
+//            @Override
+//            public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+//                //手势结束
+//            }
+//
+//            @Override
+//            public void onChartLongPressed(MotionEvent me) {
+//                //长按
+//            }
+//
+//            @Override
+//            public void onChartDoubleTapped(MotionEvent me) {
+//                //双击
+//            }
+//
+//            @Override
+//            public void onChartSingleTapped(MotionEvent me) {
+//                //单击
+//            }
+//
+//            @Override
+//            public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
+//                //快速滑动
+//            }
+//
+//            @Override
+//            public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
+//                //手势放缩
+//            }
+//
+//            @Override
+//            public void onChartTranslate(MotionEvent me, float dX, float dY) {
+//                //手势滑动
+//            }
+//        });
         mChart.setOnDrawCompletion(this);
         return this;
     }
@@ -221,6 +219,16 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             }
         });
         iconParams = (RelativeLayout.LayoutParams) ivIcon.getLayoutParams();
+
+//        mAnimator = ValueAnimator.ofFloat(1f, 0.3f, 1f);
+//        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                iconParams.
+//            }
+//        });
+//        mAnimator.setDuration(600);
+//        mAnimator.setRepeatCount(-1);
         return this;
     }
 
@@ -424,10 +432,12 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //                    .asGif()
 //                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
 //                    .into(ivIcon);
-            Glide.with(mActivity)
-                    .load(R.drawable.current_icon)
-                    .dontAnimate()
-                    .into(ivIcon);
+//            Glide.with(mActivity)
+//                    .load(R.drawable.current_icon)
+//                    .dontAnimate()
+//                    .into(ivIcon);
+            //启动动画
+            ivIcon.startAnimation(mAnimator);
         }
         if (vEndLine != null && tvEndLineDes != null /*&& ivEndLineIcon != null*/) {//截止
             ViewUtil.setViewVisibility(vEndLine, View.VISIBLE);
@@ -450,8 +460,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
      */
     private void hideView() {
         if (ivIcon != null) {
+            ivIcon.clearAnimation();
             ViewUtil.setViewVisibility(ivIcon, View.GONE);
-            ivIcon.setImageResource(0);
+//            ivIcon.setImageResource(0);
         }
         if (vEndLine != null && tvEndLineDes != null /*&& ivEndLineIcon != null*/) {//截止
             ViewUtil.setViewVisibility(vEndLine, View.GONE);
@@ -533,8 +544,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             if (mIChartData != null && mIssueEntity != null) {
                 endEntry = mIChartData.getEntry(mIssueEntity.getStopTime());
                 openEntry = mIChartData.getEntry(mIssueEntity.getBonusTime());
-                endTimer = TimerUtil.timerToLong(mIssueEntity.getStopTime()) + 2000;
-                openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime()) + 2000;
+                endTimer = TimerUtil.timerToLong(mIssueEntity.getStopTime());
+                openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
             }
             updatePurchaseView();//刷新购买点的坐标点
         } else {
@@ -682,7 +693,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         EventDistribution.getInstance().onDraw(currentEntry);
         //截止购买和开奖
         if (openEntry != null && endEntry != null) {
-            if (Math.abs(currentTimer - endTimer) < 500) {
+            if (!isOrder && currentTimer - endTimer > 500) {
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
                 if (isOrder) {
                     long end = TimerUtil.timerToLong(currentEntry.getTime());
@@ -690,7 +701,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                     if (open - end > 0)//开始倒计时
                         OpenCountDown.getInstance().startCountDown(open - end);
                 }
-            } else if (Math.abs(currentTimer - openTimer) < 500) {
+            } else if (currentTimer - openTimer > 500) {
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖
                 if (isOrder)
                     OpenCountDown.getInstance().stopCountDown();//停止倒计时

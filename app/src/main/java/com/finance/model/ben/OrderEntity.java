@@ -312,9 +312,9 @@ public class OrderEntity {
 
         private int ProductId;//产品ID
         private long Ticks;//时间戳
-        private double SellPrice;//卖出价格
-        private double BidPrice;//买入价格
-        private double RealtimePrice;//指数
+        private float SellPrice;//卖出价格
+        private float BidPrice;//买入价格
+        private float RealtimePrice;//指数
         private int Expects;//预计收益
         private boolean Unnecessary;//是否为非必要数据
         private boolean IsLast;//是否为上次相同点,该类型点不允许购买
@@ -323,64 +323,64 @@ public class OrderEntity {
             return ProductId;
         }
 
-        public void setProductId(int ProductId) {
-            this.ProductId = ProductId;
+        public void setProductId(int productId) {
+            ProductId = productId;
         }
 
         public long getTicks() {
             return Ticks;
         }
 
-        public void setTicks(long Ticks) {
-            this.Ticks = Ticks;
+        public void setTicks(long ticks) {
+            Ticks = ticks;
         }
 
-        public double getSellPrice() {
+        public float getSellPrice() {
             return SellPrice;
         }
 
-        public void setSellPrice(double SellPrice) {
-            this.SellPrice = SellPrice;
+        public void setSellPrice(float sellPrice) {
+            SellPrice = sellPrice;
         }
 
-        public double getBidPrice() {
+        public float getBidPrice() {
             return BidPrice;
         }
 
-        public void setBidPrice(double BidPrice) {
-            this.BidPrice = BidPrice;
+        public void setBidPrice(float bidPrice) {
+            BidPrice = bidPrice;
         }
 
-        public double getRealtimePrice() {
+        public float getRealtimePrice() {
             return RealtimePrice;
         }
 
-        public void setRealtimePrice(double RealtimePrice) {
-            this.RealtimePrice = RealtimePrice;
+        public void setRealtimePrice(float realtimePrice) {
+            RealtimePrice = realtimePrice;
         }
 
         public int getExpects() {
             return Expects;
         }
 
-        public void setExpects(int Expects) {
-            this.Expects = Expects;
+        public void setExpects(int expects) {
+            Expects = expects;
         }
 
         public boolean isUnnecessary() {
             return Unnecessary;
         }
 
-        public void setUnnecessary(boolean Unnecessary) {
-            this.Unnecessary = Unnecessary;
+        public void setUnnecessary(boolean unnecessary) {
+            Unnecessary = unnecessary;
         }
 
-        public boolean isIsLast() {
+        public boolean isLast() {
             return IsLast;
         }
 
-        public void setIsLast(boolean IsLast) {
-            this.IsLast = IsLast;
+        public void setLast(boolean last) {
+            IsLast = last;
         }
     }
 

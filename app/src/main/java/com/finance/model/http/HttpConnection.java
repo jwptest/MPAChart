@@ -1,6 +1,7 @@
 package com.finance.model.http;
 
 import com.finance.BuildConfig;
+import com.finance.utils.NetWorkUtils;
 import com.orhanobut.logger.Logger;
 
 import microsoft.aspnet.signalr.client.Action;
@@ -19,6 +20,7 @@ public class HttpConnection {
     private Object tag;
     private int T;
     private String Token;
+    private BaseCallback receivedHandler;
 
     public HttpConnection(String url) {
         this.url = url;
@@ -56,18 +58,28 @@ public class HttpConnection {
 
     //断开链接
     public void stop() {
-        if (connection == null) return;
-        try {
-            connection.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (receivedHandler != null) {
+            receivedHandler.setDiscarded(true);//设置为废弃
+            receivedHandler = null;
         }
-        connection = null;
+        if (connection != null) {
+            try {
+                connection.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            connection = null;
+        }
     }
 
     private Connection connection;
 
     public HttpConnection execute(BaseCallback receivedHandler) {
+        if (!NetWorkUtils.isNetworkConnected()) {
+            receivedHandler.noNetworkConnected();
+            return this;
+        }
+        this.receivedHandler = receivedHandler;
         connection = new Connection(url);
         connection.received(receivedHandler);
         connection.stateChanged(mChangedCallback);

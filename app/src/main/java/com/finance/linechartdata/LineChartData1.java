@@ -35,7 +35,7 @@ import static com.finance.utils.TimerUtil.timerToLong;
 public class LineChartData1 extends BaseChartData<Entry> implements ICallback<ArrayList<String>>, EventDistribution.IChartDraw {
 
     private LineData lineData;//显示数据
-    private HttpConnection mHttpConnection;
+    private HttpConnection mHttpConnection0, mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
     private MThread mMThread;//解析数据线程
     private ArrayList<IndexMarkEntity> mIndexMarkEntities;//推送的指数数据
@@ -99,8 +99,15 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     }
 
     @Override
-    public void onResume(String type) {
+    public void onResume(int type) {
         super.onResume(type);
+        if (lineData != null) {
+            if (type == Constants.CHART_LINEFILL) {
+                ((LineDataSet) lineData.getDataSetByIndex(0)).setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            } else if (type == Constants.CHART_LINE) {
+                ((LineDataSet) lineData.getDataSetByIndex(0)).setMode(LineDataSet.Mode.LINEAR);
+            }
+        }
         EventDistribution.getInstance().addChartDraws(this);
     }
 
@@ -116,10 +123,15 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         }
     }
 
-    private void stopNetwork() {
-        if (mHttpConnection != null) {
-            mHttpConnection.stop();
-            mHttpConnection = null;
+    @Override
+    public void stopNetwork() {
+        if (mHttpConnection0 != null) {
+            mHttpConnection0.stop();
+            mHttpConnection0 = null;
+        }
+        if (mHttpConnection1 != null) {
+            mHttpConnection1.stop();
+            mHttpConnection1 = null;
         }
         if (mMThread != null) {
             mMThread.isDiscarded = true;//设置废弃
@@ -145,10 +157,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         startRemoveDataAnimation();//启动删除动画
         long timer = timerToLong(issueEntity.getBonusTime()) - Constants.SERVERCURRENTTIMER;
         //获取期号
-        mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), this);
+        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), this);
         //获取时时数据
-//        mHttpConnection = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
-        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
+        mHttpConnection1 = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
+//        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
     }
 
     @Override
@@ -330,6 +342,11 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
                     mChartData.updateAlwaysData(entity);
                 }
             });
+        }
+
+        @Override
+        public void noNetworkConnected() {
+
         }
     }
 

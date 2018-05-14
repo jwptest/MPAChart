@@ -5,6 +5,6 @@ package com.finance.ui.main;
  */
 public interface ICentreMenu {
 
-    void checkedChart(String chartType);
+    void checkedChart(int chartType);
 
 }

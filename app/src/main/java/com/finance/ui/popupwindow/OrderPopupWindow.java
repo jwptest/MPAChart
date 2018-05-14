@@ -50,7 +50,6 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     private MainContract.Presenter mPresenter;
 
     private OrderAdapter mAdapter;
-//    private OrdersEntity ordersEntity;
 
     private CountDownTimer timer;//倒计时
     private long serviceTimer;//服务器时间
@@ -141,17 +140,6 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     protected boolean isBindView() {
         return true;
     }
-
-//    @Override
-//    public void dismiss() {
-//        super.dismiss();
-//        if (dismiss != null)
-//            dismiss.onDismiss();
-//    }
-//
-//    public void setOnDismiss(IDismiss dismiss) {
-//        this.dismiss = dismiss;
-//    }
 
     @Override
     public void dismiss() {

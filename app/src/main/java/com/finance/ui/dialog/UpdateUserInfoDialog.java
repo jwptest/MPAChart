@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.finance.R;
+import com.finance.event.EventBus;
+import com.finance.event.UpdateUserInfoEvent;
 import com.finance.utils.ViewUtil;
 
 import butterknife.BindView;
@@ -16,24 +19,29 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * 退出程序对话框
+ * 刷新用户信息对话框
  */
-public class ExitAppDialog extends Dialog {
+public class UpdateUserInfoDialog extends Dialog {
 
-    @BindView(R.id.rlContent)
-    View rlContent;
+    @BindView(R.id.tvTitle)
+    TextView tvTitle;
     @BindView(R.id.tvEdit)
-    TextView mTvEdit;
+    TextView tvEdit;
     @BindView(R.id.vLine)
-    View mVLine;
+    View vLine;
     @BindView(R.id.tvCancel)
-    TextView mTvCancel;
+    TextView tvCancel;
+    @BindView(R.id.rlContent)
+    RelativeLayout rlContent;
+    @BindView(R.id.ivTitle)
+    ImageView ivTitle;
     @BindView(R.id.ivClose)
-    ImageView mIvClose;
-
+    ImageView ivClose;
+    @BindView(R.id.llRootView)
+    RelativeLayout llRootView;
     private Activity mActivity;
 
-    public ExitAppDialog(@NonNull Activity activity) {
+    public UpdateUserInfoDialog(@NonNull Activity activity) {
         super(activity, R.style.noBackDialog);
         mActivity = activity;
     }
@@ -44,6 +52,9 @@ public class ExitAppDialog extends Dialog {
         setContentView(R.layout.dialog_exit_app);
         ButterKnife.bind(this);
         ViewUtil.setBackground(mActivity, rlContent, R.drawable.dialog_ts_bg);
+
+        tvTitle.setText("领取体验金");
+        tvEdit.setText("领取");
     }
 
     @OnClick({R.id.tvEdit, R.id.tvCancel, R.id.ivClose})
@@ -51,13 +62,7 @@ public class ExitAppDialog extends Dialog {
         dismiss();
         switch (view.getId()) {
             case R.id.tvEdit:
-                try {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                    System.exit(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(0);
-                }
+                EventBus.post(new UpdateUserInfoEvent(true));
                 break;
             case R.id.tvCancel:
                 break;
@@ -65,4 +70,6 @@ public class ExitAppDialog extends Dialog {
                 break;
         }
     }
+
+
 }

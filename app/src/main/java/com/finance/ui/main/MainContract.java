@@ -69,7 +69,7 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
-        void getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback);
+        HttpConnection getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback);
 
         void getOpenIndex(int ProductId,String productName, String issue, String Time);
 

@@ -45,7 +45,7 @@ public class CandleChartData implements IChartData {
 //    }
 
     @Override
-    public void onResume(String type) {
+    public void onResume(int type) {
         mChart.setData(mCombinedData);
         mXAxis.setAxisMaximum(20);
         mChart.invalidate();
@@ -69,6 +69,11 @@ public class CandleChartData implements IChartData {
     @Override
     public boolean isRefrshChartData() {
         return true;
+    }
+
+    @Override
+    public void stopNetwork() {
+
     }
 
     @Override
