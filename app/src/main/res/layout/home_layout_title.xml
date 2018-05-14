@@ -27,9 +27,9 @@
 
     <ImageView
         android:id="@+id/ivKM"
-        android:layout_width="@dimen/dp_120"
+        android:layout_width="@dimen/dp_110"
         android:layout_height="@dimen/home_titleBar_height"
-        android:paddingLeft="@dimen/dp_20"
+        android:paddingLeft="@dimen/dp_15"
         android:scaleType="centerInside"
         android:src="@drawable/km_icon"
         tools:tooltipText="KM"/>
@@ -70,11 +70,10 @@
             android:layout_width="@dimen/dp_8"
             android:layout_height="@dimen/dp_8"
             android:layout_alignBottom="@+id/tvBFB"
-            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_13"
             android:layout_toRightOf="@+id/tvBFB"
             android:scaleType="fitEnd"
             android:src="@drawable/xiala"/>
-
     </RelativeLayout>
 
     <View
@@ -109,7 +108,7 @@
             android:layout_width="@dimen/dp_8"
             android:layout_height="@dimen/dp_8"
             android:layout_alignBottom="@+id/tvJZTimer"
-            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_13"
             android:layout_toRightOf="@+id/tvJZTimer"
             android:scaleType="fitEnd"
             android:src="@drawable/xiala"/>
@@ -142,6 +141,7 @@
         android:layout_marginLeft="@dimen/dp_5"
         android:layout_marginRight="@dimen/dp_10"
         android:gravity="center"
+        android:singleLine="true"
         android:text="用户名称"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_12"/>
@@ -151,6 +151,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/home_titleBar_height"
         android:gravity="center"
+        android:singleLine="true"
         android:text="￥8888.00"
         android:textColor="@color/red"
         android:textSize="@dimen/sp_12"/>

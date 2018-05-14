@@ -49,6 +49,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     private ValueAnimator valueAnimator;//当前执行动画
     protected View animView;//执行加载动画的view
     private Animation mAnimation;//执行动画
+    protected int dataMinCount = 0;
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
         this(context, view, chart, presenter, null);
@@ -90,13 +91,20 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     @Override
     public void updateIssue(ProductEntity productEntity, IssueEntity issueEntity) {
         if (productEntity == null || issueEntity == null) return;
-        if (this.issueEntity != null && this.issueEntity == issueEntity) {
-            return;
+        if (productEntity == this.productEntity) {
+            if (issueEntity == this.issueEntity) {
+                return;
+            }
+            this.issueEntity = issueEntity;
+            //去掉部分历史数据
+            removeBasicData();
+        } else {
+            this.productEntity = productEntity;
+            this.issueEntity = issueEntity;
+//            ViewUtil.setViewVisibility(animView, View.VISIBLE);
+            ViewUtil.setViewVisibility(animView, View.GONE);
+            updateData();
         }
-        this.productEntity = productEntity;
-        this.issueEntity = issueEntity;
-        ViewUtil.setViewVisibility(animView, View.VISIBLE);
-        updateData();
     }
 
     //刷新X轴显示的最大值
@@ -126,13 +134,13 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     public void stopPurchase(boolean isOrder) {
         if (isOrder) return;
         mView.refreshIessue();//刷新期号
-        stopNetwork();
+//        stopNetwork();
     }
 
     @Override
     public void openPrize(boolean isOrder) {
         mView.refreshIessue();//刷新期号
-        stopNetwork();
+//        stopNetwork();
     }
 
     //刷新走势图
@@ -197,6 +205,8 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        stopAddAnimation();
 //        isAnimation = false;
 
+        dataMinCount = entitys.size();//保存基础数据条数
+
         mChart.isStopDraw(false);
         if (valueAnimator != null) {
             valueAnimator.cancel();
@@ -246,30 +256,56 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         return valueAnimator;
     }
 
+    private void removeBasicData() {//去掉部分基础数据
+        if (mChartDatas == null || mChartDatas.isEmpty()) return;
+        int size = mChartDatas.size();
+
+//        for (int i = 0; i < size; i++) {
+//
+//        }
+
+        ArrayList<T> entitys = new ArrayList<>(mChartDatas.subList(size - dataMinCount, size - 1));
+        int index = 0;
+        for (T t : entitys) {
+            t.setX(index);
+            index++;
+        }
+ddd
+        mChartDatas.clear();//清理了，如果走势图还在刷新就会报下标超界
+        mChartDatas.addAll(entitys);
+        dataMinCount = mChartDatas.size();
+        setAxisMaximum(0);
+        invalidateChart();
+
+//        startAddDataAnimation(entitys);
+
+
+    }
+
     //添加动画执行完成
     protected void stopAddAnimation() {
-        if (animView == null) return;
-        if (mAnimation == null) {
-            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
-            mAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    animView.clearAnimation();
-                    ViewUtil.setViewVisibility(animView, View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
-        animView.startAnimation(mAnimation);
+//        if (animView == null) return;
+//        if (mAnimation == null) {
+//            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
+//            mAnimation.setAnimationListener(new Animation.AnimationListener() {
+//                @Override
+//                public void onAnimationStart(Animation animation) {
+//
+//                }
+//
+//                @Override
+//                public void onAnimationEnd(Animation animation) {
+//                    animView.clearAnimation();
+//                    ViewUtil.setViewVisibility(animView, View.GONE);
+//                }
+//
+//                @Override
+//                public void onAnimationRepeat(Animation animation) {
+//
+//                }
+//            });
+//        }
+//        animView.startAnimation(mAnimation);
     }
 
     //删除动画执行完成

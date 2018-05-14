@@ -251,7 +251,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         mChartSetting
                 .setRightIAxisValueFormatter(mRightAxisValue)
                 .setXIAxisValueFormatter(mXAxisValue)
-                .initLineChart(lineChart, true);
+                .initLineChart(lineChart, false);
         chartListener = new LineChartListener(mActivity, rlPurchaseView, this, lineChart)
                 .initListener()
                 .setIvIcon(ivIcon)
@@ -372,10 +372,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         mMainPresenter.getOpenIndex(currentProduct.getProductId(), currentProduct.getProductName(), currentIssue.getIssueName(), TimerUtil.formatStr(currentIssue.getBonusTime()));
     }
 
-    @Subscribe
-    public void onEvent(OpenPrizeEvent event) {
-        if (event == null) return;//获取开奖结果事件
-    }
+//    @Subscribe
+//    public void onEvent(OpenPrizeEvent event) {
+//        if (event == null) return;//获取开奖结果事件
+//    }
 
     @Subscribe
     public void onEvent(UpdateUserInfoEvent event) {

@@ -63,6 +63,8 @@ public class LineChartSetting implements IChartSetting {
         if (isOffsets) {
             int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
             mChart.setViewPortOffsets(0, top, 0, 0);
+        }else {
+            mChart.setViewPortOffsets(0, 0, 0, 0);
         }
 //        mChart.setPinchZoom(true);//放缩 作用同上
         mChart.setDrawBorders(false);

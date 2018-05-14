@@ -14,7 +14,7 @@ public class TimerUtil {
 //    private static final String sDateFormat = "yyyy-MM-ddTHH:mm:ss";
 
     public static String formatStr(String timer) {
-        if (TextUtils.isEmpty(timer) || timer.length() < 19) throw new Error("时间格式错误");
+        if (TextUtils.isEmpty(timer) || timer.length() < 19) throw new Error("时间格式错误:" + timer);
         return timer.substring(0, 19).replace("T", " ");
     }
 

@@ -3,6 +3,7 @@ package com.finance.linechartdata;
 import android.content.Context;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.finance.App;
@@ -27,6 +28,7 @@ import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static com.finance.utils.TimerUtil.timerToLong;
 
 /**
@@ -339,6 +341,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
                 @Override
                 public void run() {
 //                    addCount++;
+                    Log.d("123", "run: " + entity.getX() + "," + entity.getY());
                     mChartData.updateAlwaysData(entity);
                 }
             });

@@ -204,7 +204,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         if (mView == null) return;
                         IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
                         if (indexEntity == null) return;
-                        App.getInstance().showErrorMsg(indexEntity.getId());//显示指数
+                        App.getInstance().showErrorMsg(indexEntity.getY() + "");//显示指数
                         getOpenData(indexEntity, ProductId, issue, productName);
 //                        if (mView == null) return;
 //                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);

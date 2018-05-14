@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.event.DataRefreshEvent;
@@ -687,13 +686,16 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mViewUtil.refreshPurchaseView(mChart, entity, dataSet);
     }
 
+    private boolean isEnd = true;//是否判断截止
+
     //绘制完成执行
     private void onDraws() {
         //绘制完成事件
         EventDistribution.getInstance().onDraw(currentEntry);
         //截止购买和开奖
         if (openEntry != null && endEntry != null) {
-            if (!isOrder && currentTimer - endTimer > 500) {
+            if (isEnd && currentTimer - endTimer > 500) {
+                isEnd = false;
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
                 if (isOrder) {
                     long end = TimerUtil.timerToLong(currentEntry.getTime());
@@ -702,6 +704,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                         OpenCountDown.getInstance().startCountDown(open - end);
                 }
             } else if (currentTimer - openTimer > 500) {
+                isEnd = true;
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖
                 if (isOrder)
                     OpenCountDown.getInstance().stopCountDown();//停止倒计时

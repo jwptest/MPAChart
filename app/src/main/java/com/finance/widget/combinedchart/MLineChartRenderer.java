@@ -3,7 +3,9 @@ package com.finance.widget.combinedchart;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.CountDownTimer;
+import android.util.Log;
 
+import com.finance.utils.HandlerUtil;
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
@@ -11,6 +13,8 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * 绘制走势图控件

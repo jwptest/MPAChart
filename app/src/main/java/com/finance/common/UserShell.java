@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.finance.App;
 import com.finance.model.ben.AccountEntity;
 import com.finance.model.ben.UserInfoEntity;
+import com.finance.utils.NumberUtil;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -122,7 +123,7 @@ public class UserShell {
     }
 
     public String getUserMoneyStr() {
-        return getUserMoney() + "";
+        return NumberUtil.digitDouble(getUserMoney()) + "";
     }
 
     public double getUserMoney() {
