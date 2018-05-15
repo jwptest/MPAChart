@@ -1,5 +1,6 @@
 package com.finance.utils;
 
+import com.finance.common.Constants;
 import com.finance.model.ben.IndexMarkEntity;
 
 import java.util.ArrayList;
@@ -9,16 +10,17 @@ import java.util.ArrayList;
  */
 public class IndexUtil {
 
-    public ArrayList<IndexMarkEntity> parseExponentially(int startIndex, ArrayList<String> serverDatas, int digit) {
+    public ArrayList<IndexMarkEntity> parseExponentially(long startTimer, ArrayList<String> serverDatas, int digit) {
         if (serverDatas == null || serverDatas.isEmpty()) return null;
         ArrayList<IndexMarkEntity> entitys = new ArrayList<>(serverDatas.size());
         for (String str : serverDatas) {
-            IndexMarkEntity entity = parseExponentially(startIndex, str, digit);
+            IndexMarkEntity entity = parseExponentially(0, str, digit);
             if (entity == null) continue;
-//            if (entity.getTime() == -1) continue;
+            if (entity.getTimeLong() == -1) continue;
+            entity.setX((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL);
             //更新下标
             entitys.add(entity);
-            startIndex++;
+//            startIndex++;
         }
         return entitys;
     }

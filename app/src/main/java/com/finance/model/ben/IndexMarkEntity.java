@@ -1,5 +1,6 @@
 package com.finance.model.ben;
 
+import com.finance.utils.TimerUtil;
 import com.github.mikephil.charting.data.Entry;
 
 import java.math.BigDecimal;
@@ -14,7 +15,8 @@ import java.util.TimeZone;
 public class IndexMarkEntity extends Entry {
 
     private int prod;
-    private String time;//时间戳
+    private String time;//时间字符串
+    private long timerLong;//时间戳
     private int isUpdatePoint;
     private String id;
 
@@ -25,7 +27,7 @@ public class IndexMarkEntity extends Entry {
         this.prod = prod;
         this.isUpdatePoint = isUpdatePoint;
         this.id = data;
-        this.time = formatTime(time);
+        this.timerLong = formatTimeLong(time);
         setX(x);//将时间转换为下标
         setY(managerExponentially((float) exponentially, decimalPointIndex, digit));
     }
@@ -35,7 +37,11 @@ public class IndexMarkEntity extends Entry {
     }
 
     public String getTime() {
-        return time;
+        return formatTimeStr(timerLong);
+    }
+
+    public long getTimeLong() {
+        return timerLong;
     }
 
     public double getExponentially() {
@@ -54,6 +60,7 @@ public class IndexMarkEntity extends Entry {
         IndexMarkEntity entity = new IndexMarkEntity();
         entity.time = time;
         entity.prod = prod;
+        entity.timerLong = timerLong;
         entity.isUpdatePoint = isUpdatePoint;
         entity.id = id;
         entity.setX(getX());
@@ -85,6 +92,8 @@ public class IndexMarkEntity extends Entry {
 
     private static SimpleDateFormat sdf;
 
+    private static SimpleDateFormat sdf2;
+
     public static long getTimeMillis(long time) {
         time -= 621355968000000000L;
         long str = time / 10000L;
@@ -101,7 +110,6 @@ public class IndexMarkEntity extends Entry {
     }
 
     public static String formatTime(long time) {
-//        System.out.println(time);
         time -= 621355968000000000L;
         long str = time / 10000L;
         time = Long.parseLong(String.valueOf(str), 10);
@@ -111,13 +119,42 @@ public class IndexMarkEntity extends Entry {
         return sd;
     }
 
+    public static String formatTimeStr(long time) {
+//        String sd = sdf.format(String.valueOf(time));
+        return TimerUtil.timerFormatStr(time);
+    }
+
+    public static long formatTimeLong(long time) {
+        time -= 621355968000000000L;
+        long str = time / 10000L;
+        time = Long.parseLong(String.valueOf(str), 10);
+        time -= 28800000L;
+        getSimpleDateFormat();
+        getSimpleDateFormat2();
+        try {
+            time = sdf2.parse(sdf.format(time)).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            time = -1;
+        }
+        return time;
+    }
+
     private static SimpleDateFormat getSimpleDateFormat() {
         if (sdf == null) {
-//            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.FFF");
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.FFF");
+//            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         }
         return sdf;
+    }
+
+    private static SimpleDateFormat getSimpleDateFormat2() {
+        if (sdf2 == null) {
+            sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.FFF");
+//            sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        }
+        return sdf2;
     }
 
 }

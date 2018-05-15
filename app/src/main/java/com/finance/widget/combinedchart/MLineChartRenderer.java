@@ -3,9 +3,7 @@ package com.finance.widget.combinedchart;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.CountDownTimer;
-import android.util.Log;
 
-import com.finance.utils.HandlerUtil;
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
@@ -13,8 +11,6 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * 绘制走势图控件
@@ -35,9 +31,12 @@ public class MLineChartRenderer extends LineChartRenderer {
     private boolean isCountDown = false;//是否倒计时
 
     private boolean isDraw = true;//是否绘制
+    private int dataSize;//数据长度
+    private int step;//步长
 
     @Override
     protected void drawCubicBezier(ILineDataSet dataSet) {
+        mXBounds.set(mChart, dataSet);//刷新X轴的值
         int size = mXBounds.range + mXBounds.min;
         drawCubicBezier(dataSet, size);
 //        int size = mXBounds.range + mXBounds.min;
@@ -129,7 +128,6 @@ public class MLineChartRenderer extends LineChartRenderer {
     private void drawCubicBezier(ILineDataSet dataSet, int size) {
         float phaseY = mAnimator.getPhaseY();
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
-        mXBounds.set(mChart, dataSet);
         float intensity = dataSet.getCubicIntensity();
         cubicPath.reset();
         if (mXBounds.range >= 1) {
@@ -153,7 +151,7 @@ public class MLineChartRenderer extends LineChartRenderer {
             // let the spline start
             cubicPath.moveTo(cur.getX(), cur.getY() * phaseY);
 //            int size = mXBounds.range + mXBounds.min;
-            int step = getStep(size);
+            int step = getStep();
             if (step > 0) {
                 boolean p = true;
                 for (int j = mXBounds.min + 1; j <= size; j++) {
@@ -254,7 +252,7 @@ public class MLineChartRenderer extends LineChartRenderer {
         }
 
         int length = mXBounds.range + mXBounds.min;
-        int step = getStep2(length);
+        int step = getStep2();
         // more than 1 color
         if (dataSet.getColors().size() > 1) {
 
@@ -356,15 +354,27 @@ public class MLineChartRenderer extends LineChartRenderer {
     }
 
     //间隔步长
-    private int getStep(int length) {
-        if (length <= 120) return 0;
-        return length / 120;
+    private int getStep() {
+//        if (step == -1) {
+//            if (dataSize <= 120) step = 0;
+//            else step = dataSize / 120;
+//        }
+//        return step;
+//        if (dataSize <= 120) return 0;
+//        return dataSize / 120;
+        return step;
     }
 
     //间隔步长
-    private int getStep2(int length) {
-        if (length <= 120) return 1;
-        return length / 120;
+    private int getStep2() {
+//        if (step == -1) {
+//            if (dataSize <= 120) step = 1;
+//            else step = dataSize / 120;
+//        }
+//        return step;
+//        if (dataSize <= 120) return 1;
+//        return dataSize / 120;
+        return step < 1 ? 1 : step;
     }
 
     public void setDrawIntervention(int startIndex, int minsPacing, int maxTimer) {
@@ -379,4 +389,9 @@ public class MLineChartRenderer extends LineChartRenderer {
     public void setDraw(boolean draw) {
         isDraw = draw;
     }
+
+    public void setDrawStep(int step) {
+        this.step = step;
+    }
+
 }

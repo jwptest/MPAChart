@@ -317,8 +317,12 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
             mMCombinedChartRenderer.getLineChartRenderer().setDrawIntervention(startIndex, minsPacing, maxTimer);
     }
 
-    public void isStopDraw(boolean isDraw) {
-        mMCombinedChartRenderer.getLineChartRenderer().setDraw(isDraw);
+//    public void isStopDraw(boolean isDraw) {
+//        mMCombinedChartRenderer.getLineChartRenderer().setDraw(isDraw);
+//    }
+
+    public void setDrawStep(int step) {
+        mMCombinedChartRenderer.getLineChartRenderer().setDrawStep(step);
     }
 
 }

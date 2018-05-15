@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.finance.App;
 import com.finance.common.Constants;
+import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.interfaces.ICallback;
@@ -28,7 +29,6 @@ import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static com.finance.utils.TimerUtil.timerToLong;
 
 /**
@@ -40,16 +40,20 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     private HttpConnection mHttpConnection0, mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
     private MThread mMThread;//解析数据线程
+    //    private ArrayList<IndexMarkEntity> mAllIndexMarks;//全部数据
     private ArrayList<IndexMarkEntity> mIndexMarkEntities;//推送的指数数据
     private ArrayList<IndexMarkEntity> mHistoryIndexMarks;//历史指数
     private boolean isRefrshChartData;//是否在刷新走势图数据
-    private boolean isDraw = false;//是否绘制
+    //    private boolean isDraw = false;//是否绘制
     private long issueLengthTime;//当前期显示的数据时间长度
     private boolean isTimer = false;//是否可以转换时间
+    private int drawStep = 1;//步长
+    private long startTimer;//开始时间
 
     public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter, View animView) {
         super(context, view, chart, presenter, animView);
         this.mIndexMarkEntities = new ArrayList<>(6);
+//        this.mAllIndexMarks = new ArrayList<>(600);
     }
 
     @Override
@@ -98,6 +102,11 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
             lineData = new LineData(set);
         }
         return lineData;
+    }
+
+    @Override
+    protected int getDrawSetp() {
+        return drawStep;
     }
 
     @Override
@@ -176,6 +185,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         invalidateChart();//刷新数据
         //发送事件
         EventBus.post(new DataRefreshEvent(true));
+        //走势图数据查询事件
+        EventBus.post(new ChartDataUpdateEvent());
         //设置介入绘制参数
         mChart.setDrawIntervention(startIndex, minsPacing, 300);
     }
@@ -188,8 +199,45 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     @Override
     protected long getLengthTime() {
-//        return issueLengthTime;
-        return 0;
+        return startTimer;
+//        return ((IndexMarkEntity) mChartDatas.get(0)).getTimeLong();
+//        return 0;
+    }
+
+    @Override
+    protected void updateStartTime(Entry entry) {
+        startTimer = ((IndexMarkEntity) entry).getTimeLong();
+    }
+
+    @Override
+    protected ArrayList<Entry> getShowData() {
+        int size = mChartDatas.size();
+        IndexMarkEntity entity = (IndexMarkEntity) mChartDatas.get(size - 1);
+        long startTimer = entity.getTimeLong() - 5 * 60 * 1000;
+        IndexMarkEntity entity2;
+        int startIndex = -1;
+        for (int i = 0; i < size; i++) {
+            entity2 = (IndexMarkEntity) mChartDatas.get(i);
+            if (entity2.getTimeLong() >= startTimer) {
+                if (startIndex == -1)
+                    startIndex = i;
+                entity2.setX((entity2.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL);
+            }
+        }
+        ArrayList<Entry> entitys;
+        if (startIndex > 0) {
+            entitys = new ArrayList<>(mChartDatas.subList(startIndex, size - 1));
+        } else {
+            entitys = new ArrayList<>(mChartDatas);
+        }
+        updateStartTime(entitys.get(0));
+        return entitys;
+    }
+
+
+    private float getDataIndex(IndexMarkEntity entity) {
+        if (entity == null) return 0;
+        return (entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL;
     }
 
     //添加历史数据
@@ -203,7 +251,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
             mHistoryIndexMarks = null;
         }
         addAlwaysDatas(entries);
-        isDraw = false;
+//        isDraw = false;
+
         //刷新时长长度
 //        long timer1 = (long) entries.get(0).getX();
 //        long timer1 = ((IndexMarkEntity) entries.get(0)).getTime();
@@ -219,11 +268,12 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     //添加时时数据
     private void addAlwaysDatas(ArrayList<Entry> entries) {
         if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
-            for (IndexMarkEntity entity : mIndexMarkEntities) {
-                //更新下标
-                entity.setX(entries.size());
-                entries.add(entity);
-            }
+            entries.addAll(mIndexMarkEntities);
+//            for (IndexMarkEntity entity : mIndexMarkEntities) {
+//                //更新下标
+//                entity.setX(entries.size());
+//                entries.add(entity);
+//            }
             mIndexMarkEntities.clear();
         }
     }
@@ -231,11 +281,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     //刷新时时数据
     private void updateAlwaysData(IndexMarkEntity entity) {
         if (!isTimer) return;
+//        mAllIndexMarks.add(entity);
+        entity.setX((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL);
         if (isRefrshChartData || isAnimation) {
             mIndexMarkEntities.add(entity);
             return;
         }
-        entity.setX(mChartDatas.size());
+//        entity.setX(mChartDatas.size());
         mChartDatas.add(entity);
         invalidateChart();//刷新数据
     }
@@ -243,7 +295,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     private void updateHistoryData(ArrayList<IndexMarkEntity> entities) {
         isRefrshChartData = false;
         if (entities == null || entities.isEmpty()) return;
+
+        drawStep = entities.size() / 100;
+        mChart.setDrawStep(drawStep);//设置步长
+        Log.d("", "updateHistoryData: ");
         mHistoryIndexMarks = entities;
+//        mAllIndexMarks.clear();
+//        mAllIndexMarks.addAll(entities);
 //        ArrayList<IndexMarkEntity> indexMarkEntities = new ArrayList<>(entities);
         addHistoryDatas();
 //        startTestData(indexMarkEntities);
@@ -303,9 +361,9 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     @Override
     public void onDraw(Entry entry) {
-        if (isDraw) return;
-//        setAxisMaximum();
-        isDraw = true;
+//        if (isDraw) return;
+////        setAxisMaximum();
+//        isDraw = true;
     }
 
     private static class Callback extends BaseCallback {
@@ -368,15 +426,14 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         @Override
         public void run() {
             if (isDiscarded || mLineChartData == null) return;
-//            IndexMarkEntity entity = mIndexUtil.parseExponentially(strings.get(0), Constants.INDEXDIGIT);
+            IndexMarkEntity entity = mIndexUtil.parseExponentially(0, strings.get(0), Constants.INDEXDIGIT);
 //            Constants.setReferenceX(entity.getTime());//更新基准下标
 //            添加时时推送的指数
             if (mLineChartData.mCallback != null && mLineChartData.mCallback.indexStrs != null) {
                 strings.addAll(mLineChartData.mCallback.indexStrs);
                 mLineChartData.mCallback.indexStrs.clear();
             }
-            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(0, strings, Constants.INDEXDIGIT);
-
+            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(entity.getTimeLong(), strings, Constants.INDEXDIGIT);
 //            Collections.sort(entities, new Comparator<IndexMarkEntity>() {
 //                @Override
 //                public int compare(IndexMarkEntity o1, IndexMarkEntity o2) {
@@ -386,6 +443,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
             if (isDiscarded || mLineChartData == null) return;
             mLineChartData.isTimer = true;
+            mLineChartData.updateStartTime(entity);
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

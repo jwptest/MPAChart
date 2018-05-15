@@ -50,6 +50,8 @@ public class StartDialog extends Dialog {
     private boolean isLogin = false;//是否登录完成
     private boolean isData = false;//是否获取数据完成
     private boolean isCountDown = false;//倒计时是否完成
+    //延迟执行操作
+    private Runnable mRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,15 +64,21 @@ public class StartDialog extends Dialog {
                 .skipMemoryCache(true)
                 .into((ImageView) findViewById(R.id.ivBg));
         setCancelable(false);
-        Runnable mRunnable = new Runnable() {
+        //如果10秒钟还没有请求成功，就关闭对话框
+        HandlerUtil.runOnUiThreadDelay(new Runnable() {
             @Override
             public void run() {
                 isCountDown = true;
                 toMainActivity();
             }
+        }, 2000);
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                dismiss();//超时没有处理完成，关闭对话框
+            }
         };
-        //如果10秒钟还没有请求成功，就关闭对话框
-        HandlerUtil.runOnUiThreadDelay(mRunnable, 2000);
+        HandlerUtil.runOnUiThreadDelay(mRunnable, 5000);
         login();
     }
 
@@ -88,6 +96,7 @@ public class StartDialog extends Dialog {
     @Override
     public void dismiss() {
         EventBus.unregister(this);
+        HandlerUtil.removeRunable(mRunnable);
         super.dismiss();
     }
 

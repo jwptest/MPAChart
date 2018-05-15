@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.common.Constants;
+import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
@@ -540,16 +541,21 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         isRefresh = event.isRefresh();
         if (isRefresh) {//走势图动画执行完成，初始化控件
             initView();
-            if (mIChartData != null && mIssueEntity != null) {
-                endEntry = mIChartData.getEntry(mIssueEntity.getStopTime());
-                openEntry = mIChartData.getEntry(mIssueEntity.getBonusTime());
-                endTimer = TimerUtil.timerToLong(mIssueEntity.getStopTime());
-                openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
-            }
             updatePurchaseView();//刷新购买点的坐标点
         } else {
             hideView();
             hidePurchaseView();//隐藏购买点
+        }
+    }
+
+    @Subscribe
+    public void onEvent(ChartDataUpdateEvent event) {
+        if (mIChartData != null && mIssueEntity != null) {
+            endEntry = mIChartData.getEntry(mIssueEntity.getStopTime());
+            openEntry = mIChartData.getEntry(mIssueEntity.getBonusTime());
+            endTimer = TimerUtil.timerToLong(mIssueEntity.getStopTime());
+            openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
+            isEnd = true;
         }
     }
 
@@ -698,10 +704,10 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                 isEnd = false;
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
                 if (isOrder) {
-                    long end = TimerUtil.timerToLong(currentEntry.getTime());
+//                    long end = TimerUtil.timerToLong(currentEntry.getTime());
                     long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
-                    if (open - end > 0)//开始倒计时
-                        OpenCountDown.getInstance().startCountDown(open - end);
+                    if (open - currentTimer > 0)//开始倒计时
+                        OpenCountDown.getInstance().startCountDown(open - currentTimer);
                 }
             } else if (currentTimer - openTimer > 500) {
                 isEnd = true;

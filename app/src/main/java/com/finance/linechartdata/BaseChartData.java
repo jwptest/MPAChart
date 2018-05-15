@@ -6,11 +6,11 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
+import com.finance.common.Constants;
+import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.interfaces.IChartData;
@@ -18,6 +18,7 @@ import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.ui.main.MainContract;
+import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -48,7 +49,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
     protected View animView;//执行加载动画的view
-    private Animation mAnimation;//执行动画
+    //    private Animation mAnimation;//执行动画
     protected int dataMinCount = 0;
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
@@ -118,16 +119,24 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        int addItems = (int) (dpPxRight / itemWidth);
 //        mXAxis.setAxisMaximum(trimL + addItems);
 
-//        //绘制完成回调
-        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
-        float labelX = mChart.getFixedPosition();
-        float labelWidth = mChart.getLabelWidth();
-        float endX = labelX - labelWidth - dpPxRight;
-        float itemWidth = endX / X;
-        float addItem = (labelWidth + dpPxRight) / itemWidth;
-        mXAxis.setAxisMaximum(X + addItem);
+////        //绘制完成回调
+//        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
+//        float labelX = mChart.getFixedPosition();
+//        float labelWidth = mChart.getLabelWidth();
+//        float endX = labelX - labelWidth - dpPxRight;
+//        float itemWidth = endX / X;
+//        float addItem = (labelWidth + dpPxRight) / itemWidth;
+//        mXAxis.setAxisMaximum(X + addItem);
 
-//        mXAxis.setAxisMaximum(count + 120);
+        long startTimer = getLengthTime();
+        long openTimer = TimerUtil.timerToLong(issueEntity.getBonusTime());
+        long xCount = (openTimer - startTimer) / Constants.ISSUEINTERVAL;
+        float labelX = mChart.getFixedPosition();//标签开始绘制坐标
+        float labelWidth = mChart.getLabelWidth();//标签长度
+        float endX = labelX - labelWidth - dpPxRight;
+        float itemWidth = endX / xCount;
+        float addItem = (labelWidth + dpPxRight) / itemWidth;
+        mXAxis.setAxisMaximum(xCount + addItem);
     }
 
     @Override
@@ -156,7 +165,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected void startRemoveDataAnimation() {
         final int maxIndex = mChartDatas.size() - 1;
         if (maxIndex < 0) return;
-        mChart.isStopDraw(false);
+//        mChart.isStopDraw(false);
         if (valueAnimator != null) {
             valueAnimator.cancel();
         }
@@ -164,6 +173,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        removeCount = 0;
         //清除数据
         mChartDatas.clear();
+//        mChart.isStopDraw(true, 0);
         invalidateChart();
         isAnimation = false;
         stopRemoveAnimation();
@@ -189,47 +199,49 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //启动添加数据动画
     protected void startAddDataAnimation(ArrayList<T> entitys) {
-//        final int maxIndex = entitys.size() - 1;
-//        mChartDatas.clear();
-//        if (maxIndex > 0) {
-//            mChartDatas.addAll(entitys);
-//            setAxisMaximum(maxIndex + 1);//刷新X周显示条数
-//        }
-//        if (combinedData == null) {
-//            combinedData = new CombinedData();
-//            combinedData.setData(getLineData());
-//            mChart.setData(combinedData);
-//        } else {
-//            invalidateChart();
-//        }
-//        stopAddAnimation();
-//        isAnimation = false;
-
-        dataMinCount = entitys.size();//保存基础数据条数
-
-        mChart.isStopDraw(false);
-        if (valueAnimator != null) {
-            valueAnimator.cancel();
-        }
         final int maxIndex = entitys.size() - 1;
-        if (maxIndex < 0) return;
-        isAnimation = true;
-        addCount = 1;
         mChartDatas.clear();
-        mChartDatas.add(entitys.get(0));
-        setAxisMaximum(entitys.size());//刷新X轴显示条数
-        mChart.isStopDraw(true);
-        valueAnimator = staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int endIndex = (int) animation.getAnimatedValue();
-                for (int i = addCount; i <= endIndex; i++) {
-                    mChartDatas.add(entitys.get(i));
-                    addCount++;
-                }
-                invalidateChart();
-            }
-        }, true, 0, maxIndex);
+//        mChart.isStopDraw(false, 0);
+        if (maxIndex > 0) {
+            mChartDatas.addAll(entitys);
+            setAxisMaximum(maxIndex + 1);//刷新X周显示条数
+        }
+        dataMinCount = entitys.size();//保存基础数据条数
+//        mChart.isStopDraw(true, dataMinCount);
+        if (combinedData == null) {
+            combinedData = new CombinedData();
+            combinedData.setData(getLineData());
+            mChart.setData(combinedData);
+        } else {
+            invalidateChart();
+        }
+        stopAddAnimation();
+        isAnimation = false;
+
+//        dataMinCount = entitys.size();//保存基础数据条数
+//        mChart.isStopDraw(false);
+//        if (valueAnimator != null) {
+//            valueAnimator.cancel();
+//        }
+//        final int maxIndex = entitys.size() - 1;
+//        if (maxIndex < 0) return;
+//        isAnimation = true;
+//        addCount = 1;
+//        mChartDatas.clear();
+//        mChartDatas.add(entitys.get(0));
+//        setAxisMaximum(entitys.size());//刷新X轴显示条数
+//        mChart.isStopDraw(true);
+//        valueAnimator = staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                int endIndex = (int) animation.getAnimatedValue();
+//                for (int i = addCount; i <= endIndex; i++) {
+//                    mChartDatas.add(entitys.get(i));
+//                    addCount++;
+//                }
+//                invalidateChart();
+//            }
+//        }, true, 0, maxIndex);
     }
 
     private ValueAnimator staetValueAnimator(ValueAnimator.AnimatorUpdateListener listener, final boolean isAddAnimation, int... values) {
@@ -259,27 +271,34 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     private void removeBasicData() {//去掉部分基础数据
         if (mChartDatas == null || mChartDatas.isEmpty()) return;
         int size = mChartDatas.size();
-
-//        for (int i = 0; i < size; i++) {
-//
+        if (size == dataMinCount) return;
+//        mChart.isStopDraw(false);
+        isAnimation = true;
+//        ArrayList<T> entitys;
+//        if (dataMinCount >= size) {
+//            entitys = new ArrayList<>(size);
+//        } else {
+//            int step = getDrawSetp();
+//            if (step != -1) {
+//                dataMinCount += dataMinCount % step;//保障步长一致
+//            }
+//            entitys = new ArrayList<>(mChartDatas.subList(size - dataMinCount, size - 1));
 //        }
-
-        ArrayList<T> entitys = new ArrayList<>(mChartDatas.subList(size - dataMinCount, size - 1));
-        int index = 0;
-        for (T t : entitys) {
-            t.setX(index);
-            index++;
-        }
-ddd
+//        int index = 0;
+//        for (T t : entitys) {
+//            t.setX(index);
+//            index++;
+//        }
+        ArrayList<T> entitys = getShowData();
         mChartDatas.clear();//清理了，如果走势图还在刷新就会报下标超界
         mChartDatas.addAll(entitys);
         dataMinCount = mChartDatas.size();
         setAxisMaximum(0);
+//        mChart.isStopDraw(true, dataMinCount);
+        isAnimation = false;
         invalidateChart();
-
-//        startAddDataAnimation(entitys);
-
-
+        //走势图数据查询事件
+        EventBus.post(new ChartDataUpdateEvent());
     }
 
     //添加动画执行完成
@@ -323,8 +342,15 @@ ddd
     protected abstract long getLengthTime();
 
     //
+    protected abstract void updateStartTime(T t);
+
+    protected abstract ArrayList<T> getShowData();
+
+    //
     protected LineData getLineData() {
         return null;
     }
+
+    protected abstract int getDrawSetp();
 
 }

@@ -354,7 +354,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         @Override
         public void run() {
             if (isDiscarded || mLineChartData == null) return;
-//            IndexMarkEntity entity = mIndexUtil.parseExponentially(strings.get(0), Constants.INDEXDIGIT);
+//            IndexMarkEntity entity = mIndexUtil.parseExponentially(0,strings.get(0), Constants.INDEXDIGIT);
 //            Constants.setReferenceX((long) entity.getX());//更新基准下标
             final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(0, strings, Constants.INDEXDIGIT);
             if (isDiscarded || mLineChartData == null) return;

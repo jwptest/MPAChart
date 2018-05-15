@@ -19,7 +19,6 @@ import com.finance.common.UserShell;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
 import com.finance.event.NetWorkStateEvent;
-import com.finance.event.OpenPrizeEvent;
 import com.finance.event.UpdateUserInfoEvent;
 import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.ICallback;
