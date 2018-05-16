@@ -33,6 +33,7 @@ public class MLineChart2 extends BarLineChartBase<LineData> implements LineDataP
     }
 
     private OnDrawCompletion drawCompletion;
+    private MYAxisRightRenderer mMYAxisRightRenderer;
 
     @Override
     protected void init() {
@@ -41,7 +42,8 @@ public class MLineChart2 extends BarLineChartBase<LineData> implements LineDataP
         mcombinedchartRenderer = new MLineChartRenderer(this, mAnimator, mViewPortHandler);
         mRenderer = mcombinedchartRenderer;
         //替换右轴绘制类
-        mAxisRendererRight = new MYAxisRightRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer);
+        mMYAxisRightRenderer = new MYAxisRightRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer);
+        mAxisRendererRight = mMYAxisRightRenderer;
         //提现X轴绘制类
         mXAxisRenderer = new MXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer);
     }
@@ -81,6 +83,13 @@ public class MLineChart2 extends BarLineChartBase<LineData> implements LineDataP
 
     public void setOnDrawCompletion(OnDrawCompletion drawCompletion) {
         this.drawCompletion = drawCompletion;
+    }
+
+    public float getFixedPosition() {
+        return mMYAxisRightRenderer.getFixedPosition();
+    }
+    public float getLabelWidth() {
+        return mMYAxisRightRenderer.getLabelWidth();
     }
 
 }

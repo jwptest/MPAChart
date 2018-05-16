@@ -141,6 +141,11 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
             mHttpConnection0 = null;
         }
         if (mHttpConnection1 != null) {
+            if (topProductEntity != null) {
+                mPresenter.unSubscribeProduct(topProductEntity.getProductId());
+                topProductEntity = null;
+                topProductEntity = productEntity;
+            }
             mHttpConnection1.stop();
             mHttpConnection1 = null;
         }
@@ -148,6 +153,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
             mMThread.isDiscarded = true;//设置废弃
             mMThread = null;
         }
+    }
+
+    @Override
+    public long getStartTimer() {
+        return startTimer;
+//        return ((IndexMarkEntity) mChartDatas.get(0)).getTimeLong();
+//        return 0;
     }
 
     @Override
@@ -195,13 +207,6 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     protected void stopRemoveAnimation() {
         //删除数据动画执行完成
         addHistoryDatas();
-    }
-
-    @Override
-    protected long getLengthTime() {
-        return startTimer;
-//        return ((IndexMarkEntity) mChartDatas.get(0)).getTimeLong();
-//        return 0;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class LineChartSetting implements IChartSetting {
         if (isOffsets) {
             int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
             mChart.setViewPortOffsets(0, top, 0, 0);
-        }else {
+        } else {
             mChart.setViewPortOffsets(0, 0, 0, 0);
         }
 //        mChart.setPinchZoom(true);//放缩 作用同上
@@ -137,7 +137,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
         rightAxis.setLabelCount(7, false);
-//        rightAxis.setAxisMinimum(0f); //
+        //        rightAxis.setAxisMinimum(0f); //
 //        rightAxis.setAxisMaximum(10f); //
 //        rightAxis.setDrawLimitLinesBehindData(true);
         //标签颜色
@@ -164,9 +164,9 @@ public class LineChartSetting implements IChartSetting {
         xAxis.setGridColor(getColor(R.color.form_line_color));//设置该轴的网格线颜色。
         //轴线颜色
         xAxis.setAxisLineColor(getColor(R.color.transparent));
-        xAxis.setDrawLabels(false);//需要绘制标签
-//        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
-//        xAxis.setTextColor(getColor(R.color.form_value_color));
+        xAxis.setDrawLabels(true);//需要绘制标签
+        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
+        xAxis.setTextColor(getColor(R.color.form_value_color));
 //        xAxis.setGranularity(10);
 //        xAxis.setSpaceMax(10);
     }

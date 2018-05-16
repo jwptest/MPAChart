@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.finance.R;
+import com.finance.utils.PhoneUtil;
 
 /**
  * 圆形进度条
@@ -114,7 +115,7 @@ public class CompletedView extends View {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setColor(Color.parseColor("#FFFFFF"));
-        mTextPaint.setTextSize(12);
+        mTextPaint.setTextSize(PhoneUtil.sp2px(getContext(), 12));
         Paint.FontMetrics fm = mTextPaint.getFontMetrics();
         mTxtHeight = (int) Math.ceil(fm.descent - fm.ascent);
     }

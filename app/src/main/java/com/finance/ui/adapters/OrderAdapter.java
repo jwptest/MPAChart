@@ -130,7 +130,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
                 entity.setItemTimer(openTotalTime[1] / 100f);
             }
             //设置进度
-            progressBar = (entity.getOpenTimer() - mICallback.getServerTimer());
+            progressBar = (entity.getOpenTimer() - mICallback.getServerTimer()) / 1000;
             if (progressBar < 0) {
                 progressBar = 0;
                 if (mICallback != null) mICallback.openPrize();

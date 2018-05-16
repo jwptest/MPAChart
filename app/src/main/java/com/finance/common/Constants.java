@@ -53,4 +53,20 @@ public class Constants {
     public static final int ALLNET = 3;//wifi网络
     public static final int UNNET = 4;//未知网络,没有网络
 
+
+
+
+
+//    NormalData: 200, //普通数据请求
+//    RateData: 0, //指数动作代码
+//    TimeRateData: 20, //历史段指数请求
+//    CancelData: 10, //取消指数请求动作
+//    PrizePoint: 12,
+//    IssueData: 300,//期号
+//    OpenOrder: 500,//开奖
+//    IssueBounusNotify: 550,//每一期开奖
+//    IssuePrized: 900,
+//    AutoRegister: 1101//自动注册
+
+
 }

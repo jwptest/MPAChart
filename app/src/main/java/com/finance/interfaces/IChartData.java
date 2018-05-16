@@ -12,6 +12,7 @@ public interface IChartData extends IDestroy {
 
     //刷新期号
     void updateIssue(ProductEntity productEntity, IssueEntity issueEntity);
+
     void onResume(int type);
 
     Entry getEntry(String trim);
@@ -21,5 +22,7 @@ public interface IChartData extends IDestroy {
     boolean isRefrshChartData();//是否在刷新走势图数据
 
     void stopNetwork();//关闭网络连接
+
+    long getStartTimer();//获取起始时间
 
 }

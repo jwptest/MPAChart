@@ -94,6 +94,37 @@ public class ViewUtil {
         viewEntity.setTvBuyingMone(tvBuyingMoney);
     }
 
+    /**
+     * 获取购买成功后显示的布局
+     *
+     * @param context 上下文
+     * @param text    购买的金额
+     * @param isAdd   是否是买涨
+     * @return 返回PurchaseViewEntity
+     */
+    public static void getPurchaseOpen(Context context, PurchaseViewEntity viewEntity, String text, boolean isAdd) {
+        if (viewEntity == null || context == null) return;
+        View view = LayoutInflater.from(context).inflate(R.layout.home_layout_buyingpoint, null);
+        View line = view.findViewById(R.id.line);//#20CF56跌，涨#EE4F3C
+        RoundTextView tvBuyingMoney = view.findViewById(R.id.tvBuyingMoney);
+        ImageView ivZD = view.findViewById(R.id.ivZD);
+        tvBuyingMoney.setText(text);
+        if (isAdd) {
+            line.setBackgroundColor(Color.parseColor("#EE4F3C"));
+            tvBuyingMoney.getDelegate().setBackgroundColor(Color.parseColor("#EE4F3C"));
+            ivZD.setImageResource(R.drawable.rise_icon);
+        } else {
+            line.setBackgroundColor(Color.parseColor("#20CF56"));
+//            tvBuyingMoney.setBackgroundResource(R.drawable.fall_bg);
+            tvBuyingMoney.getDelegate().setBackgroundColor(Color.parseColor("#20CF56"));
+            ivZD.setImageResource(R.drawable.fall_icon);
+        }
+        viewEntity.setRootView(view);
+        viewEntity.setLine(line);
+        viewEntity.setIvZD(ivZD);
+        viewEntity.setTvBuyingMone(tvBuyingMoney);
+    }
+
     //尽量调用此方法加载图片
     public static void setBackground(Activity activity, final View view, int drawableId) {
         setBackground(Glide.with(activity), activity, view, drawableId);

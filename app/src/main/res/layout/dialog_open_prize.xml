@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/llRootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,11 +11,11 @@
         android:id="@+id/llContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_10"
-        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_12"
         android:layout_marginRight="@dimen/dp_12"
-        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:orientation="horizontal"
         android:paddingLeft="@dimen/dp_30"
         android:paddingRight="@dimen/dp_30"
         android:paddingTop="@dimen/dp_30">
@@ -74,6 +75,25 @@
                     android:id="@+id/lineChart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
+
+                <View
+                    android:id="@+id/vTransverseContrast"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_0.6"
+                    android:background="#D4C495"
+                    tools:tooltipText="横向对比线"/>
+
+                <TextView
+                    android:id="@+id/tvTransverseContrastDes"
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_14.5"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/tvtransversecontrastdes_icon"
+                    android:gravity="center"
+                    android:text="横向对比"
+                    android:textColor="#444444"
+                    android:textSize="@dimen/sp_10"/>
+
             </RelativeLayout>
 
         </RelativeLayout>

@@ -83,14 +83,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     View vEndLine;
     @BindView(R.id.tvEndLineDes)
     TextView tvEndLineDes;
-    //    @BindView(R.id.ivEndLineIcon)
-//    ImageView ivEndLineIcon;
+    @BindView(R.id.ivEndLineIcon)
+    ImageView ivEndLineIcon;
     @BindView(R.id.vSettlementLine)
     View vSettlementLine;
     @BindView(R.id.tvSettlementDes)
     TextView tvSettlementDes;
-    //    @BindView(R.id.ivSettlementIcon)
-//    ImageView ivSettlementIcon;
+    @BindView(R.id.ivSettlementIcon)
+    ImageView ivSettlementIcon;
     @BindView(R.id.vTransverseContrast)
     View vTransverseContrast;
     @BindView(R.id.tvTransverseContrastDes)
@@ -244,7 +244,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         //右边轴value显示格式类
         BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);
-        BaseAxisValueFormatter mXAxisValue = new XAxisValueFormatter();
+        XAxisValueFormatter mXAxisValue = new XAxisValueFormatter();
 //        lineChart.setVisibility(View.GONE);
         mChartSetting = new LineChartSetting(mActivity);
         mChartSetting
@@ -256,12 +256,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setIvIcon(ivIcon)
                 .setEndLine(vEndLine)
                 .setTvEndLineDes(tvEndLineDes)
-//                .setIvEndLineIcon(ivEndLineIcon)
+                .setIvEndLineIcon(ivEndLineIcon)
                 .setTransverseContrast(vTransverseContrast)
                 .setTvTransverseContrastDes(tvTransverseContrastDes)
                 .setSettlementLine(vSettlementLine)
                 .setTvSettlementDes(tvSettlementDes)
-//                .setIvSettlementIcon(ivSettlementIcon)
+                .setIvSettlementIcon(ivSettlementIcon)
                 .setRightAxisValueFormatter(mRightAxisValue)
                 .setXAxisValueFormatter(mXAxisValue);
         leftMenu = new LeftMenu(mActivity, this, mMainPresenter).onInit(llLeftMenu);
@@ -537,7 +537,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         chartListener.addPurchaseView(viewEntity);
         onEvent(new UpdateUserInfoEvent(false));
     }
-
 
     private OpenPrizePopWindow prizePopWindow;//开奖对话框
 

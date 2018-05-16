@@ -6,6 +6,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
@@ -45,11 +47,12 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected boolean isAnimation = false;//是否在执行动画
     protected ProductEntity productEntity;//当前产品
     protected IssueEntity issueEntity;//当前期号
+    protected ProductEntity topProductEntity;//上一次的产品信息
     protected long duration = 160;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
     protected View animView;//执行加载动画的view
-    //    private Animation mAnimation;//执行动画
+    private Animation mAnimation;//执行动画
     protected int dataMinCount = 0;
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
@@ -102,8 +105,11 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         } else {
             this.productEntity = productEntity;
             this.issueEntity = issueEntity;
-//            ViewUtil.setViewVisibility(animView, View.VISIBLE);
-            ViewUtil.setViewVisibility(animView, View.GONE);
+            if (topProductEntity == null) {
+                topProductEntity = productEntity;
+            }
+            ViewUtil.setViewVisibility(animView, View.VISIBLE);
+//            ViewUtil.setViewVisibility(animView, View.GONE);
             updateData();
         }
     }
@@ -128,7 +134,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        float addItem = (labelWidth + dpPxRight) / itemWidth;
 //        mXAxis.setAxisMaximum(X + addItem);
 
-        long startTimer = getLengthTime();
+        long startTimer = getStartTimer();
         long openTimer = TimerUtil.timerToLong(issueEntity.getBonusTime());
         long xCount = (openTimer - startTimer) / Constants.ISSUEINTERVAL;
         float labelX = mChart.getFixedPosition();//标签开始绘制坐标
@@ -303,28 +309,28 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //添加动画执行完成
     protected void stopAddAnimation() {
-//        if (animView == null) return;
-//        if (mAnimation == null) {
-//            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
-//            mAnimation.setAnimationListener(new Animation.AnimationListener() {
-//                @Override
-//                public void onAnimationStart(Animation animation) {
-//
-//                }
-//
-//                @Override
-//                public void onAnimationEnd(Animation animation) {
-//                    animView.clearAnimation();
-//                    ViewUtil.setViewVisibility(animView, View.GONE);
-//                }
-//
-//                @Override
-//                public void onAnimationRepeat(Animation animation) {
-//
-//                }
-//            });
-//        }
-//        animView.startAnimation(mAnimation);
+        if (animView == null) return;
+        if (mAnimation == null) {
+            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
+            mAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    animView.clearAnimation();
+                    ViewUtil.setViewVisibility(animView, View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+        animView.startAnimation(mAnimation);
     }
 
     //删除动画执行完成
@@ -337,9 +343,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //刷新数据
     protected abstract void updateData();
-
-    //获取当前数据的总时长
-    protected abstract long getLengthTime();
 
     //
     protected abstract void updateStartTime(T t);

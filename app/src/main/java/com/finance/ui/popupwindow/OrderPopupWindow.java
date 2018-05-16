@@ -182,7 +182,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
         if (entity != null) {
             openTotal[0] = TimerUtil.timerToLong(entity.getBonusTime());//开奖时间
             openTotal[1] = TimerUtil.timerToLong(entity.getStartTime());//开始时间
-            openTotal[1] = openTotal[0] - openTotal[1];
+            openTotal[1] = (openTotal[0] - openTotal[1]) / 1000;
         }
         return openTotal;
     }
@@ -205,7 +205,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
 
         @Override
         public void load(int page, int size) {
-            mPresenter.getOrderRecord(page, size, this);
+            mPresenter.getOrderRecord(size, page, this);
         }
 
         @Override

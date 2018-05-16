@@ -93,6 +93,8 @@ public interface MainContract {
 
         void notesMessage(ICallback<NotesMessage> callback);
 
+        void unSubscribeProduct(int productId);
+
     }
 
 }

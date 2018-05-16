@@ -51,7 +51,4 @@ public class TimerUtil {
         return timerStr.substring(index + 1, index + 6);
     }
 
-
-
-
 }

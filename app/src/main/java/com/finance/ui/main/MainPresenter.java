@@ -33,8 +33,10 @@ import com.finance.ui.popupwindow.IssuesPopupWindow;
 import com.finance.ui.popupwindow.OrderPopupWindow;
 import com.finance.ui.popupwindow.ProductPopupWindow;
 import com.finance.ui.popupwindow.RecyclerPopupWindow;
+import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
 import com.finance.utils.TimerUtil;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -205,7 +207,12 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
                         if (indexEntity == null) return;
                         App.getInstance().showErrorMsg(indexEntity.getY() + "");//显示指数
-
+                        HandlerUtil.runOnUiThreadDelay(new Runnable() {
+                            @Override
+                            public void run() {
+                                getOpenData(indexEntity, ProductId, issue, productName);
+                            }
+                        }, 500);
 //                        if (mView == null) return;
 //                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
 //                        if (indexEntity == null) return;
@@ -242,10 +249,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         param.addParam("SourceCode", 202);
         param.addParam("Page", Page);
         param.addParam("PageSize", PageSize);
-        param.addParam("ProductId", "");
+//        param.addParam("ProductId", "");
         param.addParam("ORderStatus", new int[]{20, 40});
-        param.addParam("OrderId", "");
-        param.addParam("BonusStatus", "");
+//        param.addParam("OrderId", "");
+//        param.addParam("BonusStatus", "");
+        param.addParam("range", 0);
         NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)
@@ -454,6 +462,22 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         callback.onCallback(code, null, msg);
                     }
                 });
+    }
+
+    @Override
+    public void unSubscribeProduct(int productId) {
+        BaseParams param = new BaseParams(true);
+        param.addParam("T", 10);
+        param.addParam("productId", productId);
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .setTag(mActivity)
+                .setT(0)
+                .setISign(NetworkRequest.getInstance().getSignBasic())
+                .setToken(param.getToken())
+                .setParams(param)
+                .execute(BaseCallback.getBaseCallback());
+
     }
 
 }

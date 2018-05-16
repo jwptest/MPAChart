@@ -2,6 +2,7 @@ package com.finance.listener;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -20,6 +21,7 @@ import com.finance.event.IndexEvent;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
 import com.finance.linechartview.BaseAxisValueFormatter;
+import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
@@ -52,19 +54,19 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ImageView ivIcon;
     private View vEndLine;//截止线
     private TextView tvEndLineDes;
-    //    private ImageView ivEndLineIcon;
+    private ImageView ivEndLineIcon;
     private View vTransverseContrast;//横向对比线
     private TextView tvTransverseContrastDes;
     private View vSettlementLine;//结算线
     private TextView tvSettlementDes;
-    //    private ImageView ivSettlementIcon;
+    private ImageView ivSettlementIcon;
     private ViewGroup mParent;//父布局
 
-    private BaseAxisValueFormatter mRightAxisValueFormatter, mXAxisValueFormatter;
-
-    private RelativeLayout.LayoutParams iconParams, endParams, endDesParams;//, endIconParams;//截止线
+    private BaseAxisValueFormatter mRightAxisValueFormatter;
+    private XAxisValueFormatter mXAxisValueFormatter;
+    private RelativeLayout.LayoutParams iconParams, endParams, endDesParams, endIconParams;//截止线
     private RelativeLayout.LayoutParams tranConParams, tranConDesParams;//横向对比线
-    private RelativeLayout.LayoutParams settParams, settDesParams;//, settIconParams;//结算线
+    private RelativeLayout.LayoutParams settParams, settDesParams, settIconParams;//结算线
 
     //当前点的坐标
     private int currentX, currentY;
@@ -305,48 +307,48 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         return this;
     }
 
-//    public LineChartListener setIvEndLineIcon(ImageView ivEndLineIcon) {
-//        this.ivEndLineIcon = ivEndLineIcon;
-//        ViewUtil.setViewVisibility(ivEndLineIcon, View.GONE);
-//        this.ivEndLineIcon.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                if (LineChartListener.this.ivEndLineIcon.getWidth() <= 0)
-//                    return;
-//                LineChartListener.this.ivEndLineIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                endIconWidth = LineChartListener.this.ivEndLineIcon.getWidth();
-//                endIconHight = LineChartListener.this.ivEndLineIcon.getHeight();
+    public LineChartListener setIvEndLineIcon(ImageView ivEndLineIcon) {
+        this.ivEndLineIcon = ivEndLineIcon;
+        ViewUtil.setViewVisibility(ivEndLineIcon, View.GONE);
+        this.ivEndLineIcon.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (LineChartListener.this.ivEndLineIcon.getWidth() <= 0)
+                    return;
+                LineChartListener.this.ivEndLineIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                endIconWidth = LineChartListener.this.ivEndLineIcon.getWidth();
+                endIconHight = LineChartListener.this.ivEndLineIcon.getHeight();
 //                initViewEndHight(endIconParams.bottomMargin);
-//            }
-//        });
-//        endIconParams = (RelativeLayout.LayoutParams) ivEndLineIcon.getLayoutParams();
-//        return this;
-//    }
+            }
+        });
+        endIconParams = (RelativeLayout.LayoutParams) ivEndLineIcon.getLayoutParams();
+        return this;
+    }
 
-//    public LineChartListener setIvSettlementIcon(ImageView ivSettlementIcon) {
-//        this.ivSettlementIcon = ivSettlementIcon;
-//        ViewUtil.setViewVisibility(ivSettlementIcon, View.GONE);
-//        this.ivSettlementIcon.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                if (LineChartListener.this.ivSettlementIcon.getWidth() <= 0)
-//                    return;
-//                LineChartListener.this.ivSettlementIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                settIconWidth = LineChartListener.this.ivSettlementIcon.getWidth();
-//                settIconHight = LineChartListener.this.ivSettlementIcon.getHeight();
+    public LineChartListener setIvSettlementIcon(ImageView ivSettlementIcon) {
+        this.ivSettlementIcon = ivSettlementIcon;
+        ViewUtil.setViewVisibility(ivSettlementIcon, View.GONE);
+        this.ivSettlementIcon.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (LineChartListener.this.ivSettlementIcon.getWidth() <= 0)
+                    return;
+                LineChartListener.this.ivSettlementIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                settIconWidth = LineChartListener.this.ivSettlementIcon.getWidth();
+                settIconHight = LineChartListener.this.ivSettlementIcon.getHeight();
 //                initViewSettHight(settIconParams.bottomMargin);
-//            }
-//        });
-//        settIconParams = (RelativeLayout.LayoutParams) ivSettlementIcon.getLayoutParams();
-//        return this;
-//    }
+            }
+        });
+        settIconParams = (RelativeLayout.LayoutParams) ivSettlementIcon.getLayoutParams();
+        return this;
+    }
 
     public LineChartListener setRightAxisValueFormatter(BaseAxisValueFormatter rightAxisValueFormatter) {
         mRightAxisValueFormatter = rightAxisValueFormatter;
         return this;
     }
 
-    public LineChartListener setXAxisValueFormatter(BaseAxisValueFormatter XAxisValueFormatter) {
+    public LineChartListener setXAxisValueFormatter(XAxisValueFormatter XAxisValueFormatter) {
         mXAxisValueFormatter = XAxisValueFormatter;
         return this;
     }
@@ -439,19 +441,19 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             //启动动画
             ivIcon.startAnimation(mAnimator);
         }
-        if (vEndLine != null && tvEndLineDes != null /*&& ivEndLineIcon != null*/) {//截止
+        if (vEndLine != null && tvEndLineDes != null && ivEndLineIcon != null) {//截止
             ViewUtil.setViewVisibility(vEndLine, View.VISIBLE);
             ViewUtil.setViewVisibility(tvEndLineDes, View.VISIBLE);
-//            ViewUtil.setViewVisibility(ivEndLineIcon, View.VISIBLE);
+            ViewUtil.setViewVisibility(ivEndLineIcon, View.VISIBLE);
         }
         if (vTransverseContrast != null && tvTransverseContrastDes != null) {//横向对比
             ViewUtil.setViewVisibility(vTransverseContrast, View.VISIBLE);
             ViewUtil.setViewVisibility(tvTransverseContrastDes, View.VISIBLE);
         }
-        if (vSettlementLine != null && tvSettlementDes != null /*|| ivSettlementIcon != null*/) {//结算
+        if (vSettlementLine != null && tvSettlementDes != null && ivSettlementIcon != null) {//结算
             ViewUtil.setViewVisibility(vSettlementLine, View.VISIBLE);
             ViewUtil.setViewVisibility(tvSettlementDes, View.VISIBLE);
-//            ViewUtil.setViewVisibility(ivSettlementIcon, View.VISIBLE);
+            ViewUtil.setViewVisibility(ivSettlementIcon, View.VISIBLE);
         }
     }
 
@@ -464,19 +466,19 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             ViewUtil.setViewVisibility(ivIcon, View.GONE);
 //            ivIcon.setImageResource(0);
         }
-        if (vEndLine != null && tvEndLineDes != null /*&& ivEndLineIcon != null*/) {//截止
+        if (vEndLine != null && tvEndLineDes != null && ivEndLineIcon != null) {//截止
             ViewUtil.setViewVisibility(vEndLine, View.GONE);
             ViewUtil.setViewVisibility(tvEndLineDes, View.GONE);
-//            ViewUtil.setViewVisibility(ivEndLineIcon, View.GONE);
+            ViewUtil.setViewVisibility(ivEndLineIcon, View.GONE);
         }
         if (vTransverseContrast != null && tvTransverseContrastDes != null) {//横向对比
             ViewUtil.setViewVisibility(vTransverseContrast, View.GONE);
             ViewUtil.setViewVisibility(tvTransverseContrastDes, View.GONE);
         }
-        if (vSettlementLine != null && tvSettlementDes != null /*|| ivSettlementIcon != null*/) {//结算
+        if (vSettlementLine != null && tvSettlementDes != null && ivSettlementIcon != null) {//结算
             ViewUtil.setViewVisibility(vSettlementLine, View.GONE);
             ViewUtil.setViewVisibility(tvSettlementDes, View.GONE);
-//            ViewUtil.setViewVisibility(ivSettlementIcon, View.GONE);
+            ViewUtil.setViewVisibility(ivSettlementIcon, View.GONE);
         }
     }
 
@@ -520,7 +522,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                 ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
                 continue;
             }
-            if (mProductEntity.getProductId() == entity.getProductId()) {//是否是当前产品下购买的
+            if (mProductEntity.getProductId() == entity.getProductId() && TextUtils.equals(mIssueEntity.getIssueName(), entity.getIssue())) {//是否是当前产品下购买的
                 ViewUtil.setViewVisibility(entity.getRootView(), View.VISIBLE);//设置显示
                 entity.setxValue(indexMarkEntity.getX());
                 entity.setyValue(indexMarkEntity.getY());
@@ -555,13 +557,20 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             openEntry = mIChartData.getEntry(mIssueEntity.getBonusTime());
             endTimer = TimerUtil.timerToLong(mIssueEntity.getStopTime());
             openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
+
+            long startTimer = mIChartData.getStartTimer();
+            int timerLength = (int) ((openTimer - startTimer) / 60000);
+            mChart.getXAxis().setLabelCount(timerLength, true);
+            mXAxisValueFormatter.setStartTimer(startTimer);
+
             isEnd = true;
         }
+        updatePurchaseView();//刷新购买点的坐标点
     }
 
     @Override
     public void completion(IndexMarkEntity lastEntry, IDataSet dataSet) {
-        currentTimer = TimerUtil.timerToLong(lastEntry.getTime());
+        currentTimer = lastEntry.getTimeLong();//TimerUtil.timerToLong(lastEntry.getTime());
         Constants.SERVERCURRENTTIMER = currentTimer;//服务器当前时间
         if (!isRefresh) return;
         currentEntry = lastEntry;
@@ -595,8 +604,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             settParams.leftMargin = (int) (pointD.x + startX);//(int) (mChart.getFixedPosition() - mChart.getLabelWidth() - dpPx10);//(int) (pointD.x + settDesWidth / 2);
             //结算线描述
             settDesParams.leftMargin = settParams.leftMargin - settDesHight * 2 - settDesParams.rightMargin;
-//            //图标
-//            settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
+            //图标
+            settIconParams.leftMargin = settParams.leftMargin - settIconWidth / 2;
 //            if (endEntry != null && currentEntry.getX() > endEntry.getX() && mXAxis != null) {
 //                MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
 //                if (pointD.x < settDesParams.leftMargin - pointD.x / currentEntry.getX()) {
@@ -620,7 +629,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             //截止线描述
             endDesParams.leftMargin = endParams.leftMargin - endDesHight * 2 - endDesParams.rightMargin;
 //            //图标
-//            endIconParams.leftMargin = endParams.leftMargin - endIconWidth / 2;
+            endIconParams.leftMargin = endParams.leftMargin - endIconWidth / 2;
         }
     }
 
@@ -644,12 +653,12 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, last.getX(), mRightAxisValueFormatter.getLasTwo());
             mChart.getAxisRight().setYOffset((int) ((pointD1.y - pointD2.y) / 2));
         }
-//        if (mXAxisValueFormatter != null) {
-//            MPPointD pointD1 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasOne(), last.getY());
-//            MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasTwo(), last.getY());
-//            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 2));
-////            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 6));
-//        }
+        if (mXAxisValueFormatter != null) {
+            MPPointD pointD1 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasOne(), last.getY());
+            MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasTwo(), last.getY());
+            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 2));
+//            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 6));
+        }
     }
 
     //刷新所有购买点的位置
@@ -700,7 +709,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         EventDistribution.getInstance().onDraw(currentEntry);
         //截止购买和开奖
         if (openEntry != null && endEntry != null) {
-            if (isEnd && currentTimer - endTimer > 500) {
+            if (isEnd && currentTimer - endTimer >= 0) {
                 isEnd = false;
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
                 if (isOrder) {
@@ -709,7 +718,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                     if (open - currentTimer > 0)//开始倒计时
                         OpenCountDown.getInstance().startCountDown(open - currentTimer);
                 }
-            } else if (currentTimer - openTimer > 500) {
+            } else if (currentTimer - openTimer >= 0) {
                 isEnd = true;
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖
                 if (isOrder)

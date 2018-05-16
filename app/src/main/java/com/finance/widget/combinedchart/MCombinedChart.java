@@ -83,6 +83,8 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
         setHighlightFullBarEnabled(true);
         mMCombinedChartRenderer = new MCombinedChartRenderer(this, mAnimator, mViewPortHandler);
         mRenderer = mMCombinedChartRenderer;
+        //提现X轴绘制类
+        mXAxisRenderer = new MXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer);
     }
 
     @Override

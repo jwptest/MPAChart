@@ -2,7 +2,6 @@ package com.finance.ui.popupwindow;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +10,12 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
+import com.finance.event.EventBus;
+import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.interfaces.IDismiss;
 import com.finance.widget.animation.BaseAnimatorSet;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.ButterKnife;
 
@@ -37,6 +40,7 @@ public abstract class BasePopupWindow extends PopupWindow {
         super(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mContext = context;
         setContentView(context, width, height, x, y);
+        if (isEvent()) EventBus.register(this);
     }
 
     private void setContentView(Context context, int width, int height, int x, int y) {
@@ -90,11 +94,18 @@ public abstract class BasePopupWindow extends PopupWindow {
         return 0;
     }
 
+    //是否注册事件
+    protected boolean isEvent() {
+        return true;
+    }
+
+
     public void setDismiss(IDismiss dismiss) {
         this.dismiss = dismiss;
     }
 
     public void superDismiss() {
+        EventBus.unregister(this);
         if (isShowing()) {
             try {
                 super.dismiss();
@@ -167,6 +178,11 @@ public abstract class BasePopupWindow extends PopupWindow {
             return true;
         }
         return false;
+    }
+
+    @Subscribe
+    public void onEvent(OpenPrizeDialogEvent event) {
+        dismiss();
     }
 
     public void showPopupWindow(View view) {

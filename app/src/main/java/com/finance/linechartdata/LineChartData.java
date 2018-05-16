@@ -276,6 +276,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     }
 
     @Override
+    public long getStartTimer() {
+        return 0;
+    }
+
+    @Override
     public void onDraw(Entry entry) {
 //        if (isDraw) return;
 //        //绘制完成回调

@@ -77,6 +77,11 @@ public class CandleChartData implements IChartData {
     }
 
     @Override
+    public long getStartTimer() {
+        return 0;
+    }
+
+    @Override
     public void onDestroy() {
         mCombinedData = null;
     }
