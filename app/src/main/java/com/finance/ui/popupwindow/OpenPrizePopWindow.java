@@ -17,6 +17,7 @@ import com.finance.common.Constants;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.interfaces.IChartSetting;
+import com.finance.linechartview.LineChartSetting2;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.OpenOrderEntity;
@@ -76,7 +77,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 
     private Activity mContext;
     private MainContract.View mView;
-    private IChartSetting mChartSetting;
+    //    private IChartSetting mChartSetting;
     private HistoryIssueEntity mHistoryIssueEntity;
     private IndexMarkEntity openIndex;
     private ArrayList<IndexMarkEntity> mMarkEntities;//显示指数
@@ -100,12 +101,12 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
      * @param entity    历史期数
      * @param openIndex 开奖指数
      */
-    public OpenPrizePopWindow(@NonNull Activity context, MainContract.View view, IChartSetting mChartSetting,
+    public OpenPrizePopWindow(@NonNull Activity context, MainContract.View view,
                               HistoryIssueEntity entity, IndexMarkEntity openIndex,
                               int productId, String issue, String productName, int screenWidth, int screenHeight) {
         super(context, (int) (screenWidth * 0.6f), (int) (screenHeight * 0.6f), (int) (screenWidth * 0.2f), (int) (screenHeight * 0.2));
         this.mContext = context;
-        this.mChartSetting = mChartSetting;
+//        this.mChartSetting = mChartSetting;
         this.mView = view;
         this.mHistoryIssueEntity = entity;
         this.openIndex = openIndex;
@@ -126,17 +127,18 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
             }
         });
         //界面显示出来再处理数据
-        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (mLineChart.getWidth() <= 0) return;
-                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                initData(mHistoryIssueEntity, openIndex);
-            }
-        });
+//        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                if (mLineChart.getWidth() <= 0) return;
+//                mLineChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                initData(mHistoryIssueEntity, openIndex);
+//            }
+//        });
         tranConParams = (RelativeLayout.LayoutParams) vTransverseContrast.getLayoutParams();
         tranConDesParams = (RelativeLayout.LayoutParams) tvTransverseContrastDes.getLayoutParams();
         EventBus.post(new OpenPrizeDialogEvent());//打开开奖对话框事件
+        initData(mHistoryIssueEntity, openIndex);
     }
 
     @Override
@@ -209,7 +211,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                 OpenPrizePopWindow.this.mOrderEntities = mOrderEntities;
                 OpenPrizePopWindow.this.mMarkEntities = entities;
                 OpenPrizePopWindow.this.viewEntities = viewEntities;
-                HandlerUtil.removeRunable(new Runnable() {
+                HandlerUtil.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         initView();
@@ -249,7 +251,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         mRvList.setAdapter(adapter);
 
         mLineChart.setOnDrawCompletion(this);//设置绘制完成回调时间
-        mChartSetting.initLineChart(mLineChart, false);//配置走势图参数
+        new LineChartSetting2(mContext).initLineChart(mLineChart, false);//配置走势图参数
         //设置数据
 //        CombinedData combinedData = new CombinedData();
         LineDataSet set = ViewUtil.createLineDataSet(mContext, new ArrayList<>(mMarkEntities));
@@ -264,7 +266,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 
 //        long startTimer = mMarkEntities.get(0).getTimeLong();
 //        long openTimer = openIndex.getTimeLong();
-        long xCount = mMarkEntities.size();
+        int xCount = mMarkEntities.size();
         float labelX = mLineChart.getFixedPosition();//标签开始绘制坐标
         float labelWidth = mLineChart.getLabelWidth();//标签长度
         int dpPxRight = PhoneUtil.dip2px(mContext, 5);
@@ -290,7 +292,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         }
         //开奖点
         if (tranConDesParams != null && tranConParams != null) {
-            IndexMarkEntity entity = mMarkEntities.get(0);
+            IndexMarkEntity entity = mMarkEntities.get(xCount - 1);
             MPPointD pointD = ViewUtil.getMPPointD(mLineChart, dataSet, entity.getX(), entity.getY());
             //横向描述线
             tranConParams.topMargin = (int) pointD.y;

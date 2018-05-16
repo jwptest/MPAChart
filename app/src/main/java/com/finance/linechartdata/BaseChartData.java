@@ -17,6 +17,7 @@ import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.interfaces.IChartData;
 import com.finance.listener.EventDistribution;
+import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.ui.main.MainContract;
@@ -295,6 +296,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //            t.setX(index);
 //            index++;
 //        }
+
         ArrayList<T> entitys = getShowData();
         mChartDatas.clear();//清理了，如果走势图还在刷新就会报下标超界
         mChartDatas.addAll(entitys);

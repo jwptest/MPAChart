@@ -217,33 +217,57 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     @Override
     protected ArrayList<Entry> getShowData() {
         int size = mChartDatas.size();
-        IndexMarkEntity entity = (IndexMarkEntity) mChartDatas.get(size - 1);
-        long startTimer = entity.getTimeLong() - 5 * 60 * 1000;
+//        IndexMarkEntity entity = (IndexMarkEntity) mChartDatas.get(size - 1);
+        long startTimer = Constants.SERVERCURRENTTIMER - 2 * 60 * 1000;
+        return getShowData(mChartDatas, size, startTimer);
+    }
+
+    private ArrayList<Entry> getShowData(ArrayList<Entry> arrayList, int size, long startTimer) {
         IndexMarkEntity entity2;
         int startIndex = -1;
         for (int i = 0; i < size; i++) {
-            entity2 = (IndexMarkEntity) mChartDatas.get(i);
+            entity2 = (IndexMarkEntity) arrayList.get(i);
             if (entity2.getTimeLong() >= startTimer) {
                 if (startIndex == -1)
                     startIndex = i;
-                entity2.setX((entity2.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL);
+                entity2.setX((int) ((entity2.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL));
             }
         }
         ArrayList<Entry> entitys;
         if (startIndex > 0) {
-            entitys = new ArrayList<>(mChartDatas.subList(startIndex, size - 1));
+            entitys = new ArrayList<>(arrayList.subList(startIndex, size - 1));
         } else {
-            entitys = new ArrayList<>(mChartDatas);
+            entitys = new ArrayList<>(arrayList);
         }
         updateStartTime(entitys.get(0));
         return entitys;
     }
 
-
-    private float getDataIndex(IndexMarkEntity entity) {
-        if (entity == null) return 0;
-        return (entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL;
+    private ArrayList<IndexMarkEntity> getIndexMark(ArrayList<IndexMarkEntity> arrayList, int size, long startTimer) {
+        IndexMarkEntity entity2;
+        int startIndex = -1;
+        for (int i = 0; i < size; i++) {
+            entity2 = arrayList.get(i);
+            if (entity2.getTimeLong() >= startTimer) {
+                if (startIndex == -1)
+                    startIndex = i;
+                entity2.setX((int) ((entity2.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL));
+            }
+        }
+        ArrayList<IndexMarkEntity> entitys;
+        if (startIndex > 0) {
+            entitys = new ArrayList<>(arrayList.subList(startIndex, size - 1));
+        } else {
+            entitys = new ArrayList<>(arrayList);
+        }
+//        updateStartTime(entitys.get(0));
+        return entitys;
     }
+
+//    private float getDataIndex(IndexMarkEntity entity) {
+//        if (entity == null) return 0;
+//        return (entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL;
+//    }
 
     //添加历史数据
     private void addHistoryDatas() {
@@ -287,7 +311,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     private void updateAlwaysData(IndexMarkEntity entity) {
         if (!isTimer) return;
 //        mAllIndexMarks.add(entity);
-        entity.setX((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL);
+        entity.setX((int) ((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL));
         if (isRefrshChartData || isAnimation) {
             mIndexMarkEntities.add(entity);
             return;
@@ -301,7 +325,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         isRefrshChartData = false;
         if (entities == null || entities.isEmpty()) return;
 
-        drawStep = entities.size() / 100;
+        drawStep = entities.size() / 150;
         mChart.setDrawStep(drawStep);//设置步长
         Log.d("", "updateHistoryData: ");
         mHistoryIndexMarks = entities;
@@ -404,7 +428,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
                 @Override
                 public void run() {
 //                    addCount++;
-                    Log.d("123", "run: " + entity.getX() + "," + entity.getY());
+//                    Log.d("123", "run: " + entity.getX() + "," + entity.getY());
                     mChartData.updateAlwaysData(entity);
                 }
             });
@@ -439,20 +463,20 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
                 mLineChartData.mCallback.indexStrs.clear();
             }
             final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(entity.getTimeLong(), strings, Constants.INDEXDIGIT);
-//            Collections.sort(entities, new Comparator<IndexMarkEntity>() {
+            final ArrayList<IndexMarkEntity> entities2 = mLineChartData.getIndexMark(entities, entities.size(), Constants.SERVERCURRENTTIMER - 2 * 60 * 1000);
+//            Collections.sort(entities2, new Comparator<IndexMarkEntity>() {
 //                @Override
 //                public int compare(IndexMarkEntity o1, IndexMarkEntity o2) {
-//                    return o1.getTime() > o2.getTime() ? 1 : -1;
+//                    return o1.getTimeLong() > o2.getTimeLong() ? 1 : -1;
 //                }
 //            });
-
             if (isDiscarded || mLineChartData == null) return;
             mLineChartData.isTimer = true;
-            mLineChartData.updateStartTime(entity);
+            mLineChartData.updateStartTime(entities2.get(0));
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mLineChartData.updateHistoryData(entities);
+                    mLineChartData.updateHistoryData(entities2);
                 }
             });
         }

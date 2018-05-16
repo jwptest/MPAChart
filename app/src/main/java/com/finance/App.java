@@ -18,15 +18,17 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         sApp = this;
-        //启动bugTag
-        HandlerUtil.runOnUiThreadDelay(new Runnable() {
-            @Override
-            public void run() {
-                //初始化bugLy,为了保证运营数据的准确性，建议不要在异步线程初始化Bugly
-                CrashReport.initCrashReport(sApp.getApplicationContext(), "455847388a", BuildConfig.DEBUG);//false为正式模式，true为debug模式
-//                CrashReport.testJavaCrash();
-            }
-        }, 500);
+        //初始化bugLy,为了保证运营数据的准确性，建议不要在异步线程初始化Bugly
+        CrashReport.initCrashReport(sApp.getApplicationContext(), "455847388a", BuildConfig.DEBUG);//false为正式模式，true为debug模式
+//        //启动bugTag
+//        HandlerUtil.runOnUiThreadDelay(new Runnable() {
+//            @Override
+//            public void run() {
+//                //初始化bugLy,为了保证运营数据的准确性，建议不要在异步线程初始化Bugly
+//                CrashReport.initCrashReport(sApp.getApplicationContext(), "455847388a", BuildConfig.DEBUG);//false为正式模式，true为debug模式
+////                CrashReport.testJavaCrash();
+//            }
+//        }, 500);
     }
 
     public static App getInstance() {

@@ -303,7 +303,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     //更新期号
     private void updateIssue() {
-        chartListener.updateProductIssue(currentProduct, currentIssue);//更新产品和期号
+        chartListener.updateProductIssue(currentProduct, currentIssue, currentIssues.get(0));//更新产品和期号
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
         EventDistribution.getInstance().issue(currentIssue);
     }
@@ -382,10 +382,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         UserCommon.getUserInfo(mActivity, new ICallback<UserInfoEntity>() {
             @Override
             public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
+                ivRefresh.clearAnimation();//停止动画
                 if (userInfoEntity == null) return;
                 initViewUser();//刷新用户信息
                 if (!event.isTip()) return;
                 App.getInstance().showErrorMsg(event.getMsg());
+
             }
         });//刷新用户信息
     }
@@ -456,6 +458,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             showErrorMsg(msg);
             return;
         }
+        issuesSelectIndex = 0;
         mIssueEntities = issues;
         ArrayList<IssueEntity> issueEntities = mMainPresenter.getProductIssue(currentProduct.getProductId(), issues);
         if (issueEntities == null || issueEntities.isEmpty()) return;
@@ -552,7 +555,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         int width = PhoneUtil.getScreenWidth(mActivity);
         int height = PhoneUtil.getScreenHeight(mActivity);
         //显示开奖对话框
-        prizePopWindow = new OpenPrizePopWindow(mActivity, this, mChartSetting, entity, openIndex, productId, issue, productName, width, height);
+        prizePopWindow = new OpenPrizePopWindow(mActivity, this, entity, openIndex, productId, issue, productName, width, height);
         prizePopWindow.showPopupWindow(rlTitleBar);
         prizePopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override

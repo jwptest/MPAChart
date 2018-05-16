@@ -17,7 +17,7 @@ public class IndexUtil {
             IndexMarkEntity entity = parseExponentially(0, str, digit);
             if (entity == null) continue;
             if (entity.getTimeLong() == -1) continue;
-            entity.setX((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL);
+            entity.setX((int) ((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL));
             //更新下标
             entitys.add(entity);
 //            startIndex++;

@@ -6,7 +6,6 @@ import android.graphics.Color;
 import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.interfaces.IChartSetting;
-import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -16,7 +15,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 /**
  * MLineChart配置
  */
-public class LineChartSetting implements IChartSetting {
+public class LineChartSetting2 implements IChartSetting {
 
     private Activity mActivity;
     private YAxis leftAxis, rightAxis;
@@ -24,20 +23,20 @@ public class LineChartSetting implements IChartSetting {
     private IAxisValueFormatter mXIAxisValueFormatter;//X轴标签显示格式化
     private IAxisValueFormatter mRightIAxisValueFormatter;//右边轴标签显示格式化
 
-    public LineChartSetting(Activity activity) {
+    public LineChartSetting2(Activity activity) {
         this.mActivity = activity;
     }
 
     //在调用initLineChart之前调用才会生效
     @Override
-    public LineChartSetting setRightIAxisValueFormatter(IAxisValueFormatter rightIAxisValueFormatter) {
+    public LineChartSetting2 setRightIAxisValueFormatter(IAxisValueFormatter rightIAxisValueFormatter) {
         mRightIAxisValueFormatter = rightIAxisValueFormatter;
         return this;
     }
 
     //在调用initLineChart之前调用才会生效
     @Override
-    public LineChartSetting setXIAxisValueFormatter(IAxisValueFormatter XIAxisValueFormatter) {
+    public LineChartSetting2 setXIAxisValueFormatter(IAxisValueFormatter XIAxisValueFormatter) {
         mXIAxisValueFormatter = XIAxisValueFormatter;
         return this;
     }
@@ -45,18 +44,17 @@ public class LineChartSetting implements IChartSetting {
     /***************************初始化LineChart******************************/
 
     @Override
-    public LineChartSetting initLineChart(BarLineChartBase mChart, boolean isOffsets) {
+    public LineChartSetting2 initLineChart(BarLineChartBase mChart, boolean isOffsets) {
         mChart.setDrawGridBackground(false);//设置是否画网格背景
         mChart.setDragDecelerationEnabled(false);//继续滚动后润色
         mChart.getDescription().setEnabled(true);//描述文本
         mChart.getDescription().setText("");//设置描述文本
         mChart.setNoDataText("");//没有数据显示的文本
-        mChart.setTouchEnabled(true);//允许手势触摸
-        mChart.setDragEnabled(true);//手势拖动走势图
+        mChart.setTouchEnabled(false);//允许手势触摸
+        mChart.setDragEnabled(false);//手势拖动走势图
         mChart.setScaleEnabled(true);//拖动放缩
         mChart.setScaleXEnabled(true);
-        mChart.setScaleYEnabled(false);
-        mChart.setScaleX(1f);
+        mChart.setScaleYEnabled(true);
         mChart.setAutoScaleMinMaxEnabled(true);//自动缩放
 //        mChart.setPinchZoom(false);
         //偏移量
@@ -165,9 +163,9 @@ public class LineChartSetting implements IChartSetting {
         xAxis.setGridColor(getColor(R.color.form_line_color));//设置该轴的网格线颜色。
         //轴线颜色
         xAxis.setAxisLineColor(getColor(R.color.transparent));
-        xAxis.setDrawLabels(true);//需要绘制标签
-        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
-        xAxis.setTextColor(getColor(R.color.form_value_color));
+//        xAxis.setDrawLabels(false);//需要绘制标签
+//        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
+//        xAxis.setTextColor(getColor(R.color.form_value_color));
 //        xAxis.setGranularity(10);
 //        xAxis.setSpaceMax(10);
     }

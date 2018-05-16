@@ -40,7 +40,7 @@
                     android:id="@+id/vEndLine"
                     android:layout_width="@dimen/dp_0.6"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dp_80"
+                    android:layout_marginBottom="@dimen/dp_62"
                     android:background="#696458"
                     tools:tooltipText="截止线"/>
 
@@ -61,7 +61,7 @@
                     android:layout_width="@dimen/dp_25"
                     android:layout_height="@dimen/dp_25"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/dp_70"
+                    android:layout_marginBottom="@dimen/dp_50"
                     android:scaleType="centerInside"
                     android:src="@drawable/end_line_icon"/>
 
@@ -69,7 +69,7 @@
                     android:id="@+id/vSettlementLine"
                     android:layout_width="@dimen/dp_0.6"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dp_80"
+                    android:layout_marginBottom="@dimen/dp_62"
                     android:background="#D43625"
                     tools:tooltipText="结算线"/>
 
@@ -90,7 +90,7 @@
                     android:layout_width="@dimen/dp_25"
                     android:layout_height="@dimen/dp_25"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/dp_70"
+                    android:layout_marginBottom="@dimen/dp_50"
                     android:scaleType="centerInside"
                     android:src="@drawable/settlement_line_icon"/>
 
@@ -115,8 +115,8 @@
 
                 <ImageView
                     android:id="@+id/ivIcon"
-                    android:layout_width="@dimen/dp_60"
-                    android:layout_height="@dimen/dp_60"
+                    android:layout_width="@dimen/dp_80"
+                    android:layout_height="@dimen/dp_80"
                     android:scaleType="centerInside"
                     android:src="@drawable/current_icon"
                     tools:tooltipText="当前点图标"/>
@@ -141,7 +141,7 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/llCentreMenu"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_55"
+            android:layout_height="@dimen/dp_50"
             android:layout_alignParentBottom="true"
             android:layout_toLeftOf="@+id/llRightMenu"
             android:layout_toRightOf="@+id/llLeftMenu">
