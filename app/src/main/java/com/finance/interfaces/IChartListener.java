@@ -17,8 +17,6 @@ public interface IChartListener extends IDestroy {
 
     IChartListener initListener();
 
-    IndexMarkEntity getCurrentEntry();
-
     void addPurchaseView(PurchaseViewEntity entity);
 
     void updateProductIssue(ProductEntity productEntity,IssueEntity issueEntity,IssueEntity oneIssueEntity);

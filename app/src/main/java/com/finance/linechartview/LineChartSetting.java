@@ -6,7 +6,6 @@ import android.graphics.Color;
 import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.interfaces.IChartSetting;
-import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -57,13 +56,15 @@ public class LineChartSetting implements IChartSetting {
         mChart.setScaleXEnabled(true);
         mChart.setScaleYEnabled(false);
         mChart.setScaleX(1f);
+        //缩放第二种方式
+//        mChart.getViewPortHandler().getMatrixTouch().postScale(1.5f, 1f);
         mChart.setAutoScaleMinMaxEnabled(true);//自动缩放
 //        mChart.setPinchZoom(false);
         //偏移量
 //        mChart.setExtraOffsets(0, 0, 0, 0);
         if (isOffsets) {
-            int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
-            mChart.setViewPortOffsets(0, top, 0, 0);
+//            int top = mActivity.getResources().getDimensionPixelOffset(R.dimen.dp_50);
+            mChart.setViewPortOffsets(0, 0, 0, 0);
         } else {
             mChart.setViewPortOffsets(0, 0, 0, 0);
         }
@@ -91,7 +92,7 @@ public class LineChartSetting implements IChartSetting {
 
     /***************************初始化MarkerView******************************/
 
-    public void initMarkerView() {
+    private void initMarkerView() {
 //        MyMarkerView mv = new MyMarkerView(mActivity, R.layout.custom_marker_view);
 //        mv.setChartView(mChart); // For bounds control
 //        mChart.setMarker(mv); // Set the marker to the chart
@@ -137,7 +138,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setDrawGridLines(true);
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
-        rightAxis.setLabelCount(7, false);
+        rightAxis.setLabelCount(10, true);
         //        rightAxis.setAxisMinimum(0f); //
 //        rightAxis.setAxisMaximum(10f); //
 //        rightAxis.setDrawLimitLinesBehindData(true);

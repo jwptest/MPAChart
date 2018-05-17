@@ -25,4 +25,6 @@ public interface IChartData extends IDestroy {
 
     long getStartTimer();//获取起始时间
 
+    IndexMarkEntity getCurrentEntry();
+
 }

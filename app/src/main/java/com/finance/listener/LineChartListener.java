@@ -420,12 +420,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mViewUtil.addPurchaseToView(viewGroup, entity, childCount + mPurchaseViewEntities.size() - 1);
     }
 
-    //获取当前点的值
-    @Override
-    public IndexMarkEntity getCurrentEntry() {
-        return currentEntry;
-    }
-
     private void initView() {
         if (ivIcon != null) {
             ViewUtil.setViewVisibility(ivIcon, View.VISIBLE);
@@ -562,10 +556,10 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             oneEndTimer = TimerUtil.timerToLong(oneIssueEntity.getStopTime());
             oneOpenTimer = TimerUtil.timerToLong(oneIssueEntity.getBonusTime());
 
-            long startTimer = mIChartData.getStartTimer();
-            int timerLength = (int) ((openTimer - startTimer) / 60000);
-            mChart.getXAxis().setLabelCount(timerLength, true);
-            mXAxisValueFormatter.setStartTimer(startTimer);
+//            long startTimer = mIChartData.getStartTimer();
+//            int timerLength = (int) ((openTimer - startTimer) / 60000);
+//            mChart.getXAxis().setLabelCount(timerLength, true);
+//            mXAxisValueFormatter.setStartTimer(startTimer);
 
             isEnd = true;
         }
@@ -574,10 +568,10 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     @Override
     public void completion(IndexMarkEntity lastEntry, IDataSet dataSet) {
-        currentTimer = lastEntry.getTimeLong();//TimerUtil.timerToLong(lastEntry.getTime());
+        currentEntry = lastEntry;
+        currentTimer = currentEntry.getTimeLong();//TimerUtil.timerToLong(lastEntry.getTime());
         Constants.SERVERCURRENTTIMER = currentTimer;//服务器当前时间
         if (!isRefresh) return;
-        currentEntry = lastEntry;
         currentDataSet = dataSet;
         if (mView.isRefrshChartData()) return;
         MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
@@ -593,7 +587,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         //截止购买
         refreshEnd(endEntry, dataSet);
         //其他线
-        refreshLocation(currentEntry, dataSet);
+        refreshLocation(mIChartData.getCurrentEntry(), dataSet);
         //刷新位置
         mParent.requestLayout();
         onDraws();//调用绘制完成事件
@@ -651,18 +645,18 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             tranConDesParams.topMargin = currentY - tranConDesHight / 2;
             tvTransverseContrastDes.setText(last.getY() + "");
         }
-        if (mRightAxisValueFormatter != null) {
-            //右边轴标签显示偏移值
-            MPPointD pointD1 = ViewUtil.getMPPointD(mChart, dataSet, last.getX(), mRightAxisValueFormatter.getLasOne());
-            MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, last.getX(), mRightAxisValueFormatter.getLasTwo());
-            mChart.getAxisRight().setYOffset((int) ((pointD1.y - pointD2.y) / 2));
-        }
-        if (mXAxisValueFormatter != null) {
-            MPPointD pointD1 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasOne(), last.getY());
-            MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasTwo(), last.getY());
-            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 2));
-//            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 6));
-        }
+//        if (mRightAxisValueFormatter != null) {
+//            //右边轴标签显示偏移值
+//            MPPointD pointD1 = ViewUtil.getMPPointD(mChart, dataSet, last.getX(), mRightAxisValueFormatter.getLasOne());
+//            MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, last.getX(), mRightAxisValueFormatter.getLasTwo());
+//            mChart.getAxisRight().setYOffset((int) ((pointD1.y - pointD2.y) / 2));
+//        }
+//        if (mXAxisValueFormatter != null) {
+//            MPPointD pointD1 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasOne(), last.getY());
+//            MPPointD pointD2 = ViewUtil.getMPPointD(mChart, dataSet, mXAxisValueFormatter.getLasTwo(), last.getY());
+//            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 2));
+////            mChart.getXAxis().setXOffset((int) ((pointD2.x - pointD1.x) / 6));
+//        }
     }
 
     //刷新所有购买点的位置

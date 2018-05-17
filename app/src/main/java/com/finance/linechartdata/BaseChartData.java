@@ -6,8 +6,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import com.finance.R;
 import com.finance.base.BaseAminatorListener;
@@ -16,20 +14,22 @@ import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.interfaces.IChartData;
+import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.listener.EventDistribution;
-import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
+import com.finance.model.ben.XEntity;
 import com.finance.ui.main.MainContract;
 import com.finance.utils.TimerUtil;
-import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * 数据处理基类类
@@ -52,8 +52,8 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected long duration = 160;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
-    protected View animView;//执行加载动画的view
-    private Animation mAnimation;//执行动画
+    //    protected View animView;//执行加载动画的view
+//    private Animation mAnimation;//执行动画
     protected int dataMinCount = 0;
 
     public BaseChartData(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
@@ -68,7 +68,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         this.mXAxis = mChart.getXAxis();
         this.mChartDatas = new ArrayList<>(100);
         this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_30);
-        this.animView = animView;
+//        this.animView = animView;
         minsPacing = ViewConfiguration.get(context).getScaledTouchSlop();
         this.mChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -109,7 +109,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             if (topProductEntity == null) {
                 topProductEntity = productEntity;
             }
-            ViewUtil.setViewVisibility(animView, View.VISIBLE);
+//            ViewUtil.setViewVisibility(animView, View.VISIBLE);
 //            ViewUtil.setViewVisibility(animView, View.GONE);
             updateData();
         }
@@ -144,6 +144,67 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         float itemWidth = endX / xCount;
         float addItem = (labelWidth + dpPxRight) / itemWidth;
         mXAxis.setAxisMaximum(xCount + addItem);
+
+        //标签计算
+        long totalTimer = startTimer + ((int) mXAxis.getAxisMaximum() * 500);
+        int lableCount = (int) (totalTimer - startTimer) / 1000 / 60;
+        mXAxis.setLabelCount(lableCount + 1, true);//设置x轴显示的标签个数
+        //计算X轴标签显示值
+        IAxisValueFormatter f = mXAxis.getValueFormatter();
+        if (!(f instanceof XAxisValueFormatter)) {
+            return;
+        }
+        int hour = (int) (openTimer - startTimer) / 1000 / 60;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(openTimer);
+        ArrayList<XEntity> xentitys = new ArrayList<>();
+        for (int i = 0; i <= hour; i++) {
+            XEntity en = new XEntity();
+            en.setMaxIndex(getXIndex(openTimer - i * 60000));
+            en.setMinIndex(getXIndex(openTimer - (i + 1) * 60000));
+            en.setValue(TimerUtil.getHourMin(calendar));
+            calendar.add(Calendar.MINUTE, -1);
+            xentitys.add(en);
+        }
+
+        hour = (int) (totalTimer - openTimer) / 1000 / 60;
+        calendar.setTimeInMillis(openTimer);
+        for (int i = 0; i <= hour; i++) {
+            calendar.add(Calendar.MINUTE, 1);
+            XEntity en = new XEntity();
+            en.setMinIndex(getXIndex(openTimer + i * 60000));
+            en.setMaxIndex(getXIndex(openTimer + (i + 1) * 60000));
+            en.setValue(TimerUtil.getHourMin(calendar));
+            xentitys.add(en);
+        }
+
+        ((XAxisValueFormatter) f).setStartTimer(xentitys);
+
+
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(openTimer);
+//
+//
+//        ArrayList<XEntity> xentitys = new ArrayList<>();
+//        for (long i = openTimer; i >= startTimer; i -= 60000) {
+//            XEntity en = new XEntity();
+//            en.setMaxIndex(getXIndex(i + 60000));
+//            en.setMinIndex(getXIndex(i));
+//            en.setValue(TimerUtil.getHourMin(i));
+//            xentitys.add(en);
+//        }
+//        if (openTimer + 60000 < startTimer + mXAxis.getAxisMaximum() * 500) {
+//            XEntity en = new XEntity();
+//            en.setMaxIndex(getXIndex(openTimer + 60000 * 2));
+//            en.setMinIndex(getXIndex(openTimer + 60000));
+//            en.setValue(TimerUtil.getHourMin(openTimer + 60000));
+//            xentitys.add(en);
+//        }
+//        ((XAxisValueFormatter) f).setStartTimer(xentitys);
+
+//        long totalTimer = startTimer + ((int) mXAxis.getAxisMaximum() * 500);
+//        Log.d("123", "setAxisMaximum: " + totalTimer);
+//        Log.d("123", "setAxisMaximum: " + (totalTimer - startTimer) / 1000);
     }
 
     @Override
@@ -311,28 +372,28 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //添加动画执行完成
     protected void stopAddAnimation() {
-        if (animView == null) return;
-        if (mAnimation == null) {
-            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
-            mAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    animView.clearAnimation();
-                    ViewUtil.setViewVisibility(animView, View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
-        animView.startAnimation(mAnimation);
+//        if (animView == null) return;
+//        if (mAnimation == null) {
+//            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
+//            mAnimation.setAnimationListener(new Animation.AnimationListener() {
+//                @Override
+//                public void onAnimationStart(Animation animation) {
+//
+//                }
+//
+//                @Override
+//                public void onAnimationEnd(Animation animation) {
+//                    animView.clearAnimation();
+//                    ViewUtil.setViewVisibility(animView, View.GONE);
+//                }
+//
+//                @Override
+//                public void onAnimationRepeat(Animation animation) {
+//
+//                }
+//            });
+//        }
+//        animView.startAnimation(mAnimation);
     }
 
     //删除动画执行完成
@@ -357,5 +418,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     }
 
     protected abstract int getDrawSetp();
+
+    protected abstract int getXIndex(long timer);
 
 }

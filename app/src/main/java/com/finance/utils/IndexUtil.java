@@ -13,13 +13,20 @@ public class IndexUtil {
     public ArrayList<IndexMarkEntity> parseExponentially(long startTimer, ArrayList<String> serverDatas, int digit) {
         if (serverDatas == null || serverDatas.isEmpty()) return null;
         ArrayList<IndexMarkEntity> entitys = new ArrayList<>(serverDatas.size());
+        IndexMarkEntity top = null;
         for (String str : serverDatas) {
             IndexMarkEntity entity = parseExponentially(0, str, digit);
             if (entity == null) continue;
             if (entity.getTimeLong() == -1) continue;
+            if (top != null && top.getTimeLong() == entity.getTimeLong()) {
+                entity.setX(top.getX());
+                entitys.set(entitys.size() - 1, entity);
+                continue;
+            }
             entity.setX((int) ((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL));
             //更新下标
             entitys.add(entity);
+            top = entity;
 //            startIndex++;
         }
         return entitys;

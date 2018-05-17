@@ -119,8 +119,8 @@ public class YAxisRenderer extends AxisRenderer {
                 ? mYAxis.mEntryCount
                 : (mYAxis.mEntryCount - 1);
 
-        // draw
-        for (int i = from; i < to; i++) {
+        // draw 最后一个值不绘制
+        for (int i = from + 1; i < to; i++) {
 
             String text = mYAxis.getFormattedLabel(i);
 

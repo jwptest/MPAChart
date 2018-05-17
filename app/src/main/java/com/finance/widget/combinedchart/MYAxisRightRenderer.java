@@ -28,10 +28,10 @@ public class MYAxisRightRenderer extends YAxisRenderer {
                 : (mYAxis.mEntryCount - 1);
         this.fixedPosition = fixedPosition;
         // draw
-        for (int i = from; i < to - 1; i++) {
+        for (int i = from + 1; i < to - 1; i++) {
             String text = mYAxis.getFormattedLabel(i);
-//            c.drawText(text, fixedPosition, positions[i * 2 + 1] + offset, mAxisLabelPaint);
-            c.drawText(text, fixedPosition, positions[i * 2 + 1], mAxisLabelPaint);
+            c.drawText(text, fixedPosition, positions[i * 2 + 1] + offset, mAxisLabelPaint);
+//            c.drawText(text, fixedPosition, positions[i * 2 + 1], mAxisLabelPaint);
             if (i == from) measureText = text;
         }
     }

@@ -4,7 +4,10 @@ import android.text.TextUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+
+import static android.R.attr.value;
 
 /**
  * 时间工具类
@@ -50,5 +53,34 @@ public class TimerUtil {
         if (timerStr.length() < index + 5) return timerStr;
         return timerStr.substring(index + 1, index + 6);
     }
+
+    public static String getHourMin(long timer) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timer);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int min = calendar.get(Calendar.MINUTE);
+        if (hour < 10 && min < 10) {
+            return "0" + hour + ":0" + min;
+        } else if (hour < 10) {
+            return "0" + hour + ":" + min;
+        } else if (min < 10) {
+            return "" + hour + ":0" + min;
+        }
+        return hour + ":" + min;
+    }
+
+    public static String getHourMin(Calendar calendar) {
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int min = calendar.get(Calendar.MINUTE);
+        if (hour < 10 && min < 10) {
+            return "0" + hour + ":0" + min;
+        } else if (hour < 10) {
+            return "0" + hour + ":" + min;
+        } else if (min < 10) {
+            return "" + hour + ":0" + min;
+        }
+        return hour + ":" + min;
+    }
+
 
 }

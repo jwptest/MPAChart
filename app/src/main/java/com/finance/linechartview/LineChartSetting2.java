@@ -157,6 +157,7 @@ public class LineChartSetting2 implements IChartSetting {
         xAxis.setValueFormatter(mXIAxisValueFormatter);
         xAxis.setAxisMinimum(0);//X轴自定义最小值
         xAxis.setDrawGridLines(true);//绘制网格线，默认为true
+        xAxis.setDrawLabels(true);
         //网格线绘制模式
         xAxis.enableGridDashedLine(10f, 0f, 0f);
         xAxis.setGridLineWidth(1f);//网格线宽度单位dp
@@ -164,7 +165,7 @@ public class LineChartSetting2 implements IChartSetting {
         //轴线颜色
         xAxis.setAxisLineColor(getColor(R.color.transparent));
 //        xAxis.setDrawLabels(false);//需要绘制标签
-//        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
+        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
 //        xAxis.setTextColor(getColor(R.color.form_value_color));
 //        xAxis.setGranularity(10);
 //        xAxis.setSpaceMax(10);

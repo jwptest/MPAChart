@@ -65,6 +65,7 @@ public class IndexMarkEntity extends Entry {
         entity.id = id;
         entity.setX(getX());
         entity.setY(getY());
+        entity.setData(getData());
         return entity;
     }
 

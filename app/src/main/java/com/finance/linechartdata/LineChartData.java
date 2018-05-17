@@ -281,6 +281,11 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     }
 
     @Override
+    public IndexMarkEntity getCurrentEntry() {
+        return null;
+    }
+
+    @Override
     public void onDraw(Entry entry) {
 //        if (isDraw) return;
 //        //绘制完成回调

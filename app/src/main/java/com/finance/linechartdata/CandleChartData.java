@@ -25,6 +25,7 @@ import java.util.ArrayList;
  */
 public class CandleChartData implements IChartData {
 
+
     private MCombinedChart mChart;
     private Activity activity;
     private XAxis mXAxis;
@@ -79,6 +80,11 @@ public class CandleChartData implements IChartData {
     @Override
     public long getStartTimer() {
         return 0;
+    }
+
+    @Override
+    public IndexMarkEntity getCurrentEntry() {
+        return null;
     }
 
     @Override

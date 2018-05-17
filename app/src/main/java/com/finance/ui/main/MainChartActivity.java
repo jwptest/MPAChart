@@ -250,7 +250,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         mChartSetting
                 .setRightIAxisValueFormatter(mRightAxisValue)
                 .setXIAxisValueFormatter(mXAxisValue)
-                .initLineChart(lineChart, false);
+                .initLineChart(lineChart, true);
         chartListener = new LineChartListener(mActivity, rlPurchaseView, this, lineChart)
                 .initListener()
                 .setIvIcon(ivIcon)
@@ -339,7 +339,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     public void placeOrder(int money, boolean Result) {
-        IndexMarkEntity entry = chartListener.getCurrentEntry();
+        IndexMarkEntity entry = dataSetting.getCurrentEntry();
         if (entry == null || currentProduct == null || currentIssue == null) return;
         mMainPresenter.placeOrder(currentIssue.getIssueName(), currentIssue.getIssueType(), money, currentProduct.getProductId(), Result, entry.getId());
 //        purchase(money, false);
