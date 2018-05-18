@@ -52,6 +52,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected long duration = 160;//动画执行时间
     protected int minsPacing = -1;//如果为-1折不介入绘制
     private ValueAnimator valueAnimator;//当前执行动画
+    protected int currentChartType;
     //    protected View animView;//执行加载动画的view
 //    private Animation mAnimation;//执行动画
     protected int dataMinCount = 0;
@@ -84,12 +85,15 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     @Override
     public void onResume(int type) {
+        currentChartType = type;
         EventDistribution.getInstance().addPurchase(this);
     }
 
     @Override
-    public void onDestroy() {
-        EventBus.post(new DataRefreshEvent(false));
+    public void onDestroy(int chartType) {
+        if (chartType != Constants.CHART_LINEFILL && chartType != Constants.CHART_LINE) {
+            EventBus.post(new DataRefreshEvent(false));
+        }
         EventDistribution.getInstance().removePurchase(this);
     }
 
@@ -209,14 +213,18 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     @Override
     public void stopPurchase(boolean isOrder) {
-        if (isOrder) return;
+        if (isOrder) {
+            return;
+        }
         mView.refreshIessue();//刷新期号
+        isAnimation = true;
 //        stopNetwork();
     }
 
     @Override
     public void openPrize(boolean isOrder) {
         mView.refreshIessue();//刷新期号
+        isAnimation = true;
 //        stopNetwork();
     }
 
@@ -341,7 +349,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         int size = mChartDatas.size();
         if (size == dataMinCount) return;
 //        mChart.isStopDraw(false);
-        isAnimation = true;
 //        ArrayList<T> entitys;
 //        if (dataMinCount >= size) {
 //            entitys = new ArrayList<>(size);
@@ -417,7 +424,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         return null;
     }
 
-    protected abstract int getDrawSetp();
+//    protected abstract int getDrawSetp();
 
     protected abstract int getXIndex(long timer);
 

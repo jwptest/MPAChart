@@ -1,5 +1,6 @@
 package com.finance.ui.main;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -14,6 +15,7 @@ import com.finance.App;
 import com.finance.R;
 import com.finance.base.BaseActivity;
 import com.finance.common.Constants;
+import com.finance.common.NetWorkStateReceiver;
 import com.finance.common.UserCommon;
 import com.finance.common.UserShell;
 import com.finance.event.EventBus;
@@ -46,6 +48,7 @@ import com.finance.ui.dialog.ExitAppDialog;
 import com.finance.ui.dialog.StartDialog;
 import com.finance.ui.popupwindow.OpenPrizePopWindow;
 import com.finance.utils.BtnClickUtil;
+import com.finance.utils.HandlerUtil;
 import com.finance.utils.NetWorkUtils;
 import com.finance.utils.PhoneUtil;
 import com.finance.utils.StatusBarUtil;
@@ -168,13 +171,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private LineChartData1 mLineChartData;//折线图
     private CandleChartData mCandleData;//蜡烛图
     private int chartType;//当前显示图像类型
+    private NetWorkStateReceiver mNetWorkStateReceiver;//网络改变监听
 
     private ArrayList<ProductEntity> mProductEntities;
     private ArrayList<IssueEntity> mIssueEntities;
-    private Animation animation;//更新余额动画
     private ProductEntity currentProduct;//当前显示的产品
     private ArrayList<IssueEntity> currentIssues;//当前可供选折的期号
     private IssueEntity currentIssue;//当前选中的期号
+    private Animation animation;//更新余额动画
     private int issuesSelectIndex = 0;
     private int statusBarHigh = 0;
 
@@ -201,29 +205,37 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Override
     protected void onResume() {
         super.onResume();
+        mNetWorkStateReceiver = NetWorkStateReceiver.registerReceiver(mActivity);
         isResume = true;
         if (dataSetting != null) dataSetting.onResume(chartType);
         OpenCountDown.getInstance().addCallback(this);
-        //刷新产品、期号、走势图
-        mMainPresenter.getProduct();
+        refreshData();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         OpenCountDown.getInstance().removeCallback(this);
-        if (dataSetting != null) dataSetting.onDestroy();
+        if (dataSetting != null) dataSetting.onDestroy(0);
+        if (mNetWorkStateReceiver != null) {
+            NetWorkStateReceiver.unregisterReceiver(mActivity, mNetWorkStateReceiver);
+            mNetWorkStateReceiver = null;
+        }
     }
 
     @Override
     protected void onDestroy() {
-        if (dataSetting != null) dataSetting.onDestroy();
+        if (dataSetting != null) dataSetting.onDestroy(0);
         if (chartListener != null) chartListener.onDestroy();
         if (leftMenu != null) leftMenu.onDestroy();
         if (rightMenu != null) rightMenu.onDestroy();
         if (centreMenu != null) centreMenu.onDestroy();
         OpenCountDown.getInstance().removeCallback(this);
         EventBus.unregister(this);
+        if (mNetWorkStateReceiver != null) {
+            NetWorkStateReceiver.unregisterReceiver(mActivity, mNetWorkStateReceiver);
+            mNetWorkStateReceiver = null;
+        }
         super.onDestroy();
     }
 
@@ -231,6 +243,16 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     public void onBackPressed() {
 //        super.onBackPressed();
         new ExitAppDialog(this).show();
+    }
+
+    private void refreshData() {
+        mProductEntities = null;//产品
+        mIssueEntities = null;//所有期号
+        currentProduct = null;//当前显示的产品
+        currentIssues = null;//当前可供选折的期号
+        currentIssue = null;//当前选中的期号
+        //刷新产品、期号、走势图
+        mMainPresenter.getProduct();
     }
 
     //初始化控件
@@ -264,6 +286,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setIvSettlementIcon(ivSettlementIcon)
                 .setRightAxisValueFormatter(mRightAxisValue)
                 .setXAxisValueFormatter(mXAxisValue);
+        chartListener.hideView();//默认隐藏控件
         leftMenu = new LeftMenu(mActivity, this, mMainPresenter).onInit(llLeftMenu);
         rightMenu = new RightMenu(mActivity, this, this).onInit(llRightMenu);
         centreMenu = new CentreMenu(this, mMainPresenter).onInit(llCentreMenu);
@@ -351,7 +374,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             return;
         }
         if (dataSetting != null) {
-            dataSetting.onDestroy();
+            dataSetting.onDestroy(chartType);
         }
         this.chartType = chartType;
         dataSetting = getChartData(chartType);
@@ -361,7 +384,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Subscribe
     public void onEvent(UserLoginEvent event) {
         if (event == null) return;
-        mMainPresenter.getProduct();//获取产品信息
+        refreshData();//获取产品信息
         initViewUser();
     }
 
@@ -392,18 +415,48 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         });//刷新用户信息
     }
 
+    private Runnable mRunnable;
+
     @Subscribe
     public void onEvent(NetWorkStateEvent event) {
         if (event == null) return;
-        if (!event.isNetWork()) {//没有网络
-            if (dataSetting != null) dataSetting.stopNetwork();//关闭网络连接
-        } else if (isNetWork) {//当前网络为连接，上次状态也为连接不处理
+        if (this.isNetWork == event.isNetWork()) {
             return;
-        } else {//网络重新连接上，刷新数据
-            //刷新产品、期号、走势图
-            mMainPresenter.getProduct();
         }
-        isNetWork = event.isNetWork();
+        this.isNetWork = event.isNetWork();//更新状态
+        if (mRunnable != null) {
+            HandlerUtil.removeRunable(mRunnable);
+        }
+        Log.d("123", event.isNetWork() + "");
+        if (!event.isNetWork()) {
+            App.getInstance().showErrorMsg("网络断开！");
+            dataSetting.stopNetwork();//关闭网络连接
+            return;
+        }
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mRunnable = null;
+                refreshData();//获取产品信息
+            }
+        };
+        HandlerUtil.runOnUiThreadDelay(mRunnable, 500);
+
+//        if (event.isNetWork()) {
+//            refreshData();//获取产品信息
+//        } else {
+//            dataSetting.stopNetwork();//关闭网络连接
+//        }
+//        boolean isNetWork = event.isNetWork();
+//        if (!isNetWork) {//没有网络
+//            if (dataSetting != null && this.isNetWork) dataSetting.stopNetwork();//关闭网络连接
+//        } else {//当前网络为连接，上次状态也为连接不处理
+//            if (!this.isNetWork) {//网络重新连接上，刷新数据
+//                refreshData();//获取产品信息
+//            }
+//        }
+//        this.isNetWork = isNetWork;//更新状态
+//        Toast.makeText(this, event.getState() + "," + event.isNetWork() + "," + this.isNetWork, Toast.LENGTH_SHORT).show();
     }
 
     private void initViewUser() {

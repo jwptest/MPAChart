@@ -18,10 +18,13 @@ public class IndexUtil {
             IndexMarkEntity entity = parseExponentially(0, str, digit);
             if (entity == null) continue;
             if (entity.getTimeLong() == -1) continue;
-            if (top != null && top.getTimeLong() == entity.getTimeLong()) {
-                entity.setX(top.getX());
-                entitys.set(entitys.size() - 1, entity);
-                continue;
+            if (top != null) {
+                if (top.getTimeLong() > entity.getTimeLong()) continue;//时间错位
+                if (top.getTimeLong() == entity.getTimeLong()) {
+                    entity.setX(top.getX());
+                    entitys.set(entitys.size() - 1, entity);
+                    continue;
+                }
             }
             entity.setX((int) ((entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL));
             //更新下标

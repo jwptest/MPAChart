@@ -153,7 +153,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy(int chartType) {
         EventBus.post(new DataRefreshEvent(false));
     }
 

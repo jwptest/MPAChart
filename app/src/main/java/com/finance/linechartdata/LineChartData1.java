@@ -39,14 +39,14 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
     private HttpConnection mHttpConnection0, mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
     private MThread mMThread;//解析数据线程
-    //    private ArrayList<IndexMarkEntity> mAllIndexMarks;//全部数据
+    //    private ArrayList<Entry> mAllIndexMarks;//全部数据
     private ArrayList<Entry> mIndexMarkEntities;//推送的指数数据
     private ArrayList<IndexMarkEntity> mHistoryIndexMarks;//历史指数
     private boolean isRefrshChartData;//是否在刷新走势图数据
     //    private boolean isDraw = false;//是否绘制
     private long issueLengthTime;//当前期显示的数据时间长度
     private boolean isTimer = false;//是否可以转换时间
-    private int drawStep = 1;//步长
+    //    private int drawStep = 1;//步长
     private long startTimer;//开始时间
     private ChartCurrentPointAnimation mPointAnimation;
     private IndexMarkEntity currentPoint;
@@ -111,10 +111,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         return lineData;
     }
 
-    @Override
-    protected int getDrawSetp() {
-        return drawStep;
-    }
+//    @Override
+//    protected int getDrawSetp() {
+//        return drawStep;
+//    }
 
     @Override
     protected int getXIndex(long timer) {
@@ -123,26 +123,31 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     @Override
     public void onResume(int type) {
-        super.onResume(type);
+        if (currentChartType == type) return;
         if (lineData != null) {
             if (type == Constants.CHART_LINEFILL) {
-                ((LineDataSet) lineData.getDataSetByIndex(0)).setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                LineDataSet set = ((LineDataSet) lineData.getDataSetByIndex(0));
+                set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                set.setDrawFilled(true);
             } else if (type == Constants.CHART_LINE) {
-                ((LineDataSet) lineData.getDataSetByIndex(0)).setMode(LineDataSet.Mode.LINEAR);
+                LineDataSet set = ((LineDataSet) lineData.getDataSetByIndex(0));
+                set.setMode(LineDataSet.Mode.LINEAR);
+                set.setDrawFilled(false);
             }
         }
         EventDistribution.getInstance().addChartDraws(this);
+        super.onResume(type);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroy(int chartType) {
+        super.onDestroy(chartType);
         EventDistribution.getInstance().removeChartDraws(this);
-        //发送事件
-        EventBus.post(new DataRefreshEvent(false));
-        if (mCallback != null) {
-            mCallback.isStop = true;
-            mCallback = null;
+        if (chartType != Constants.CHART_LINEFILL && chartType != Constants.CHART_LINE) {
+            if (mCallback != null) {
+                mCallback.isStop = true;
+                mCallback = null;
+            }
         }
     }
 
@@ -193,7 +198,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
             mCallback = null;
         }
         //重置介入绘制参数
-        mChart.setDrawIntervention(-1, 0, 300);
+//        mChart.setDrawIntervention(-1, 0, 300);
         EventBus.post(new DataRefreshEvent(false));
         mCallback = new Callback(this);
         stopNetwork();//停止以前的网络请求
@@ -222,13 +227,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         //走势图数据查询事件
         EventBus.post(new ChartDataUpdateEvent());
         //设置介入绘制参数
-        mChart.setDrawIntervention(startIndex, minsPacing, 300);
+//        mChart.setDrawIntervention(startIndex, minsPacing, 300);
     }
 
     @Override
     protected void stopRemoveAnimation() {
         //删除数据动画执行完成
-        addHistoryDatas();
+
     }
 
     @Override
@@ -314,7 +319,9 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 //        issueLengthTime = timer2 - timer1;
 
         currentPoint = (IndexMarkEntity) entries.get(entries.size() - 1).copy();
-
+        top = currentPoint;
+//        mAllIndexMarks.clear();
+//        mAllIndexMarks.addAll(entries);
         startAddDataAnimation(entries);
     }
 
@@ -333,14 +340,16 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     private IndexMarkEntity top = null;
 
-    private boolean addIndexEntity(ArrayList<Entry> ens, IndexMarkEntity entity) {
-        if (top == null || top.getTimeLong() != entity.getTimeLong()) {
-            return false;
+    //防止时间错乱走势图绘制出错
+    private int addIndexEntity(ArrayList<Entry> ens, IndexMarkEntity entity) {
+        if (top == null) return 0;//添加
+        if (top.getX() > entity.getX()) {
+            return 1;//不做操作
         }
-        entity.setX(top.getX());
-        ens.set(ens.size() - 1, entity);
-        top = entity;
-        return true;
+        if (top.getX() < entity.getX())
+            return 0;//添加
+//        ens.set(ens.size() - 1, entity);
+        return 0;//刷新
     }
 
     //刷新时时数据
@@ -349,30 +358,35 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         if (isRefrshChartData || isAnimation) {
             return;
         }
-//        Log.d("123", "updateAlwaysData: " + entity.getTimeLong());
+//        mAllIndexMarks.add(entity);
         entity.setX(getXIndex(entity.getTimeLong()));
-//        if (isRefrshChartData || isAnimation) {
-//            if (!addIndexEntity(mIndexMarkEntities, entity)) {
-//                mIndexMarkEntities.add(entity);
-//            }
-//            return;
-//        }
-        if (!addIndexEntity(mChartDatas, entity)) {
-            mChartDatas.add(entity);
-        }
-        currentPoint = entity.copy();
-        mPointAnimation.stopAnimation();
+        int r = addIndexEntity(mChartDatas, entity);
+        if (r == 1) return;
+        mChartDatas.add(entity);
+        top = entity;
         int size = mChartDatas.size();
+        currentPoint = entity.copy();
         mPointAnimation.updateParam(mChartDatas.get(size - 1), mChartDatas.get(size - 2));
+        mPointAnimation.stopAnimation();
         mPointAnimation.startAnimation();
+//        int size = mChartDatas.size();
+//        if (r == 2) {
+//            mPointAnimation.updateParam(mChartDatas.get(size - 1), top);
+//        } else {
+//            mPointAnimation.updateParam(mChartDatas.get(size - 1), mChartDatas.get(size - 2));
+//        }
+//        top = entity;
+//        currentPoint = entity.copy();
+//        mPointAnimation.stopAnimation();
+//        mPointAnimation.startAnimation();
         //invalidateChart();//刷新数据
     }
 
     private void updateHistoryData(ArrayList<IndexMarkEntity> entities) {
         isRefrshChartData = false;
         if (entities == null || entities.isEmpty()) return;
-        drawStep = entities.size() / 150;
-        mChart.setDrawStep(drawStep);//设置步长
+//        drawStep = entities.size() / 150;
+//        mChart.setDrawStep(drawStep);//设置步长
         mHistoryIndexMarks = entities;
 //        mAllIndexMarks.clear();
 //        mAllIndexMarks.addAll(entities);

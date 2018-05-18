@@ -8,7 +8,7 @@ import com.github.mikephil.charting.data.Entry;
 /**
  * 数据处理接口
  */
-public interface IChartData extends IDestroy {
+public interface IChartData {
 
     //刷新期号
     void updateIssue(ProductEntity productEntity, IssueEntity issueEntity);
@@ -27,4 +27,5 @@ public interface IChartData extends IDestroy {
 
     IndexMarkEntity getCurrentEntry();
 
+    void onDestroy(int chartType);
 }

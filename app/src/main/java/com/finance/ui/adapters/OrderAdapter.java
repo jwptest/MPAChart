@@ -198,17 +198,17 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
     }
 
     public class ItemHolder extends RecyclerViewHolder {
-        CompletedView cvProgressBar;
-        View llTimer;
-        TextView tvTimer;
-        TextView tvName;
-        TextView tvPurchase;
-        TextView tvMoney;
-        TextView tvDate;
-        ImageView ivRiseFall;
-        TextView tvExplain;
-        TextView tvPurchase2;
-        TextView tvMoney2;
+        CompletedView cvProgressBar;//时间倒计时
+        View llTimer;//时间和日期布局
+        TextView tvTimer;//显示时间控件
+        TextView tvName;//产品名称
+        TextView tvPurchase;//购买点指数
+        TextView tvMoney;//预计收益
+        TextView tvDate;//日期
+        ImageView ivRiseFall;//涨跌图标
+        TextView tvExplain;//涨跌说明
+        TextView tvPurchase2;//指数
+        TextView tvMoney2;//购买金额
 
         /**
          * 子项RecyclerView.ViewHolderNew

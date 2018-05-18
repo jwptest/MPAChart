@@ -6,6 +6,7 @@ import com.orhanobut.logger.Logger;
 
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
+import microsoft.aspnet.signalr.client.SignalRFuture;
 import microsoft.aspnet.signalr.client.StateChangedCallback;
 
 /**
@@ -86,9 +87,13 @@ public class HttpConnection {
         if (receivedHandler instanceof JsonCallback) {
             JsonCallback jsonCallback = (JsonCallback) receivedHandler;
             jsonCallback.setTag(tag);
+            jsonCallback.setConnection(this);
             jsonCallback.onBefore();//开始请求网络
         }
-        connection.start().done(new Action<Void>() {
+        //setResult
+        SignalRFuture signalRFuture = connection.start();
+        signalRFuture.setResult("");
+        signalRFuture.done(new Action<Void>() {
             @Override
             public void run(Void aVoid) throws Exception {
                 String json = mISign.getSign(params.getParams(), T, Token);

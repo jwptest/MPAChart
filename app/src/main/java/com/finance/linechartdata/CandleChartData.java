@@ -88,7 +88,7 @@ public class CandleChartData implements IChartData {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy(int chartType) {
         mCombinedData = null;
     }
 

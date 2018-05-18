@@ -25,6 +25,7 @@ public abstract class JsonCallback<T> extends BaseCallback {
     private T t;
     private ResponseEntity mEntity;
     private boolean isInvalid = false;
+    private HttpConnection mConnection;//网络请求对象
 
     public JsonCallback(Class<T> clazz) {
         this.clazz = clazz;
@@ -40,7 +41,10 @@ public abstract class JsonCallback<T> extends BaseCallback {
 
     @Override
     public void onMessageReceived(JsonElement jsonElement) {
-        if (isInvalid || isDiscarded) return;//当前对象已经完成一次请求
+        if (isInvalid || isDiscarded) {
+            stop();
+            return;//当前对象已经完成一次请求
+        }
         //运行在子线程
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
@@ -68,7 +72,10 @@ public abstract class JsonCallback<T> extends BaseCallback {
             mEntity = (ResponseEntity) t;
             if (mEntity.getStatus() == Constants.DEFAULTCODE) return;
         }
-        if (isInvalid) return;//当前对象已经完成一次请求
+        if (isInvalid) {
+            stop();
+            return;//当前对象已经完成一次请求
+        }
         isInvalid = true;
         HandlerUtil.runOnUiThread(new Runnable() {
             @Override
@@ -93,9 +100,17 @@ public abstract class JsonCallback<T> extends BaseCallback {
         failed(mEntity.getSourceCode(), "没有网络！", false);
     }
 
+    private void stop() {
+        if (mConnection != null) mConnection.stop();
+    }
+
     //设置tag
     void setTag(Object tag) {
         this.tag = tag;
+    }
+
+    public void setConnection(HttpConnection connection) {
+        mConnection = connection;
     }
 
     //开始网络请求

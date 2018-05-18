@@ -55,7 +55,7 @@ public class LineChartSetting implements IChartSetting {
         mChart.setScaleEnabled(true);//拖动放缩
         mChart.setScaleXEnabled(true);
         mChart.setScaleYEnabled(false);
-        mChart.setScaleX(1f);
+//        mChart.setScaleX(1f);
         //缩放第二种方式
 //        mChart.getViewPortHandler().getMatrixTouch().postScale(1.5f, 1f);
         mChart.setAutoScaleMinMaxEnabled(true);//自动缩放

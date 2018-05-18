@@ -88,7 +88,6 @@ public class CentreMenu extends BaseViewHandle implements ICallback<NotesMessage
         timer.start();
     }
 
-
     @OnClick({R.id.ivZST, R.id.ivZXT, R.id.ivKXT, R.id.ivOther})
     public void onViewClicked(View view) {
         if (BtnClickUtil.isFastDoubleClick(view.getId())) {

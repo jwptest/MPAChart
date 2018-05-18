@@ -420,7 +420,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mViewUtil.addPurchaseToView(viewGroup, entity, childCount + mPurchaseViewEntities.size() - 1);
     }
 
-    private void initView() {
+    @Override
+    public void initView() {
         if (ivIcon != null) {
             ViewUtil.setViewVisibility(ivIcon, View.VISIBLE);
 //            //加载gif
@@ -434,7 +435,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //                    .dontAnimate()
 //                    .into(ivIcon);
             //启动动画
-            ivIcon.startAnimation(mAnimator);
+//            ivIcon.startAnimation(mAnimator);
         }
         if (vEndLine != null && tvEndLineDes != null && ivEndLineIcon != null) {//截止
             ViewUtil.setViewVisibility(vEndLine, View.VISIBLE);
@@ -455,7 +456,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     /**
      * 隐藏图标
      */
-    private void hideView() {
+    @Override
+    public void hideView() {
         if (ivIcon != null) {
             ivIcon.clearAnimation();
             ViewUtil.setViewVisibility(ivIcon, View.GONE);
@@ -540,7 +542,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             initView();
             updatePurchaseView();//刷新购买点的坐标点
         } else {
-            hideView();
+//            hideView();
             hidePurchaseView();//隐藏购买点
         }
     }

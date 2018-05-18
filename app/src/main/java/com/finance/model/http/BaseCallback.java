@@ -16,7 +16,6 @@ public abstract class BaseCallback implements MessageReceivedHandler {
         isDiscarded = discarded;
     }
 
-
     //获取一个空处理的回调
     public static BaseCallback getBaseCallback() {
         return new BaseCallback() {
