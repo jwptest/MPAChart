@@ -6,9 +6,10 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.BaseActivity;
-import com.finance.model.http.JsonCallback;
 import com.finance.model.http.BaseParams;
 import com.finance.model.http.HttpConnection;
+import com.finance.model.http.JsonCallback;
+import com.finance.model.http.JsonCallback2;
 import com.finance.model.imps.NetworkRequest;
 import com.google.gson.JsonElement;
 
@@ -40,8 +41,7 @@ public class NetworkActivity extends BaseActivity {
 
     @Override
     protected void onCreated() {
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 102);
+        BaseParams baseParams = new BaseParams(102);
 //        baseParams.addParam("NickName", "123456");
         baseParams.addParam("Password", "123456");
         baseParams.addParam("UserName", "tt1234567");
@@ -51,8 +51,7 @@ public class NetworkActivity extends BaseActivity {
 
     @OnClick(R.id.tvSend)
     public void onViewClicked() {
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 101);
+        BaseParams baseParams = new BaseParams(101);
 //        baseParams.addParam("NickName", "123456");
 //        baseParams.addParam("Password", "123456");
 //        baseParams.addParam("UserName", "tt1234567");

@@ -117,7 +117,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
         this.issueEntity = issueEntity;
         isInitData = false;
         //获取期号
-        mPresenter.getHistoryIssues(productEntity.getProductId(), 300, this);
+        mPresenter.getHistoryIssues(productEntity.getProductId(), 300, null);
         //获取时时数据
         mHttpConnection = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
     }

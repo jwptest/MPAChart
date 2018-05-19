@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
+import com.finance.event.EventBus;
+import com.finance.event.OpenPrizeDialogEvent;
+import com.finance.event.OpenPrizeEvent;
 import com.finance.listener.EventDistribution;
 import com.finance.listener.OpenCountDown;
 import com.finance.model.ben.IssueEntity;
@@ -16,6 +19,8 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.ui.popupwindow.KeyboardPopupWindow;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.NumberUtil;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Locale;
 
@@ -305,6 +310,8 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     public void startTick() {
         isUpdateText = true;
         buttonChecked(true);
+        //注册开奖对话框打开事件
+        EventBus.register(this);
     }
 
     @Override
@@ -316,6 +323,14 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     @Override
     public void onFinish() {
         isUpdateText = true;
-        buttonChecked(false);
+//        buttonChecked(false);
     }
+
+    @Subscribe
+    public void onEvent(OpenPrizeDialogEvent event) {
+        buttonChecked(false);
+        tvRightTimer.setText("0");
+        EventBus.unregister(this);
+    }
+
 }

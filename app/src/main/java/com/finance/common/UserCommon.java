@@ -6,8 +6,8 @@ import android.text.TextUtils;
 import com.finance.interfaces.ICallback;
 import com.finance.model.ben.TokenEntity;
 import com.finance.model.ben.UserInfoEntity;
-import com.finance.model.http.JsonCallback;
 import com.finance.model.http.BaseParams;
+import com.finance.model.http.JsonCallback;
 import com.finance.model.imps.NetworkRequest;
 
 /**
@@ -60,8 +60,7 @@ public class UserCommon {
      * 获取用户信息
      */
     private static void getUserInfo1(Context context, final String token, final ICallback<UserInfoEntity> iCallback) {
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 105);
+        BaseParams baseParams = new BaseParams(105);
         baseParams.addParam("Token", token);
         NetworkRequest.getInstance()
                 .getHttpConnection()
@@ -98,8 +97,7 @@ public class UserCommon {
      * @param iCallback 回调接口
      */
     private static void register(Context context, final ICallback<TokenEntity> iCallback) {
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 101);
+        BaseParams baseParams = new BaseParams(101);
         NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setT(1101)

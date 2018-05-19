@@ -1,6 +1,7 @@
 package com.finance.listener;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
@@ -28,6 +29,8 @@ import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.ui.main.MainContract;
 import com.finance.ui.main.PurchaseViewAnimation;
+import com.finance.utils.HandlerUtil;
+import com.finance.utils.NumberUtil;
 import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
@@ -479,6 +482,28 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         }
     }
 
+    //截止点撞线效果
+    private void endLine() {
+        vEndLine.setBackgroundColor(Color.parseColor("#F9F023"));
+        HandlerUtil.runOnUiThreadDelay(new Runnable() {
+            @Override
+            public void run() {
+                vEndLine.setBackgroundColor(Color.parseColor("#696458"));
+            }
+        }, 200);
+    }
+
+    //开奖点撞线效果
+    private void openLine() {
+        vSettlementLine.setBackgroundColor(Color.parseColor("#FF0000"));
+        HandlerUtil.runOnUiThreadDelay(new Runnable() {
+            @Override
+            public void run() {
+                vSettlementLine.setBackgroundColor(Color.parseColor("#D43625"));
+            }
+        }, 200);
+    }
+
     private void initViewHight() {
         //设置横向对比线的宽度
         tranConParams.width = chartWidth - 10;//横线对比线
@@ -645,7 +670,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             tranConParams.topMargin = currentY;
             //横向描线描述
             tranConDesParams.topMargin = currentY - tranConDesHight / 2;
-            tvTransverseContrastDes.setText(last.getY() + "");
+            tvTransverseContrastDes.setText(NumberUtil.digitDouble(last.getY(), Constants.INDEXDIGIT) + "");
         }
 //        if (mRightAxisValueFormatter != null) {
 //            //右边轴标签显示偏移值
@@ -665,14 +690,14 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void refreshPurchaseViews(IDataSet dataSet) {
         isOrder = false;
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
-        boolean isIndex = false;
+//        boolean isIndex = false;
         //移除到达开奖点的购买点
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             if (entity.getOpenTimer() <= currentTimer) {
                 entity.getRootView().clearAnimation();
                 mParent.removeView(entity.getRootView());
                 if (entity.getProductId() == mProductEntity.getProductId()) {
-                    isIndex = true;
+//                    isIndex = true;
                     temporaryList.add(entity.copy());
                 }
                 removePurchaseViews.add(entity);
@@ -688,9 +713,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             refreshPurchaseView(entity, dataSet);
         }
-        if (isIndex) {//判断当前产品是否到有到达开奖点的
-            EventBus.post(new IndexEvent());
-        }
+//        if (isIndex) {//判断当前产品是否到有到达开奖点的
+//            EventBus.post(new IndexEvent());
+//        }
     }
 
     //刷新购买点的位置
@@ -721,6 +746,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             if (isEnd && currentTimer - endTimerIs >= 0) {
                 isEnd = false;
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
+                endLine();
                 if (isOrder) {
 //                    long end = TimerUtil.timerToLong(currentEntry.getTime());
                     long open = TimerUtil.timerToLong(mCurrentIssueEntity.getBonusTime());
@@ -730,8 +756,11 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             } else if (currentTimer - openTimerIs >= 0) {
                 isEnd = true;
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖
-                if (isOrder)
+                openLine();
+                if (isOrder) {
                     OpenCountDown.getInstance().stopCountDown();//停止倒计时
+                    EventBus.post(new IndexEvent());
+                }
             }
 //            if (currentEntry.getX() == endEntry.getX()) {
 //                EventDistribution.getInstance().purchase(false, isOrder);//截止购买

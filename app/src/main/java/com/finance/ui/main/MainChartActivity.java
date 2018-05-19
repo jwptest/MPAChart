@@ -1,5 +1,6 @@
 package com.finance.ui.main;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.finance.common.UserShell;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
 import com.finance.event.NetWorkStateEvent;
+import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.event.UpdateUserInfoEvent;
 import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.ICallback;
@@ -172,7 +174,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private CandleChartData mCandleData;//蜡烛图
     private int chartType;//当前显示图像类型
     private NetWorkStateReceiver mNetWorkStateReceiver;//网络改变监听
-
     private ArrayList<ProductEntity> mProductEntities;
     private ArrayList<IssueEntity> mIssueEntities;
     private ProductEntity currentProduct;//当前显示的产品
@@ -384,7 +385,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Subscribe
     public void onEvent(UserLoginEvent event) {
         if (event == null) return;
-        refreshData();//获取产品信息
+//        refreshData();//获取产品信息
         initViewUser();
     }
 
@@ -392,6 +393,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     public void onEvent(IndexEvent event) {
         if (event == null) return;//获取开奖指数事件
         mMainPresenter.getOpenIndex(currentProduct.getProductId(), currentProduct.getProductName(), currentIssue.getIssueName(), TimerUtil.formatStr(currentIssue.getBonusTime()));
+    }
+
+    @Subscribe
+    public void onEvent(OpenPrizeDialogEvent event) {
+        refreshIessue();//刷新期号
     }
 
 //    @Subscribe
@@ -410,7 +416,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 initViewUser();//刷新用户信息
                 if (!event.isTip()) return;
                 App.getInstance().showErrorMsg(event.getMsg());
-
             }
         });//刷新用户信息
     }
@@ -468,7 +473,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .error(R.drawable.userhead)
                 .placeholder(R.drawable.userhead)
                 .into(ivUHead);
-        tvUName.setText(entity.getUserName());
+        if (entity.getNickName().length() > 20) {
+            tvUName.setText(entity.getNickName().substring(0, 15));
+        } else {
+            tvUName.setText(entity.getNickName());
+        }
         tvMoney.setText("￥" + UserShell.getInstance().getUserMoneyStr());
     }
 

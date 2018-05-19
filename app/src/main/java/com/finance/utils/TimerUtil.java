@@ -73,13 +73,13 @@ public class TimerUtil {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int min = calendar.get(Calendar.MINUTE);
         if (hour < 10 && min < 10) {
-            return "0" + hour + ":0" + min;
+            return "0" + hour + ":0" + min + ":00";
         } else if (hour < 10) {
-            return "0" + hour + ":" + min;
+            return "0" + hour + ":" + min + ":00";
         } else if (min < 10) {
-            return "" + hour + ":0" + min;
+            return "" + hour + ":0" + min + ":00";
         }
-        return hour + ":" + min;
+        return hour + ":" + min + ":00";
     }
 
 

@@ -28,7 +28,7 @@ public abstract class BasePopupWindow extends PopupWindow {
     protected View mAminationView;
     private IDismiss dismiss;
     //动画执行时间
-    protected long mInnerAnimDuration = 350;
+    protected long mInnerAnimDuration = 230;
     protected int mAnimViewWidth, mAnimViewHeight;
     protected Context mContext;
 

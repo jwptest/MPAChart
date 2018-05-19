@@ -82,17 +82,17 @@
                     android:layout_height="@dimen/dp_0.6"
                     android:background="#D4C495"
                     tools:tooltipText="横向对比线"/>
-
+                <!--2.76-->
                 <TextView
                     android:id="@+id/tvTransverseContrastDes"
-                    android:layout_width="@dimen/dp_40"
-                    android:layout_height="@dimen/dp_14.5"
+                    android:layout_width="@dimen/dp_48"
+                    android:layout_height="@dimen/dp_17"
                     android:layout_alignParentRight="true"
                     android:background="@drawable/tvtransversecontrastdes_icon"
                     android:gravity="center"
-                    android:text="横向对比"
+                    android:text="1.235689"
                     android:textColor="#444444"
-                    android:textSize="@dimen/sp_10"/>
+                    android:textSize="@dimen/sp_9"/>
 
             </RelativeLayout>
 

@@ -3,11 +3,14 @@ package com.finance.ui.main;
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import com.finance.App;
 import com.finance.base.BasePresenter;
 import com.finance.common.Constants;
 import com.finance.common.UserShell;
+import com.finance.event.EventBus;
+import com.finance.event.ToastCloseEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
@@ -23,10 +26,14 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
 import com.finance.model.http.BaseCallback;
+import com.finance.model.http.BaseCallback2;
 import com.finance.model.http.BaseParams;
+import com.finance.model.http.CallbackIssues;
 import com.finance.model.http.HttpConnection;
 import com.finance.model.http.JsonCallback;
+import com.finance.model.http.JsonCallback2;
 import com.finance.model.imps.NetworkRequest;
+import com.finance.ui.dialog.ToastDialog;
 import com.finance.ui.dialog.UpdateUserInfoDialog;
 import com.finance.ui.popupwindow.DynamicPopupWindow;
 import com.finance.ui.popupwindow.IssuesPopupWindow;
@@ -36,7 +43,6 @@ import com.finance.ui.popupwindow.RecyclerPopupWindow;
 import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
 import com.finance.utils.TimerUtil;
-import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -78,8 +84,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void getProduct() {
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 310);
+        BaseParams baseParams = new BaseParams(310);
         NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)
@@ -103,8 +108,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     public void getProductIssue(int[] productIds) {
         if (productIds == null || productIds.length == 0) return;
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 302);
+        BaseParams baseParams = new BaseParams(302);
         baseParams.addParam("ProductId", productIds);
         NetworkRequest.getInstance()
                 .getHttpConnection()
@@ -127,9 +131,30 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 });
     }
 
+//    @Override
+//    public void getHistoryIssues(int ProductId, int timer, final CallbackIssues callbackIssues) {
+//        BaseParams param = new BaseParams();
+//        param.addParam("T", 20);
+//        param.addParam("D", ProductId + ":300");
+//        param.addParam("isRate", true);//默认值
+//        param.addParam("productId", ProductId);
+//        param.addParam("times", timer);//默认值
+//        param.addParam("Token", "");
+////        param.addParam("Token", UserShell.getInstance().getUserToken());
+//        NetworkRequest.getInstance()
+//                .getHttpConnection()
+//                .setTag(mActivity)
+//                .setT(20)
+//                .setISign(NetworkRequest.getInstance().getSignBasic())
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute(callbackIssues);
+//    }
+
+
     @Override
-    public HttpConnection getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback) {
-        BaseParams param = new BaseParams(true);
+    public HttpConnection getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callbackIssues) {
+        BaseParams param = new BaseParams();
         param.addParam("T", 20);
         param.addParam("D", ProductId + ":300");
         param.addParam("isRate", true);//默认值
@@ -137,6 +162,15 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         param.addParam("times", timer);//默认值
         param.addParam("Token", "");
 //        param.addParam("Token", UserShell.getInstance().getUserToken());
+//        NetworkRequest.getInstance()
+//                .getHttpConnection()
+//                .setTag(mActivity)
+//                .setT(20)
+//                .setISign(NetworkRequest.getInstance().getSignBasic())
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute(callbackIssues);
+
         return NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)
@@ -148,22 +182,20 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 }.getType()) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, ArrayList<String> result) {
-                        if (mView == null || callback == null) return;
-                        callback.onCallback(code, result, msg);
+                        callbackIssues.onCallback(code, result, msg);
                     }
 
                     @Override
                     public void onFailed(int code, String msg, boolean isFromCache) {
-                        if (mView == null || callback == null) return;
-                        callback.onCallback(code, null, msg);
+                        callbackIssues.onCallback(code, null, msg);
                     }
                 });
+
     }
 
     //获取开奖数据
     private void getOpenData(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName) {
-        BaseParams param = new BaseParams();
-        param.addParam("SourceCode", 210);
+        BaseParams param = new BaseParams(210);
         param.addParam("ProductId", ProductId);
         param.addParam("Issue", Issue);
         param.addParam("Second", 360);
@@ -183,6 +215,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     @Override
                     public void onFailed(int code, String msg, boolean isFromCache) {
                         if (mView == null) return;
+                        EventBus.post(new ToastCloseEvent());
                         mView.openPrizeDialog(null, msg, indexEntity, ProductId, Issue, productName);
                     }
                 });
@@ -190,8 +223,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void getOpenIndex(final int ProductId, final String productName, final String issue, String Time) {
-        BaseParams param = new BaseParams();
-        param.addParam("SourceCode", 12);
+        BaseParams param = new BaseParams(12);
         param.addParam("ProductId", ProductId);
         param.addParam("Time", Time);//默认值
         NetworkRequest.getInstance()
@@ -206,13 +238,14 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         if (mView == null) return;
                         IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
                         if (indexEntity == null) return;
-                        App.getInstance().showErrorMsg(indexEntity.getY() + "");//显示指数
+                        new ToastDialog(mActivity, indexEntity.getY() + "").show();//显示指数
+//                        App.getInstance().showErrorMsg(indexEntity.getY() + "");//显示指数
                         HandlerUtil.runOnUiThreadDelay(new Runnable() {
                             @Override
                             public void run() {
                                 getOpenData(indexEntity, ProductId, issue, productName);
                             }
-                        }, 500);
+                        }, 600);
 //                        if (mView == null) return;
 //                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
 //                        if (indexEntity == null) return;
@@ -229,12 +262,12 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public HttpConnection getAlwaysIssues(int ProductId, BaseCallback callback) {
-        BaseParams param = new BaseParams(true);
+        BaseParams param = new BaseParams();
         param.addParam("T", 0);
         param.addParam("D", ProductId + "");
         param.addParam("Token", "");
         return NetworkRequest.getInstance()
-                .getHttpConnection()
+                .getHttpConnection2()
                 .setTag(mActivity)
                 .setT(0)
                 .setISign(NetworkRequest.getInstance().getSignBasic())
@@ -245,8 +278,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void getOrderRecord(int PageSize, int Page, ICallback<OrdersEntity> iCallback) {
-        BaseParams param = new BaseParams();
-        param.addParam("SourceCode", 202);
+        BaseParams param = new BaseParams(202);
         param.addParam("Page", Page);
         param.addParam("PageSize", PageSize);
 //        param.addParam("ProductId", "");
@@ -277,8 +309,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void getDynamicPopupWindow(final ICallback<DynamicsEntity> iCallback) {
-        BaseParams param = new BaseParams();
-        param.addParam("SourceCode", 206);
+        BaseParams param = new BaseParams(206);
         NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)
@@ -401,8 +432,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
             new UpdateUserInfoDialog(mActivity).show();
             return;
         }
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 201);
+        BaseParams baseParams = new BaseParams(201);
 //        baseParams.addParam("IndexMark", IndexMark);
         baseParams.addParam("Issue", Issue);
         baseParams.addParam("IssueType", IssueType);
@@ -435,8 +465,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void notesMessage(final ICallback<NotesMessage> callback) {
-        BaseParams baseParams = new BaseParams();
-        baseParams.addParam("SourceCode", 206);
+        BaseParams baseParams = new BaseParams(206);
 //        baseParams.addParam("Begin", "2018-05-11T11:24:30+08:00");//开始时间
 //        baseParams.addParam("End", "2018-05-12T17:24:30+08:00");//结束时间
 //        baseParams.addParam("Page", 1);
@@ -466,7 +495,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void unSubscribeProduct(int productId) {
-        BaseParams param = new BaseParams(true);
+        BaseParams param = new BaseParams();
         param.addParam("T", 10);
         param.addParam("productId", productId);
         NetworkRequest.getInstance()
@@ -477,7 +506,6 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setToken(param.getToken())
                 .setParams(param)
                 .execute(BaseCallback.getBaseCallback());
-
     }
 
 }

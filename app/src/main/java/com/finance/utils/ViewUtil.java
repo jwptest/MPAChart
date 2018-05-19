@@ -214,7 +214,9 @@ public class ViewUtil {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, PurchaseViewEntity.viewHeight);
         entity.setDisplay(true);
         rootView.setLayoutParams(params);
-        viewGroup.addView(rootView, index);
+        if (index == -1) viewGroup.addView(rootView);
+        else viewGroup.addView(rootView, index);
+
     }
 
 

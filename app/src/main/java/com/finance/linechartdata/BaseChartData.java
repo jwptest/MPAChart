@@ -223,8 +223,11 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     @Override
     public void openPrize(boolean isOrder) {
-        mView.refreshIessue();//刷新期号
-        isAnimation = true;
+        if (isOrder) {
+            isAnimation = true;
+        } else {
+            mView.refreshIessue();//刷新期号
+        }
 //        stopNetwork();
     }
 
@@ -345,9 +348,15 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     }
 
     private void removeBasicData() {//去掉部分基础数据
-        if (mChartDatas == null || mChartDatas.isEmpty()) return;
+        if (mChartDatas == null || mChartDatas.isEmpty()) {
+            isAnimation = false;
+            return;
+        }
         int size = mChartDatas.size();
-        if (size == dataMinCount) return;
+        if (size == dataMinCount) {
+            isAnimation = false;
+            return;
+        }
 //        mChart.isStopDraw(false);
 //        ArrayList<T> entitys;
 //        if (dataMinCount >= size) {

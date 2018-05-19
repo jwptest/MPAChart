@@ -14,6 +14,7 @@ import com.finance.interfaces.ICallback;
 import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.http.BaseCallback;
+import com.finance.model.http.CallbackIssues;
 import com.finance.model.http.HttpConnection;
 import com.finance.ui.main.MainContract;
 import com.finance.utils.HandlerUtil;
@@ -33,12 +34,12 @@ import static com.finance.utils.TimerUtil.timerToLong;
 /**
  *
  */
-public class LineChartData1 extends BaseChartData<Entry> implements ICallback<ArrayList<String>>, EventDistribution.IChartDraw {
+public class LineChartData1 extends BaseChartData<Entry> implements EventDistribution.IChartDraw {
 
     private LineData lineData;//显示数据
     private HttpConnection mHttpConnection0, mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
-    private MThread mMThread;//解析数据线程
+    //    private MThread mMThread;//解析数据线程
     //    private ArrayList<Entry> mAllIndexMarks;//全部数据
     private ArrayList<Entry> mIndexMarkEntities;//推送的指数数据
     private ArrayList<IndexMarkEntity> mHistoryIndexMarks;//历史指数
@@ -207,7 +208,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 //        startRemoveDataAnimation();//启动删除动画
         long timer = timerToLong(issueEntity.getBonusTime()) - Constants.SERVERCURRENTTIMER;
         //获取期号
-        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), this);
+        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
         //获取时时数据
         mHttpConnection1 = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
 //        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
@@ -428,30 +429,57 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
 
     private long topStartTimer = 0;
 
-    @Override
-    public void onCallback(int code, ArrayList<String> strings, String message) {
-        if (strings == null || strings.isEmpty()) {
-            App.getInstance().showErrorMsg(message);
-            return;
-        }
-        long current = System.currentTimeMillis();
-        if (current - topStartTimer < 3000) {//重复返回
-            return;
-        }
-
-        if (mMThread != null) {
-            mMThread.isDiscarded = true;//设置为废弃
-            mMThread = null;
-        }
-        mMThread = new MThread(this, strings);
-        mMThread.start();
-    }
+//    @Override
+//    public void onCallback(int code, ArrayList<String> strings, String message) {
+//        if (strings == null || strings.isEmpty()) {
+//            App.getInstance().showErrorMsg(message);
+//            return;
+//        }
+//        long current = System.currentTimeMillis();
+//        if (current - topStartTimer < 3000) {//重复返回
+//            return;
+//        }
+//
+//        if (mMThread != null) {
+//            mMThread.isDiscarded = true;//设置为废弃
+//            mMThread = null;
+//        }
+//        mMThread = new MThread(this, strings);
+//        mMThread.start();
+//    }
 
     @Override
     public void onDraw(Entry entry) {
 //        if (isDraw) return;
 ////        setAxisMaximum();
 //        isDraw = true;
+    }
+
+    private MCallbackIssues mCallbackIssues;
+    private MThread mMThread;
+
+    public ICallback<ArrayList<String>> getCallbackIssues() {
+//        if (mCallbackIssues != null) {
+//            //设置为废弃
+//            mCallbackIssues.isDiscarded = true;
+//            mCallbackIssues = null;
+//        }
+//        mCallbackIssues = new MCallbackIssues();
+//        return mCallbackIssues;
+
+
+        if (mMThread != null) {
+            mMThread.isDiscarded = true;
+            mMThread = null;
+        }
+
+        return new ICallback<ArrayList<String>>() {
+            @Override
+            public void onCallback(int code, ArrayList<String> strings, String message) {
+                mMThread = new MThread(LineChartData1.this, strings);
+                mMThread.start();
+            }
+        };
     }
 
     private static class Callback extends BaseCallback {
@@ -496,6 +524,47 @@ public class LineChartData1 extends BaseChartData<Entry> implements ICallback<Ar
         @Override
         public void noNetworkConnected() {
 
+        }
+    }
+
+    private class MCallbackIssues extends CallbackIssues {
+        private boolean isDiscarded = false;//是否废弃
+        private IndexUtil mIndexUtil;
+
+        @Override
+        public void onMessages(ArrayList<String> issues) {
+            long current = System.currentTimeMillis();
+            if (current - topStartTimer < 500) {//重复返回
+                return;
+            }
+            if (issues == null || issues.isEmpty()) {
+                App.getInstance().showErrorMsg("历史期号获取失败！");
+                return;
+            }
+            if (isDiscarded) {
+                return;
+            }
+            mIndexUtil = new IndexUtil();
+            IndexMarkEntity entity = mIndexUtil.parseExponentially(0, issues.get(0), Constants.INDEXDIGIT);
+//            Constants.setReferenceX(entity.getTime());//更新基准下标
+//            添加时时推送的指数
+            if (mCallback != null && mCallback.indexStrs != null) {
+                issues.addAll(mCallback.indexStrs);
+                mCallback.indexStrs.clear();
+            }
+            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(entity.getTimeLong(), issues, Constants.INDEXDIGIT);
+            long startTimer = getStartTimer(Constants.SERVERCURRENTTIMER);
+            final ArrayList<IndexMarkEntity> entities2 = getIndexMark(entities, entities.size(), startTimer);
+            if (isDiscarded) return;
+            isTimer = true;
+            updateStartTime(entities2.get(0));//更新起始时间
+            HandlerUtil.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isDiscarded) return;
+                    updateHistoryData(entities2);
+                }
+            });
         }
     }
 

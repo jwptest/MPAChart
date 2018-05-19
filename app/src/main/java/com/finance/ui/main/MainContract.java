@@ -1,8 +1,6 @@
 package com.finance.ui.main;
 
 
-import android.view.View;
-
 import com.finance.base.IBasePresenter;
 import com.finance.base.IBaseView;
 import com.finance.interfaces.ICallback;
@@ -69,9 +67,9 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
-        HttpConnection getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callback);
+        HttpConnection getHistoryIssues(int ProductId, int timer, ICallback<ArrayList<String>> callbackIssues);
 
-        void getOpenIndex(int ProductId,String productName, String issue, String Time);
+        void getOpenIndex(int ProductId, String productName, String issue, String Time);
 
         HttpConnection getAlwaysIssues(int ProductId, final BaseCallback callback);
 
@@ -79,7 +77,7 @@ public interface MainContract {
 
         void getDynamicPopupWindow(ICallback<DynamicsEntity> iCallback);
 
-        IssueEntity getIssue(int productId, String issue,ArrayList<IssueEntity> issueEntities);
+        IssueEntity getIssue(int productId, String issue, ArrayList<IssueEntity> issueEntities);
 
         void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities, IDismiss dismiss);
 
@@ -93,7 +91,7 @@ public interface MainContract {
 
         void notesMessage(ICallback<NotesMessage> callback);
 
-        void unSubscribeProduct(int productId);
+        void unSubscribeProduct(int productId);//取消订阅
 
     }
 

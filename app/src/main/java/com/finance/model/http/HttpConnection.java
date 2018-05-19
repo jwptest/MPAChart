@@ -90,9 +90,8 @@ public class HttpConnection {
             jsonCallback.setConnection(this);
             jsonCallback.onBefore();//开始请求网络
         }
-        //setResult
-        SignalRFuture signalRFuture = connection.start();
-        signalRFuture.setResult("");
+
+        SignalRFuture<Void> signalRFuture = connection.start();
         signalRFuture.done(new Action<Void>() {
             @Override
             public void run(Void aVoid) throws Exception {

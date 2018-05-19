@@ -16,7 +16,7 @@ import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
-import com.finance.interfaces.IChartSetting;
+import com.finance.event.ToastCloseEvent;
 import com.finance.linechartview.LineChartSetting2;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
@@ -138,6 +138,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         tranConParams = (RelativeLayout.LayoutParams) vTransverseContrast.getLayoutParams();
         tranConDesParams = (RelativeLayout.LayoutParams) tvTransverseContrastDes.getLayoutParams();
         EventBus.post(new OpenPrizeDialogEvent());//打开开奖对话框事件
+        EventBus.post(new ToastCloseEvent());//关闭指数对话框
         initData(mHistoryIssueEntity, openIndex);
     }
 
@@ -263,27 +264,25 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 
     @Override
     public void completion(IndexMarkEntity lastEntry, IDataSet dataSet) {
-
 //        long startTimer = mMarkEntities.get(0).getTimeLong();
 //        long openTimer = openIndex.getTimeLong();
         int xCount = mMarkEntities.size();
         float labelX = mLineChart.getFixedPosition();//标签开始绘制坐标
         float labelWidth = mLineChart.getLabelWidth();//标签长度
-        int dpPxRight = PhoneUtil.dip2px(mContext, 5);
+        int dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_48);
         float endX = labelX - labelWidth - dpPxRight;
         float itemWidth = endX / xCount;
         float addItem = (labelWidth + dpPxRight) / itemWidth;
         mLineChart.getXAxis().setAxisMaximum(xCount + addItem);
-
         //绘制购买点
-        int index = 1;
+//        int index = 1;
         //刷新购买点的位置
         for (PurchaseViewEntity entity : viewEntities) {
             ViewUtil.getPurchase(mContext, entity, entity.getMoney() + "", entity.isResult());
             if (!isAddPurchase) {//已经添加就不重复添加
                 //添加到走势图
-                mViewUtil.addPurchaseToView(rlChart, entity, index);
-                index++;
+                mViewUtil.addPurchaseToView(rlChart, entity, -1);
+//                index++;
             }
             //刷新位置
             mViewUtil.refreshPurchaseView(mLineChart, entity, dataSet);
