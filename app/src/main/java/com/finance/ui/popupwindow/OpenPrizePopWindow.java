@@ -16,7 +16,6 @@ import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
-import com.finance.event.ToastCloseEvent;
 import com.finance.linechartview.LineChartSetting2;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
@@ -26,7 +25,6 @@ import com.finance.ui.main.MainContract;
 import com.finance.ui.main.PurchaseViewAnimation;
 import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
-import com.finance.utils.PhoneUtil;
 import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.animation.BaseAnimatorSet;
@@ -137,8 +135,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 //        });
         tranConParams = (RelativeLayout.LayoutParams) vTransverseContrast.getLayoutParams();
         tranConDesParams = (RelativeLayout.LayoutParams) tvTransverseContrastDes.getLayoutParams();
-        EventBus.post(new OpenPrizeDialogEvent());//打开开奖对话框事件
-        EventBus.post(new ToastCloseEvent());//关闭指数对话框
+        EventBus.post(new OpenPrizeDialogEvent(true));//打开开奖对话框事件
         initData(mHistoryIssueEntity, openIndex);
     }
 
@@ -161,7 +158,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         new Thread() {
             @Override
             public void run() {
-                ArrayList<IndexMarkEntity> entities = new IndexUtil().parseExponentially(0, entity.getIndexMarks(), Constants.INDEXDIGIT);
+                ArrayList<IndexMarkEntity> entities = new IndexUtil().parseExponentially2(0, entity.getIndexMarks(), Constants.INDEXDIGIT);
                 if (entities == null) return;
                 //设置下标
                 for (int i = 0, size = entities.size(); i < size; i++) {

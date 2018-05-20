@@ -67,7 +67,7 @@ public class NetworkActivity extends BaseActivity {
                 .setTag(this)
                 .setT(1101)
                 .setParams(baseParams)
-                .execute(new JsonCallback<String>(String.class) {
+                .execute(new JsonCallback2<String>(String.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
 

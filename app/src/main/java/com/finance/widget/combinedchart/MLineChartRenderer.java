@@ -68,7 +68,7 @@ public class MLineChartRenderer extends LineChartRenderer {
                 nextIndex = j + 1 < count ? j + 1 : j;
                 next = dataSet.getEntryForIndex(nextIndex);
 
-                if (next.getX() == cur.getX() && nextIndex < count) continue;
+                if (next.getX() <= cur.getX() && nextIndex < count) continue;
 
                 prevDx = (cur.getX() - prevPrev.getX()) * intensity;
                 prevDy = (cur.getY() - prevPrev.getY()) * intensity;

@@ -8,6 +8,7 @@ import com.finance.model.ben.TokenEntity;
 import com.finance.model.ben.UserInfoEntity;
 import com.finance.model.http.BaseParams;
 import com.finance.model.http.JsonCallback;
+import com.finance.model.http.JsonCallback2;
 import com.finance.model.imps.NetworkRequest;
 
 /**
@@ -68,7 +69,7 @@ public class UserCommon {
                 .setT(200)
                 .setToken(token)
                 .setParams(baseParams)
-                .execute(new JsonCallback<UserInfoEntity>(UserInfoEntity.class) {
+                .execute(new JsonCallback2<UserInfoEntity>(UserInfoEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, UserInfoEntity result) {
                         UserShell shell = UserShell.getInstance();
@@ -104,7 +105,7 @@ public class UserCommon {
                 .setTag(context)
                 .setToken("")
                 .setParams(baseParams)
-                .execute(new JsonCallback<TokenEntity>(TokenEntity.class) {
+                .execute(new JsonCallback2<TokenEntity>(TokenEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, TokenEntity result) {
                         if (iCallback != null)

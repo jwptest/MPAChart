@@ -15,6 +15,7 @@ import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.http.BaseCallback;
+import com.finance.model.http.CallbackIssues;
 import com.finance.model.http.HttpConnection;
 
 import java.util.ArrayList;
@@ -45,6 +46,9 @@ public interface MainContract {
         ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue);
 
         //刷新期号
+        void refreshIessueNextIssue();
+
+        //刷新期号
         void refreshIessue();
 
         boolean isRefrshChartData();//是否在刷新走势图数据
@@ -55,6 +59,7 @@ public interface MainContract {
 
         IssueEntity getIssue(int productId, String issue);
 
+        void setShowOrder(int productId, String issueName);
 //        void openIndex(OpenIndexEntity entity, String msg);
     }
 
@@ -67,7 +72,7 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
-        HttpConnection getHistoryIssues(int ProductId, int timer, ICallback<ArrayList<String>> callbackIssues);
+        void getHistoryIssues(int ProductId, int timer, CallbackIssues issues);
 
         void getOpenIndex(int ProductId, String productName, String issue, String Time);
 

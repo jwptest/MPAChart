@@ -81,6 +81,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ProductEntity mProductEntity;//当前产品
     //当前期号
     private IssueEntity oneIssueEntity, mCurrentIssueEntity;
+    private int productId;//需要显示的产品id
+    private String issueName;//需要显示的期号名称
+    private boolean isOtherIssue;//是否判断其他条件
     //显示数据
     private IDataSet currentDataSet;
     //是否刷新子控件坐标
@@ -362,6 +365,18 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     }
 
     @Override
+    public void setShowOrder(int productId, String issueName) {
+        this.productId = productId;
+        this.issueName = issueName;
+        this.isOtherIssue = true;
+    }
+
+    @Override
+    public void setOtherIssue(boolean isOtherIssue) {
+        this.isOtherIssue = isOtherIssue;
+    }
+
+    @Override
     public ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue) {
         ArrayList<PurchaseViewEntity> entities = new ArrayList<>(4);
         if (temporaryList == null || temporaryList.isEmpty())
@@ -537,6 +552,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     //控制购买点隐藏于显示
     private void updatePurchaseView() {
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
+        boolean isShow = false;
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             IndexMarkEntity indexMarkEntity = mView.getIndexMarkEntity(entity.getIndexMark());
             if (indexMarkEntity == null) {
@@ -544,7 +560,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                 ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
                 continue;
             }
-            if (mProductEntity.getProductId() == entity.getProductId() && TextUtils.equals(mCurrentIssueEntity.getIssueName(), entity.getIssue())) {//是否是当前产品下购买的
+            isShow = (mProductEntity.getProductId() == entity.getProductId() && TextUtils.equals(mCurrentIssueEntity.getIssueName(), entity.getIssue())) ||
+                    (isOtherIssue && productId == entity.getProductId() && TextUtils.equals(issueName, entity.getIssue()));
+            if (isShow) {//是否是当前产品下购买的
                 ViewUtil.setViewVisibility(entity.getRootView(), View.VISIBLE);//设置显示
                 entity.setxValue(indexMarkEntity.getX());
                 entity.setyValue(indexMarkEntity.getY());
@@ -690,14 +708,16 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void refreshPurchaseViews(IDataSet dataSet) {
         isOrder = false;
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
-//        boolean isIndex = false;
+        boolean isIndex = false;
+        if (!removePurchaseViews.isEmpty())
+            removePurchaseViews.clear();
         //移除到达开奖点的购买点
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             if (entity.getOpenTimer() <= currentTimer) {
                 entity.getRootView().clearAnimation();
                 mParent.removeView(entity.getRootView());
                 if (entity.getProductId() == mProductEntity.getProductId()) {
-//                    isIndex = true;
+                    isIndex = true;
                     temporaryList.add(entity.copy());
                 }
                 removePurchaseViews.add(entity);
@@ -713,9 +733,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             refreshPurchaseView(entity, dataSet);
         }
-//        if (isIndex) {//判断当前产品是否到有到达开奖点的
-//            EventBus.post(new IndexEvent());
-//        }
+        if (isIndex) {//判断当前产品是否到有到达开奖点的
+            EventBus.post(new IndexEvent());
+        }
     }
 
     //刷新购买点的位置
@@ -759,7 +779,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                 openLine();
                 if (isOrder) {
                     OpenCountDown.getInstance().stopCountDown();//停止倒计时
-                    EventBus.post(new IndexEvent());
                 }
             }
 //            if (currentEntry.getX() == endEntry.getX()) {

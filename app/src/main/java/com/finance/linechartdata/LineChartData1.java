@@ -10,7 +10,6 @@ import com.finance.common.Constants;
 import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
-import com.finance.interfaces.ICallback;
 import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.http.BaseCallback;
@@ -37,7 +36,7 @@ import static com.finance.utils.TimerUtil.timerToLong;
 public class LineChartData1 extends BaseChartData<Entry> implements EventDistribution.IChartDraw {
 
     private LineData lineData;//显示数据
-    private HttpConnection mHttpConnection0, mHttpConnection1;
+    private HttpConnection /*mHttpConnection0,*/ mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
     //    private MThread mMThread;//解析数据线程
     //    private ArrayList<Entry> mAllIndexMarks;//全部数据
@@ -154,10 +153,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 
     @Override
     public void stopNetwork() {
-        if (mHttpConnection0 != null) {
-            mHttpConnection0.stop();
-            mHttpConnection0 = null;
-        }
+//        if (mHttpConnection0 != null) {
+//            mHttpConnection0.stop();
+//            mHttpConnection0 = null;
+//        }
         if (mHttpConnection1 != null) {
             if (topProductEntity != null) {
                 mPresenter.unSubscribeProduct(topProductEntity.getProductId());
@@ -167,10 +166,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
             mHttpConnection1.stop();
             mHttpConnection1 = null;
         }
-        if (mMThread != null) {
-            mMThread.isDiscarded = true;//设置废弃
-            mMThread = null;
-        }
+//        if (mMThread != null) {
+//            mMThread.isDiscarded = true;//设置废弃
+//            mMThread = null;
+//        }
     }
 
     @Override
@@ -208,7 +207,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //        startRemoveDataAnimation();//启动删除动画
         long timer = timerToLong(issueEntity.getBonusTime()) - Constants.SERVERCURRENTTIMER;
         //获取期号
-        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
+//        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
+        mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
         //获取时时数据
         mHttpConnection1 = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
 //        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
@@ -320,7 +320,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //        issueLengthTime = timer2 - timer1;
 
         currentPoint = (IndexMarkEntity) entries.get(entries.size() - 1).copy();
-        top = currentPoint;
+//        top = currentPoint;
 //        mAllIndexMarks.clear();
 //        mAllIndexMarks.addAll(entries);
         startAddDataAnimation(entries);
@@ -339,19 +339,18 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         }
     }
 
-    private IndexMarkEntity top = null;
-
-    //防止时间错乱走势图绘制出错
-    private int addIndexEntity(ArrayList<Entry> ens, IndexMarkEntity entity) {
-        if (top == null) return 0;//添加
-        if (top.getX() > entity.getX()) {
-            return 1;//不做操作
-        }
-        if (top.getX() < entity.getX())
-            return 0;//添加
-//        ens.set(ens.size() - 1, entity);
-        return 0;//刷新
-    }
+//    private IndexMarkEntity top = null;
+//    //防止时间错乱走势图绘制出错
+//    private int addIndexEntity(ArrayList<Entry> ens, IndexMarkEntity entity) {
+//        if (top == null) return 0;//添加
+//        if (top.getX() > entity.getX()) {
+//            return 1;//不做操作
+//        }
+//        if (top.getX() < entity.getX())
+//            return 0;//添加
+////        ens.set(ens.size() - 1, entity);
+//        return 0;//刷新
+//    }
 
     //刷新时时数据
     private void updateAlwaysData(IndexMarkEntity entity) {
@@ -361,10 +360,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         }
 //        mAllIndexMarks.add(entity);
         entity.setX(getXIndex(entity.getTimeLong()));
-        int r = addIndexEntity(mChartDatas, entity);
-        if (r == 1) return;
+//        int r = addIndexEntity(mChartDatas, entity);
+//        if (r == 1) return;
         mChartDatas.add(entity);
-        top = entity;
+//        top = entity;
         int size = mChartDatas.size();
         currentPoint = entity.copy();
         mPointAnimation.updateParam(mChartDatas.get(size - 1), mChartDatas.get(size - 2));
@@ -456,30 +455,28 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     }
 
     private MCallbackIssues mCallbackIssues;
-    private MThread mMThread;
+//    private MThread mMThread;
 
-    public ICallback<ArrayList<String>> getCallbackIssues() {
-//        if (mCallbackIssues != null) {
-//            //设置为废弃
-//            mCallbackIssues.isDiscarded = true;
-//            mCallbackIssues = null;
-//        }
-//        mCallbackIssues = new MCallbackIssues();
-//        return mCallbackIssues;
-
-
-        if (mMThread != null) {
-            mMThread.isDiscarded = true;
-            mMThread = null;
+    public MCallbackIssues getCallbackIssues() {
+        if (mCallbackIssues != null) {
+            //设置为废弃
+            mCallbackIssues.isDiscarded = true;
+            mCallbackIssues = null;
         }
+        mCallbackIssues = new MCallbackIssues();
+        return mCallbackIssues;
 
-        return new ICallback<ArrayList<String>>() {
-            @Override
-            public void onCallback(int code, ArrayList<String> strings, String message) {
-                mMThread = new MThread(LineChartData1.this, strings);
-                mMThread.start();
-            }
-        };
+//        if (mMThread != null) {
+//            mMThread.isDiscarded = true;
+//            mMThread = null;
+//        }
+//        return new ICallback<ArrayList<String>>() {
+//            @Override
+//            public void onCallback(int code, ArrayList<String> strings, String message) {
+//                mMThread = new MThread(LineChartData1.this, strings);
+//                mMThread.start();
+//            }
+//        };
     }
 
     private static class Callback extends BaseCallback {

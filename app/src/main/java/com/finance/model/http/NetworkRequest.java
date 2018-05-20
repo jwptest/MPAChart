@@ -6,6 +6,7 @@ import com.orhanobut.logger.Logger;
 
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
+import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
  * 网络请求
@@ -66,30 +67,35 @@ public class NetworkRequest {
             jsonCallback.onBefore();//开始请求网络
         }
         mHandler.addBaseCallback(params.getSourceCode(), callback2);//将回调添加到集合
-        connection.start().done(new Action<Void>() {
-            @Override
-            public void run(Void aVoid) throws Exception {
-                String json = mISign.getSign(params.getParams(), T, Token);
-                if (BuildConfig.DEBUG) {
-                    Logger.d("提交参数：" + json);
-                }
-                connection.send(json);
-            }
-        });
+        request();
     }
 
     public void execute(CallbackIssues callback2) {
         mHandler.setHistoryIssues(callback2);//设置回调
-        connection.start().done(new Action<Void>() {
-            @Override
-            public void run(Void aVoid) throws Exception {
-                String json = mISign.getSign(params.getParams(), T, Token);
-                if (BuildConfig.DEBUG) {
-                    Logger.d("提交参数：" + json);
+        request();
+    }
+
+    private void request() {
+        if (connection.getState() != ConnectionState.Connected) {
+            //未连接
+            connection.start().done(new Action<Void>() {
+                @Override
+                public void run(Void aVoid) throws Exception {
+                    send();
                 }
-                connection.send(json);
-            }
-        });
+            });
+        } else {
+            //已经连接成功
+            send();
+        }
+    }
+
+    private void send() {
+        String json = mISign.getSign(params.getParams(), T, Token);
+        if (BuildConfig.DEBUG) {
+            Logger.d("提交参数：" + json);
+        }
+        connection.send(json);
     }
 
 

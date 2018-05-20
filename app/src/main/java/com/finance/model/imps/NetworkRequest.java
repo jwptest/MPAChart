@@ -40,16 +40,15 @@ public class NetworkRequest {
         return sNetworkRequest;
     }
 
-    public HttpConnection getHttpConnection() {
-        return new HttpConnection(Constants.HTTPURL)
-                .setISign(sSignImp)
-                .setT(200)
-                .setChangedCallback(sChangedCallback);
-
-//        return new com.finance.model.http.NetworkRequest(mConnection)
+    public com.finance.model.http.NetworkRequest getHttpConnection() {
+//        return new HttpConnection(Constants.HTTPURL)
 //                .setISign(sSignImp)
 //                .setT(200)
-//                .setHandler(mMMessageReceivedHandler);
+//                .setChangedCallback(sChangedCallback);
+        return new com.finance.model.http.NetworkRequest(mConnection)
+                .setISign(sSignImp)
+                .setT(200)
+                .setHandler(mMMessageReceivedHandler);
     }
 
     public HttpConnection getHttpConnection2() {
@@ -59,10 +58,8 @@ public class NetworkRequest {
                 .setChangedCallback(sChangedCallback);
     }
 
-
     public ISign getSignBasic() {
         return sSignBasic;
     }
-
 
 }

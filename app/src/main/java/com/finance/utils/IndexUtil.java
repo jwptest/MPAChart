@@ -35,6 +35,22 @@ public class IndexUtil {
         return entitys;
     }
 
+    public ArrayList<IndexMarkEntity> parseExponentially2(long startTimer, ArrayList<String> serverDatas, int digit) {
+        if (serverDatas == null || serverDatas.isEmpty()) return null;
+        ArrayList<IndexMarkEntity> entitys = new ArrayList<>(serverDatas.size());
+        int index = 0;
+        for (String str : serverDatas) {
+            IndexMarkEntity entity = parseExponentially(0, str, digit);
+            if (entity == null) continue;
+            if (entity.getTimeLong() == -1) continue;
+            entity.setX(index);
+            //更新下标
+            entitys.add(entity);
+            index++;
+        }
+        return entitys;
+    }
+
     /**
      * 解析指数
      */

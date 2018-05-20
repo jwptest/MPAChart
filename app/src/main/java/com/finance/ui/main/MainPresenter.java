@@ -3,14 +3,13 @@ package com.finance.ui.main;
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Toast;
 
 import com.finance.App;
 import com.finance.base.BasePresenter;
 import com.finance.common.Constants;
 import com.finance.common.UserShell;
 import com.finance.event.EventBus;
-import com.finance.event.ToastCloseEvent;
+import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
@@ -30,7 +29,6 @@ import com.finance.model.http.BaseCallback2;
 import com.finance.model.http.BaseParams;
 import com.finance.model.http.CallbackIssues;
 import com.finance.model.http.HttpConnection;
-import com.finance.model.http.JsonCallback;
 import com.finance.model.http.JsonCallback2;
 import com.finance.model.imps.NetworkRequest;
 import com.finance.ui.dialog.ToastDialog;
@@ -43,7 +41,6 @@ import com.finance.ui.popupwindow.RecyclerPopupWindow;
 import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
 import com.finance.utils.TimerUtil;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
@@ -91,7 +88,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(baseParams.getToken())
                 .setParams(baseParams)
-                .execute(new JsonCallback<ProductsEntity>(ProductsEntity.class) {
+                .execute(new JsonCallback2<ProductsEntity>(ProductsEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, ProductsEntity result) {
                         if (mView == null) return;
@@ -116,7 +113,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(baseParams.getToken())
                 .setParams(baseParams)
-                .execute(new JsonCallback<IssuesEntity>(IssuesEntity.class) {
+                .execute(new JsonCallback2<IssuesEntity>(IssuesEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, IssuesEntity result) {
                         if (mView == null) return;
@@ -151,9 +148,8 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 //                .execute(callbackIssues);
 //    }
 
-
     @Override
-    public HttpConnection getHistoryIssues(int ProductId, int timer, final ICallback<ArrayList<String>> callbackIssues) {
+    public void getHistoryIssues(int ProductId, int timer, final CallbackIssues callbackIssues) {
         BaseParams param = new BaseParams();
         param.addParam("T", 20);
         param.addParam("D", ProductId + ":300");
@@ -162,34 +158,34 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         param.addParam("times", timer);//默认值
         param.addParam("Token", "");
 //        param.addParam("Token", UserShell.getInstance().getUserToken());
-//        NetworkRequest.getInstance()
-//                .getHttpConnection()
-//                .setTag(mActivity)
-//                .setT(20)
-//                .setISign(NetworkRequest.getInstance().getSignBasic())
-//                .setToken(param.getToken())
-//                .setParams(param)
-//                .execute(callbackIssues);
-
-        return NetworkRequest.getInstance()
+        NetworkRequest.getInstance()
                 .getHttpConnection()
                 .setTag(mActivity)
                 .setT(20)
                 .setISign(NetworkRequest.getInstance().getSignBasic())
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(new JsonCallback<ArrayList<String>>(new TypeToken<ArrayList<String>>() {
-                }.getType()) {
-                    @Override
-                    public void onSuccessed(int code, String msg, boolean isFromCache, ArrayList<String> result) {
-                        callbackIssues.onCallback(code, result, msg);
-                    }
+                .execute(callbackIssues);
 
-                    @Override
-                    public void onFailed(int code, String msg, boolean isFromCache) {
-                        callbackIssues.onCallback(code, null, msg);
-                    }
-                });
+//        return NetworkRequest.getInstance()
+//                .getHttpConnection()
+//                .setTag(mActivity)
+//                .setT(20)
+//                .setISign(NetworkRequest.getInstance().getSignBasic())
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute(new JsonCallback2<ArrayList<String>>(new TypeToken<ArrayList<String>>() {
+//                }.getType()) {
+//                    @Override
+//                    public void onSuccessed(int code, String msg, boolean isFromCache, ArrayList<String> result) {
+//                        callbackIssues.onCallback(code, result, msg);
+//                    }
+//
+//                    @Override
+//                    public void onFailed(int code, String msg, boolean isFromCache) {
+//                        callbackIssues.onCallback(code, null, msg);
+//                    }
+//                });
 
     }
 
@@ -205,7 +201,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(new JsonCallback<HistoryIssueEntity>(HistoryIssueEntity.class) {
+                .execute(new JsonCallback2<HistoryIssueEntity>(HistoryIssueEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, HistoryIssueEntity result) {
                         if (mView == null) return;
@@ -215,7 +211,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     @Override
                     public void onFailed(int code, String msg, boolean isFromCache) {
                         if (mView == null) return;
-                        EventBus.post(new ToastCloseEvent());
+                        EventBus.post(new OpenPrizeDialogEvent(false));
                         mView.openPrizeDialog(null, msg, indexEntity, ProductId, Issue, productName);
                     }
                 });
@@ -232,7 +228,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(new JsonCallback<OpenIndexEntity>(OpenIndexEntity.class) {
+                .execute(new JsonCallback2<OpenIndexEntity>(OpenIndexEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, OpenIndexEntity result) {
                         if (mView == null) return;
@@ -245,7 +241,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                             public void run() {
                                 getOpenData(indexEntity, ProductId, issue, productName);
                             }
-                        }, 600);
+                        }, 1500);
 //                        if (mView == null) return;
 //                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
 //                        if (indexEntity == null) return;
@@ -292,7 +288,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(new JsonCallback<OrdersEntity>(OrdersEntity.class) {
+                .execute(new JsonCallback2<OrdersEntity>(OrdersEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, OrdersEntity result) {
                         if (iCallback != null)
@@ -316,7 +312,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(new JsonCallback<DynamicsEntity>(DynamicsEntity.class) {
+                .execute(new JsonCallback2<DynamicsEntity>(DynamicsEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, DynamicsEntity result) {
                         if (iCallback != null)
@@ -448,7 +444,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(baseParams.getToken())
                 .setParams(baseParams)
-                .execute(new JsonCallback<PlaceOrderEntity>(PlaceOrderEntity.class) {
+                .execute(new JsonCallback2<PlaceOrderEntity>(PlaceOrderEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, PlaceOrderEntity result) {
                         if (mView == null) return;
@@ -478,7 +474,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setT(200)
                 .setToken(baseParams.getToken())
                 .setParams(baseParams)
-                .execute(new JsonCallback<String>(String.class) {
+                .execute(new JsonCallback2<String>(String.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
                         if (mView == null || callback == null) return;
@@ -505,7 +501,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                 .setISign(NetworkRequest.getInstance().getSignBasic())
                 .setToken(param.getToken())
                 .setParams(param)
-                .execute(BaseCallback.getBaseCallback());
+                .execute(BaseCallback2.getBaseCallback());
     }
 
 }

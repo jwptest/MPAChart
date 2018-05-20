@@ -1,10 +1,8 @@
 package com.finance.interfaces;
 
-import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
-import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 
@@ -22,6 +20,10 @@ public interface IChartListener extends IDestroy {
     void updateProductIssue(ProductEntity productEntity, IssueEntity issueEntity, IssueEntity oneIssueEntity);
 
     void setIChartData(IChartData iChartData);
+
+    void setShowOrder(int productId, String issueName);
+
+    void setOtherIssue(boolean isOtherIssue);
 
     ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue);
 

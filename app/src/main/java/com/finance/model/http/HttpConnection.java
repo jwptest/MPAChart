@@ -6,6 +6,7 @@ import com.orhanobut.logger.Logger;
 
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
+import microsoft.aspnet.signalr.client.ConnectionState;
 import microsoft.aspnet.signalr.client.SignalRFuture;
 import microsoft.aspnet.signalr.client.StateChangedCallback;
 
@@ -91,18 +92,28 @@ public class HttpConnection {
             jsonCallback.onBefore();//开始请求网络
         }
 
-        SignalRFuture<Void> signalRFuture = connection.start();
-        signalRFuture.done(new Action<Void>() {
-            @Override
-            public void run(Void aVoid) throws Exception {
-                String json = mISign.getSign(params.getParams(), T, Token);
-                if (BuildConfig.DEBUG) {
-                    Logger.d("提交参数：" + json);
+        if (connection.getState() != ConnectionState.Connected) {
+            //未连接
+            connection.start().done(new Action<Void>() {
+                @Override
+                public void run(Void aVoid) throws Exception {
+                    send();
                 }
-                connection.send(json);
-            }
-        });
+            });
+        } else {
+            //已经连接成功
+            send();
+        }
         return this;
     }
+
+    private void send() {
+        String json = mISign.getSign(params.getParams(), T, Token);
+        if (BuildConfig.DEBUG) {
+            Logger.d("提交参数：" + json);
+        }
+        connection.send(json);
+    }
+
 
 }

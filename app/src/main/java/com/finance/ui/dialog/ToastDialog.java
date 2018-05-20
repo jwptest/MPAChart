@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
-import com.finance.event.ToastCloseEvent;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -44,7 +43,7 @@ public class ToastDialog extends Dialog {
     }
 
     @Subscribe
-    public void onEvent(ToastCloseEvent event) {
+    public void onEvent(OpenPrizeDialogEvent event) {
         dismiss();
     }
 

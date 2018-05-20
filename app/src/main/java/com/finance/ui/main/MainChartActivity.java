@@ -1,6 +1,5 @@
 package com.finance.ui.main;
 
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -164,7 +163,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private boolean isNetWork = true;//是否有网络连接
 
     private boolean isResume;
-
+    //    private boolean isNextIssue = false;//是否点击了下一期
     //数据处理接口
     private IChartData dataSetting;
     //走势图参数配置接口
@@ -182,6 +181,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private Animation animation;//更新余额动画
     private int issuesSelectIndex = 0;
     private int statusBarHigh = 0;
+    private boolean isConnectService = false;//是否连接服务器成功
 
     @Override
     protected int getLayoutId() {
@@ -210,7 +210,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         isResume = true;
         if (dataSetting != null) dataSetting.onResume(chartType);
         OpenCountDown.getInstance().addCallback(this);
-        refreshData();
+        if (isConnectService) {
+            refreshData();
+        }
     }
 
     @Override
@@ -327,6 +329,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     //更新期号
     private void updateIssue() {
+        chartListener.setOtherIssue(issuesSelectIndex == 0);
         chartListener.updateProductIssue(currentProduct, currentIssue, currentIssues.get(0));//更新产品和期号
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
         EventDistribution.getInstance().issue(currentIssue);
@@ -385,8 +388,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Subscribe
     public void onEvent(UserLoginEvent event) {
         if (event == null) return;
-//        refreshData();//获取产品信息
         initViewUser();
+        isConnectService = true;
+        refreshData();//获取产品信息
     }
 
     @Subscribe
@@ -397,6 +401,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Subscribe
     public void onEvent(OpenPrizeDialogEvent event) {
+//        if (!isNextIssue) {
+//            isNextIssue = false;
+//        }
         refreshIessue();//刷新期号
     }
 
@@ -473,7 +480,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .error(R.drawable.userhead)
                 .placeholder(R.drawable.userhead)
                 .into(ivUHead);
-        if (entity.getNickName().length() > 20) {
+        if (entity.getNickName().length() > 15) {
             tvUName.setText(entity.getNickName().substring(0, 15));
         } else {
             tvUName.setText(entity.getNickName());
@@ -568,6 +575,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     }
 
     @Override
+    public void refreshIessueNextIssue() {
+//        isNextIssue = true;
+        refreshIessue();
+    }
+
+    @Override
     public void refreshIessue() {
         mMainPresenter.getProductIssue(mMainPresenter.getProductIds(mProductEntities));
     }
@@ -632,6 +645,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         return mMainPresenter.getIssue(productId, issue, mIssueEntities);
     }
 
+    @Override
+    public void setShowOrder(int productId, String issueName) {
+        chartListener.setShowOrder(productId, issueName);
+    }
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
     public void onClickListener(View view) {

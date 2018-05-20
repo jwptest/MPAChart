@@ -11,7 +11,6 @@ import com.finance.R;
 import com.finance.base.BaseViewHandle;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
-import com.finance.event.OpenPrizeEvent;
 import com.finance.listener.EventDistribution;
 import com.finance.listener.OpenCountDown;
 import com.finance.model.ben.IssueEntity;
@@ -73,6 +72,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 
     private long serviceTimer;//服务器时间
     private boolean isUpdateText = true;
+    private boolean isCountDown = false;
 
     public RightMenu(Activity activity, MainContract.View view, IRightMenu rightMenu) {
         this.mActivity = activity;
@@ -123,7 +123,8 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         EventDistribution.getInstance().addProduct(this);
         EventDistribution.getInstance().addIssue(this);
         OpenCountDown.getInstance().addCallback(this);
-
+        //注册开奖对话框打开事件
+        EventBus.register(RightMenu.this);
         setMoney(10);
         return this;
     }
@@ -135,6 +136,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         EventDistribution.getInstance().removeProduct(this);
         EventDistribution.getInstance().removeIssue(this);
         OpenCountDown.getInstance().removeCallback(this);
+        EventBus.unregister(RightMenu.this);
     }
 
     @OnClick({R.id.ivMoneyAdd, R.id.ivMoneyReduce, R.id.llFall, R.id.llRise, R.id.ivEditBg, R.id.ivRightNext})
@@ -162,7 +164,8 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
             case R.id.ivRightNext://下一期
                 isUpdateText = false;
                 buttonChecked(false);
-                mView.refreshIessue();//刷新期号
+                mView.refreshIessueNextIssue();//刷新期号
+                mView.setShowOrder(mProductEntity.getProductId(), mIssueEntity.getIssueName());
                 break;
         }
     }
@@ -279,6 +282,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     }
 
     private void buttonChecked(boolean isNext) {
+        isCountDown = isNext;//倒计时布局是否显示
         if (isNext) {
             llRise.setVisibility(View.GONE);
             llFall.setVisibility(View.GONE);
@@ -310,8 +314,6 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     public void startTick() {
         isUpdateText = true;
         buttonChecked(true);
-        //注册开奖对话框打开事件
-        EventBus.register(this);
     }
 
     @Override
@@ -322,15 +324,16 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 
     @Override
     public void onFinish() {
-        isUpdateText = true;
+        isUpdateText = false;
+        tvRightTimer.setText("0");
 //        buttonChecked(false);
     }
 
     @Subscribe
     public void onEvent(OpenPrizeDialogEvent event) {
-        buttonChecked(false);
-        tvRightTimer.setText("0");
-        EventBus.unregister(this);
+        if (isCountDown) {
+            buttonChecked(false);
+        }
     }
 
 }

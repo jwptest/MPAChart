@@ -101,14 +101,16 @@
     </style>
 
     <style name="open_prize_product">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0.0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/dynamic_title_color</item>
         <item name="android:textSize">@dimen/sp_12</item>
     </style>
 
     <style name="open_prize_product1">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0.0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/sp_12</item>

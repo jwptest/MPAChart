@@ -7,12 +7,16 @@ import android.widget.ImageView;
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
 import com.finance.common.Constants;
+import com.finance.event.EventBus;
+import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.model.ben.NoteMessage;
 import com.finance.model.ben.NotesMessage;
 import com.finance.utils.BtnClickUtil;
 import com.finance.widget.roundview.RoundLinearLayout;
 import com.finance.widget.roundview.RoundTextView;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -44,13 +48,13 @@ public class CentreMenu extends BaseViewHandle implements ICallback<NotesMessage
     public CentreMenu(ICentreMenu centreMenu, MainContract.Presenter presenter) {
         mCentreMenu = centreMenu;
         this.presenter = presenter;
+        EventBus.register(this);
     }
 
     @Override
     public CentreMenu onInit(View rootView) {
         super.onInit(rootView);
 //        R.layout.home_layout_centre_menu
-        presenter.notesMessage(this);
         return this;
     }
 
@@ -118,6 +122,12 @@ public class CentreMenu extends BaseViewHandle implements ICallback<NotesMessage
     public void onDestroy() {
         super.onDestroy();
         stopCountDown();
+        EventBus.unregister(this);
+    }
+
+    @Subscribe
+    public void onEvent(UserLoginEvent event){
+        presenter.notesMessage(this);
     }
 
 }
