@@ -236,7 +236,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     private void setMoney(int money) {
         if (minMoney != -1 && money < minMoney) money = minMoney;
         else if (maxMoney != -1 && money > maxMoney) money = maxMoney;
-        tvInvestmentMoney.setText(String.format(Locale.CHINA, "￥%s", money));
+        tvInvestmentMoney.setText(String.format(Locale.CHINA, "¥%s", money));
         tvInvestmentMoney.setTag(money);
         updateInterestRate(money);
     }
@@ -246,18 +246,18 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         int money = getMoney();
         if (money > maxMoney) money = maxMoney;
         else if (money < 0) money = 0;
-        tvInvestmentMoney.setText(String.format(Locale.CHINA, "￥%s", money));
+        tvInvestmentMoney.setText(String.format(Locale.CHINA, "¥%s", money));
         tvInvestmentMoney.setTag(money);
     }
 
     private void updateInterestRate(int money) {
         if (mProductEntity == null) {
-            tvProfit.setText(String.format(Locale.CANADA, "￥%s", money));
+            tvProfit.setText(String.format(Locale.CANADA, "¥%s", money));
             return;
         }
         float sy = money;
         sy += sy * mProductEntity.getExpects() / 100;
-        tvProfit.setText(String.format(Locale.CANADA, "￥%s", NumberUtil.digitFloatStr2(sy)));
+        tvProfit.setText(String.format(Locale.CANADA, "¥%s", NumberUtil.digitFloatStr2(sy)));
     }
 
     private void rise() {

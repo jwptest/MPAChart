@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Set;
@@ -20,24 +19,31 @@ public class SignImp implements ISign {
     private HashMap<String, Object> mHashMap;
     private HashMap<String, Object> sendHasMap;
     private StringBuilder mStringBuilder;
-    private Comparator<String> mComparator = new MyComparator();
+    //    private Comparator<String> mComparator = new MyComparator();
     private Gson mGson = new Gson();
 
     @Override
-    public String getSign(HashMap<String, Object> params, int T, String Token) {
+    public String getSendJson(HashMap<String, Object> params, String D, int T, String Token) {
 //        ArrayList<String> keys = getKeys(params);
-        TreeMap<String, Object> treeMap = getKeys(params);
-        String signJson = mGson.toJson(treeMap);//getSignJson(keys, mHashMap);
-        params.put("Sign", getSignMd5(signJson));
+//        String signJson = getSign(params);//getSignJson(keys, mHashMap);
+//        params.put("Sign", getSignMd5(signJson));
         HashMap<String, Object> baseparams = getSendHasMap();
-        baseparams.put("D", mGson.toJson(params));
+        baseparams.put("D", D);
         baseparams.put("T", T);
         baseparams.put("Token", Token);
         String json = mGson.toJson(baseparams);
-        getHashMap();
-        getStringBuilder();
         getSendHasMap();
         return json;
+    }
+
+    @Override
+    public String getDJson(HashMap<String, Object> params) {
+        TreeMap<String, Object> treeMap = getKeys(params);
+        params.put("Sign", mGson.toJson(treeMap));
+        String d = mGson.toJson(params);
+        getHashMap();
+//        getStringBuilder();
+        return d;//getSignJson(keys, mHashMap);
     }
 
     private TreeMap<String, Object> getKeys(HashMap<String, Object> params) {

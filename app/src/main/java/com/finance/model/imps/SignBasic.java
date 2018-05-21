@@ -10,10 +10,19 @@ import java.util.HashMap;
  */
 public class SignBasic implements ISign {
 
-    private Gson mGson = new Gson();
+    @Override
+    public String getSendJson(HashMap<String, Object> params,String D, int T, String Token) {
+        return new Gson().toJson(params);
+    }
+
+//    @Override
+//    public String getSendJson(String d, int t, String Token) {
+//        return d;
+//    }
 
     @Override
-    public String getSign(HashMap<String, Object> params, int T, String Token) {
-        return mGson.toJson(params);
+    public String getDJson(HashMap<String, Object> params) {
+        return "";
     }
+
 }

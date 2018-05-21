@@ -108,11 +108,11 @@ public class HttpConnection {
     }
 
     private void send() {
-        String json = mISign.getSign(params.getParams(), T, Token);
-        if (BuildConfig.DEBUG) {
-            Logger.d("提交参数：" + json);
-        }
-        connection.send(json);
+//        String json = mISign.getSign(params.getParams(), T, Token);
+//        if (BuildConfig.DEBUG) {
+//            Logger.d("提交参数：" + json);
+//        }
+//        connection.send(json);
     }
 
 

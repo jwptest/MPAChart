@@ -23,7 +23,7 @@ import microsoft.aspnet.signalr.client.MessageReceivedHandler;
 public class MMessageReceivedHandler implements MessageReceivedHandler {
 
     protected CallbackIssues historyIssues;//历史期号回调
-//    protected BaseCallback2 alwaysIssues;//期号
+    //    protected BaseCallback2 alwaysIssues;//期号
     protected HashMap<Integer, BaseCallback2> callBacks;//回调接口
     protected Gson gson;
 

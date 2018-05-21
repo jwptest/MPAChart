@@ -1,7 +1,6 @@
 package com.finance.linechartdata;
 
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -12,9 +11,8 @@ import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IndexMarkEntity;
-import com.finance.model.http.BaseCallback;
-import com.finance.model.http.CallbackIssues;
 import com.finance.model.http.HttpConnection;
+import com.finance.model.imps.NetworkRequest;
 import com.finance.ui.main.MainContract;
 import com.finance.utils.HandlerUtil;
 import com.finance.utils.IndexUtil;
@@ -23,10 +21,10 @@ import com.finance.widget.combinedchart.MCombinedChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.google.gson.JsonElement;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import static com.finance.utils.TimerUtil.timerToLong;
 
@@ -40,7 +38,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     private Callback mCallback;//时时数据回调接口
     //    private MThread mMThread;//解析数据线程
     //    private ArrayList<Entry> mAllIndexMarks;//全部数据
-    private ArrayList<Entry> mIndexMarkEntities;//推送的指数数据
+//    private ArrayList<Entry> mIndexMarkEntities;//推送的指数数据
     private ArrayList<IndexMarkEntity> mHistoryIndexMarks;//历史指数
     private boolean isRefrshChartData;//是否在刷新走势图数据
     //    private boolean isDraw = false;//是否绘制
@@ -53,7 +51,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 
     public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter, View animView) {
         super(context, view, chart, presenter, animView);
-        this.mIndexMarkEntities = new ArrayList<>(6);
+//        this.mIndexMarkEntities = new ArrayList<>(6);
 //        this.mAllIndexMarks = new ArrayList<>(600);
         this.mPointAnimation = new ChartCurrentPointAnimation(new ChartCurrentPointAnimation.IinvalidateChart() {
             @Override
@@ -203,14 +201,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         mCallback = new Callback(this);
         stopNetwork();//停止以前的网络请求
         isTimer = false;//设置不可以转换时间
-        topStartTimer = 0;
 //        startRemoveDataAnimation();//启动删除动画
         long timer = timerToLong(issueEntity.getBonusTime()) - Constants.SERVERCURRENTTIMER;
         //获取期号
 //        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
         mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
         //获取时时数据
-        mHttpConnection1 = mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
+        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
 //        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
     }
 
@@ -218,23 +215,12 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     protected void stopAddAnimation() {
         super.stopAddAnimation();
         //添加数据动画执行完成
-        addAlwaysDatas(mChartDatas);
-        int startIndex = -1;
-        if (!mChartDatas.isEmpty())
-            startIndex = (int) mChartDatas.get(mChartDatas.size() - 1).getX();
+//        addAlwaysDatas(mChartDatas);
         invalidateChart();//刷新数据
         //发送事件
         EventBus.post(new DataRefreshEvent(true));
         //走势图数据查询事件
         EventBus.post(new ChartDataUpdateEvent());
-        //设置介入绘制参数
-//        mChart.setDrawIntervention(startIndex, minsPacing, 300);
-    }
-
-    @Override
-    protected void stopRemoveAnimation() {
-        //删除数据动画执行完成
-
     }
 
     @Override
@@ -245,7 +231,6 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     @Override
     protected ArrayList<Entry> getShowData() {
         int size = mChartDatas.size();
-//        IndexMarkEntity entity = (IndexMarkEntity) mChartDatas.get(size - 1);
         return getShowData(mChartDatas, size, getStartTimer(Constants.SERVERCURRENTTIMER));
     }
 
@@ -287,77 +272,40 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         } else {
             entitys = new ArrayList<>(arrayList);
         }
-//        updateStartTime(entitys.get(0));
         return entitys;
     }
-
-//    private float getDataIndex(IndexMarkEntity entity) {
-//        if (entity == null) return 0;
-//        return (entity.getTimeLong() - startTimer) / Constants.ISSUEINTERVAL;
-//    }
 
     //添加历史数据
     private void addHistoryDatas() {
         if (isAnimation) return;
-        if (mHistoryIndexMarks == null && mIndexMarkEntities.isEmpty()) return;
         ArrayList<Entry> entries = new ArrayList<>();
-        if (mHistoryIndexMarks != null) {
+        if (mHistoryIndexMarks != null && !mHistoryIndexMarks.isEmpty()) {
             entries.addAll(mHistoryIndexMarks);
             mHistoryIndexMarks.clear();
             mHistoryIndexMarks = null;
         }
-        addAlwaysDatas(entries);
-//        isDraw = false;
-
-        //刷新时长长度
-//        long timer1 = (long) entries.get(0).getX();
-//        long timer1 = ((IndexMarkEntity) entries.get(0)).getTime();
-//        long timer2 = timerToLong(issueEntity.getBonusTime());
-//
-//        Log.d("123", "addHistoryDatas: " + TimerUtil.timerFormatStr(timer1));
-//        Log.d("123", "addHistoryDatas2: " + TimerUtil.timerFormatStr(timer2));
-//
-//        issueLengthTime = timer2 - timer1;
-
+//        addAlwaysDatas(entries);
         currentPoint = (IndexMarkEntity) entries.get(entries.size() - 1).copy();
-//        top = currentPoint;
-//        mAllIndexMarks.clear();
-//        mAllIndexMarks.addAll(entries);
         startAddDataAnimation(entries);
     }
 
-    //添加时时数据
-    private void addAlwaysDatas(ArrayList<Entry> entries) {
-        if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
-            entries.addAll(mIndexMarkEntities);
-//            for (IndexMarkEntity entity : mIndexMarkEntities) {
-//                //更新下标
-//                entity.setX(entries.size());
-//                entries.add(entity);
-//            }
-            mIndexMarkEntities.clear();
-        }
-    }
-
-//    private IndexMarkEntity top = null;
-//    //防止时间错乱走势图绘制出错
-//    private int addIndexEntity(ArrayList<Entry> ens, IndexMarkEntity entity) {
-//        if (top == null) return 0;//添加
-//        if (top.getX() > entity.getX()) {
-//            return 1;//不做操作
+//    //添加时时数据
+//    private void addAlwaysDatas(ArrayList<Entry> entries) {
+//        if (mIndexMarkEntities != null && !mIndexMarkEntities.isEmpty()) {
+//            entries.addAll(mIndexMarkEntities);
+////            for (IndexMarkEntity entity : mIndexMarkEntities) {
+////                //更新下标
+////                entity.setX(entries.size());
+////                entries.add(entity);
+////            }
+//            mIndexMarkEntities.clear();
 //        }
-//        if (top.getX() < entity.getX())
-//            return 0;//添加
-////        ens.set(ens.size() - 1, entity);
-//        return 0;//刷新
 //    }
 
     //刷新时时数据
     private void updateAlwaysData(IndexMarkEntity entity) {
         if (!isTimer) return;
-        if (isRefrshChartData || isAnimation) {
-            return;
-        }
+        if (isRefrshChartData || isAnimation) return;
 //        mAllIndexMarks.add(entity);
         entity.setX(getXIndex(entity.getTimeLong()));
 //        int r = addIndexEntity(mChartDatas, entity);
@@ -384,7 +332,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 
     private void updateHistoryData(ArrayList<IndexMarkEntity> entities) {
         isRefrshChartData = false;
-        if (entities == null || entities.isEmpty()) return;
+        if (entities == null || entities.isEmpty()) {
+
+            return;
+        }
 //        drawStep = entities.size() / 150;
 //        mChart.setDrawStep(drawStep);//设置步长
         mHistoryIndexMarks = entities;
@@ -394,58 +345,6 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         addHistoryDatas();
 //        startTestData(indexMarkEntities);
     }
-
-    private CountDownTimer timer;//倒计时
-    private Random rand = new Random();
-
-    private void startTestData(ArrayList<IndexMarkEntity> entities) {
-        stopCountDown();
-        int l = entities.size() * 500;
-        timer = new CountDownTimer(l, 500) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                int index = (int) ((l - millisUntilFinished) / 500);
-                IndexMarkEntity entity = entities.get(index).copy();
-                entity.setX(mChartDatas.size());
-                float y = rand.nextInt(5) + 1;
-                entity.setY(entity.getY() + y / 10000000f);
-                updateAlwaysData(entity);
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        };
-        timer.start();
-    }
-
-    private void stopCountDown() {
-        if (timer == null) return;
-        timer.cancel();
-        timer = null;
-    }
-
-    private long topStartTimer = 0;
-
-//    @Override
-//    public void onCallback(int code, ArrayList<String> strings, String message) {
-//        if (strings == null || strings.isEmpty()) {
-//            App.getInstance().showErrorMsg(message);
-//            return;
-//        }
-//        long current = System.currentTimeMillis();
-//        if (current - topStartTimer < 3000) {//重复返回
-//            return;
-//        }
-//
-//        if (mMThread != null) {
-//            mMThread.isDiscarded = true;//设置为废弃
-//            mMThread = null;
-//        }
-//        mMThread = new MThread(this, strings);
-//        mMThread.start();
-//    }
 
     @Override
     public void onDraw(Entry entry) {
@@ -479,7 +378,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //        };
     }
 
-    private static class Callback extends BaseCallback {
+    private static class Callback extends NetworkRequest.BaseCallback {
 
         private IndexUtil mIndexUtil;
         private LineChartData1 mChartData;
@@ -493,7 +392,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         }
 
         @Override
-        public void onMessageReceived(JsonElement jsonElement) {
+        public void onMessageReceived(String data) {
             //在子线程运行
             if (isStop) {//断开链接
                 return;
@@ -503,7 +402,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //                indexStrs.add(jsonElement.getAsString());
                 return;
             }
-            final IndexMarkEntity entity = mIndexUtil.parseExponentially(0, jsonElement.getAsString(), Constants.INDEXDIGIT);
+            final IndexMarkEntity entity = mIndexUtil.parseExponentially(0, data, Constants.INDEXDIGIT);
             if (isStop /*|| entity.getTime() == -1*/) {//断开链接
                 return;
             }
@@ -517,23 +416,23 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
                 }
             });
         }
-
-        @Override
-        public void noNetworkConnected() {
-
-        }
     }
 
-    private class MCallbackIssues extends CallbackIssues {
+    private class MCallbackIssues extends NetworkRequest.BaseCallback {
         private boolean isDiscarded = false;//是否废弃
         private IndexUtil mIndexUtil;
 
         @Override
-        public void onMessages(ArrayList<String> issues) {
-            long current = System.currentTimeMillis();
-            if (current - topStartTimer < 500) {//重复返回
+        public void onMessageReceived(String data) {
+//            long current = System.currentTimeMillis();
+//            if (current - topStartTimer < 500) {//重复返回
+//                return;
+//            }
+            if (isDiscarded) {
                 return;
             }
+            ArrayList<String> issues = new Gson().fromJson(data, new TypeToken<ArrayList<String>>() {
+            }.getType());
             if (issues == null || issues.isEmpty()) {
                 App.getInstance().showErrorMsg("历史期号获取失败！");
                 return;
@@ -606,7 +505,6 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
                 }
             });
         }
-
     }
 
 }

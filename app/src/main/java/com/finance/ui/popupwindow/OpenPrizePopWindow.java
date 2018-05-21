@@ -188,14 +188,14 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                         orderEntity.setOpenIndex(openIndex.getY() + "");
                         orderEntity.setIcon(viewEntity.isResult() ? R.drawable.add_icon_item : R.drawable.fall_icon_item);
                         orderTMoney += viewEntity.getMoney();//订单金额
-                        orderEntity.setOrderMoney("￥" + viewEntity.getMoney());
+                        orderEntity.setOrderMoney("¥" + viewEntity.getMoney());
                         int profit = 0;
                         if (viewEntity.isResult() && openIndex.getY() > indexMarkEntity.getY()) {//猜涨
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         } else if (!viewEntity.isResult() && openIndex.getY() < indexMarkEntity.getY()) {//猜跌
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         }
-                        orderEntity.setProfit("￥" + profit);
+                        orderEntity.setProfit("¥" + profit);
                         profitTMoney += profit;
                         mOrderEntities.add(orderEntity);
                         //购买点数据
@@ -204,8 +204,8 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                     }
                 }
                 if (!OpenPrizePopWindow.this.isShowing()) return;
-                OpenPrizePopWindow.this.orderTMoney = "￥" + orderTMoney;
-                OpenPrizePopWindow.this.profitTMoney = "￥" + profitTMoney;
+                OpenPrizePopWindow.this.orderTMoney = "¥" + orderTMoney;
+                OpenPrizePopWindow.this.profitTMoney = "¥" + profitTMoney;
                 OpenPrizePopWindow.this.mOrderEntities = mOrderEntities;
                 OpenPrizePopWindow.this.mMarkEntities = entities;
                 OpenPrizePopWindow.this.viewEntities = viewEntities;

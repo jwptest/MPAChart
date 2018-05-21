@@ -50,10 +50,10 @@ public class LineChartSetting implements IChartSetting {
         mChart.getDescription().setEnabled(true);//描述文本
         mChart.getDescription().setText("");//设置描述文本
         mChart.setNoDataText("");//没有数据显示的文本
-        mChart.setTouchEnabled(true);//允许手势触摸
-        mChart.setDragEnabled(true);//手势拖动走势图
-        mChart.setScaleEnabled(true);//拖动放缩
-        mChart.setScaleXEnabled(true);
+        mChart.setTouchEnabled(false);//允许手势触摸
+        mChart.setDragEnabled(false);//手势拖动走势图
+        mChart.setScaleEnabled(false);//拖动放缩
+        mChart.setScaleXEnabled(false);
         mChart.setScaleYEnabled(false);
 //        mChart.setScaleX(1f);
         //缩放第二种方式

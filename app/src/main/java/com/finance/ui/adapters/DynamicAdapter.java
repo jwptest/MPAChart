@@ -62,7 +62,7 @@ public class DynamicAdapter extends StickyBaseAdapter<DynamicEntity> implements 
         DynamicEntity entity = getItem(position);
         itemHolder.tvName.setText(entity.getUserName());
         itemHolder.tvProduct.setText(entity.getProductName());
-        itemHolder.tvMoney.setText("￥" + entity.getMoney());
+        itemHolder.tvMoney.setText("¥" + (int) entity.getMoney());
         itemHolder.vProportion.setProgress((int) entity.getMoney());
     }
 
@@ -74,7 +74,8 @@ public class DynamicAdapter extends StickyBaseAdapter<DynamicEntity> implements 
     @Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_dynamic_recy_head, parent, false);
-        return new RecyclerView.ViewHolder(view) {};
+        return new RecyclerView.ViewHolder(view) {
+        };
     }
 
     @Override

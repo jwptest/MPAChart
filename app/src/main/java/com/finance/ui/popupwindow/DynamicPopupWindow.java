@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.finance.App;
 import com.finance.R;
 import com.finance.interfaces.ICallback;
-import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicEntity;
 import com.finance.model.ben.DynamicsEntity;
 import com.finance.ui.adapters.DynamicAdapter;

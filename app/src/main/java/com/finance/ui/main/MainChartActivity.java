@@ -485,7 +485,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         } else {
             tvUName.setText(entity.getNickName());
         }
-        tvMoney.setText("￥" + UserShell.getInstance().getUserMoneyStr());
+        tvMoney.setText("¥" + UserShell.getInstance().getUserMoneyStr());
     }
 
     private void initViewProduct(ProductEntity entity) {

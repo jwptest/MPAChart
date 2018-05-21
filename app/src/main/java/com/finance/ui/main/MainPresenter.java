@@ -24,12 +24,10 @@ import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
-import com.finance.model.http.BaseCallback;
-import com.finance.model.http.BaseCallback2;
 import com.finance.model.http.BaseParams;
-import com.finance.model.http.CallbackIssues;
-import com.finance.model.http.HttpConnection;
-import com.finance.model.http.JsonCallback2;
+import com.finance.model.https.BaseCallback3;
+import com.finance.model.https.JsonCallback;
+import com.finance.model.https.RequestParams;
 import com.finance.model.imps.NetworkRequest;
 import com.finance.ui.dialog.ToastDialog;
 import com.finance.ui.dialog.UpdateUserInfoDialog;
@@ -43,6 +41,8 @@ import com.finance.utils.IndexUtil;
 import com.finance.utils.TimerUtil;
 
 import java.util.ArrayList;
+
+import static com.finance.model.imps.NetworkRequest.getRequestParamSignBasic;
 
 /**
  * 首页逻辑处理
@@ -81,14 +81,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void getProduct() {
-        BaseParams baseParams = new BaseParams(310);
+        BaseParams params = new BaseParams(310);
+        params.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(baseParams.getToken())
-                .setParams(baseParams)
-                .execute(new JsonCallback2<ProductsEntity>(ProductsEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(params), new JsonCallback<ProductsEntity>(ProductsEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, ProductsEntity result) {
                         if (mView == null) return;
@@ -105,15 +102,12 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     public void getProductIssue(int[] productIds) {
         if (productIds == null || productIds.length == 0) return;
-        BaseParams baseParams = new BaseParams(302);
-        baseParams.addParam("ProductId", productIds);
+        BaseParams params = new BaseParams(302);
+        params.addParam("ProductId", productIds);
+        params.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(baseParams.getToken())
-                .setParams(baseParams)
-                .execute(new JsonCallback2<IssuesEntity>(IssuesEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(params), new JsonCallback<IssuesEntity>(IssuesEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, IssuesEntity result) {
                         if (mView == null) return;
@@ -149,23 +143,24 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 //    }
 
     @Override
-    public void getHistoryIssues(int ProductId, int timer, final CallbackIssues callbackIssues) {
+    public void getHistoryIssues(int ProductId, int timer, BaseCallback3 callback) {
         BaseParams param = new BaseParams();
-        param.addParam("T", 20);
-        param.addParam("D", ProductId + ":300");
+        param.setT(20);
+        param.setD(ProductId + ":300");
         param.addParam("isRate", true);//默认值
         param.addParam("productId", ProductId);
         param.addParam("times", timer);//默认值
-        param.addParam("Token", "");
-//        param.addParam("Token", UserShell.getInstance().getUserToken());
+        RequestParams requestParams = NetworkRequest.getRequestParamSignBasic(param);
+        requestParams.setRate(true);//指数数据
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(20)
-                .setISign(NetworkRequest.getInstance().getSignBasic())
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(callbackIssues);
+                .request(requestParams, callback);
+//                .setTag(mActivity)
+//                .setT(20)
+//                .setISign(NetworkRequest.getInstance().getSignBasic())
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute(callbackIssues);
 
 //        return NetworkRequest.getInstance()
 //                .getHttpConnection()
@@ -195,13 +190,10 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         param.addParam("ProductId", ProductId);
         param.addParam("Issue", Issue);
         param.addParam("Second", 360);
+        param.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(new JsonCallback2<HistoryIssueEntity>(HistoryIssueEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(param), new JsonCallback<HistoryIssueEntity>(HistoryIssueEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, HistoryIssueEntity result) {
                         if (mView == null) return;
@@ -222,13 +214,10 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         BaseParams param = new BaseParams(12);
         param.addParam("ProductId", ProductId);
         param.addParam("Time", Time);//默认值
+        param.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(new JsonCallback2<OpenIndexEntity>(OpenIndexEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(param), new JsonCallback<OpenIndexEntity>(OpenIndexEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, OpenIndexEntity result) {
                         if (mView == null) return;
@@ -257,19 +246,24 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     @Override
-    public HttpConnection getAlwaysIssues(int ProductId, BaseCallback callback) {
+    public void getAlwaysIssues(int ProductId, BaseCallback3 callback) {
         BaseParams param = new BaseParams();
-        param.addParam("T", 0);
-        param.addParam("D", ProductId + "");
-        param.addParam("Token", "");
-        return NetworkRequest.getInstance()
-                .getHttpConnection2()
-                .setTag(mActivity)
-                .setT(0)
-                .setISign(NetworkRequest.getInstance().getSignBasic())
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(callback);
+        param.setT(0);
+        param.setD(ProductId + "");
+        param.setTag(mActivity);
+        RequestParams requestParams = getRequestParamSignBasic(param);
+        requestParams.setRate(true);
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .request(requestParams, callback);
+
+//                .getHttpConnection2()
+//                .setTag(mActivity)
+//                .setT(0)
+//                .setISign(NetworkRequest.getInstance().getSignBasic())
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute(callback);
     }
 
     @Override
@@ -282,13 +276,10 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 //        param.addParam("OrderId", "");
 //        param.addParam("BonusStatus", "");
         param.addParam("range", 0);
+        param.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(new JsonCallback2<OrdersEntity>(OrdersEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(param), new JsonCallback<OrdersEntity>(OrdersEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, OrdersEntity result) {
                         if (iCallback != null)
@@ -301,18 +292,20 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                             iCallback.onCallback(code, null, msg);
                     }
                 });
+//                .setTag(mActivity)
+//                .setT(200)
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute();
     }
 
     @Override
     public void getDynamicPopupWindow(final ICallback<DynamicsEntity> iCallback) {
         BaseParams param = new BaseParams(206);
+        param.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(new JsonCallback2<DynamicsEntity>(DynamicsEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(param), new JsonCallback<DynamicsEntity>(DynamicsEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, DynamicsEntity result) {
                         if (iCallback != null)
@@ -325,6 +318,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                             iCallback.onCallback(code, null, msg);
                     }
                 });
+//                .setTag(mActivity)
+//                .setT(200)
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute();
     }
 
     @Override
@@ -440,11 +438,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         baseParams.addParam("taskid", "00000000-0000-0000-0000-000000000000");
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(baseParams.getToken())
-                .setParams(baseParams)
-                .execute(new JsonCallback2<PlaceOrderEntity>(PlaceOrderEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(baseParams), new JsonCallback<PlaceOrderEntity>(PlaceOrderEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, PlaceOrderEntity result) {
                         if (mView == null) return;
@@ -457,11 +451,17 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         mView.placeOrder(null, msg);
                     }
                 });
+//                .setTag(mActivity)
+//                .setT(200)
+//                .setToken(baseParams.getToken())
+//                .setParams(baseParams)
+//                .execute();
     }
 
     @Override
     public void notesMessage(final ICallback<NotesMessage> callback) {
         BaseParams baseParams = new BaseParams(206);
+        baseParams.setTag(mActivity);
 //        baseParams.addParam("Begin", "2018-05-11T11:24:30+08:00");//开始时间
 //        baseParams.addParam("End", "2018-05-12T17:24:30+08:00");//结束时间
 //        baseParams.addParam("Page", 1);
@@ -470,11 +470,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 //        baseParams.addParam("TypeMsg", new int[]{0,1, 2});
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(200)
-                .setToken(baseParams.getToken())
-                .setParams(baseParams)
-                .execute(new JsonCallback2<String>(String.class) {
+                .request(NetworkRequest.getRequestParamSignImp(baseParams), new JsonCallback<String>(String.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
                         if (mView == null || callback == null) return;
@@ -487,21 +483,29 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                         callback.onCallback(code, null, msg);
                     }
                 });
+//                .setTag(mActivity)
+//                .setT(200)
+//                .setToken(baseParams.getToken())
+//                .setParams(baseParams)
+//                .execute();
     }
 
     @Override
     public void unSubscribeProduct(int productId) {
         BaseParams param = new BaseParams();
-        param.addParam("T", 10);
+        param.setT(10);
+        param.setD("");
         param.addParam("productId", productId);
+        param.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(mActivity)
-                .setT(0)
-                .setISign(NetworkRequest.getInstance().getSignBasic())
-                .setToken(param.getToken())
-                .setParams(param)
-                .execute(BaseCallback2.getBaseCallback());
+                .request(getRequestParamSignBasic(param), NetworkRequest.getBaseCallback());
+//                .setTag(mActivity)
+//                .setT(0)
+//                .setISign(NetworkRequest.getInstance().getSignBasic())
+//                .setToken(param.getToken())
+//                .setParams(param)
+//                .execute(BaseCallback2.getBaseCallback());
     }
 
 }

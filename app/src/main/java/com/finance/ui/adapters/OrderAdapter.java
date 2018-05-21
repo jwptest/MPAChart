@@ -36,7 +36,6 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.StickyBaseAdapter;
 import com.finance.model.ben.OrderEntity;
-import com.finance.utils.IndexUtil;
 import com.finance.widget.CompletedView;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersAdapter;
@@ -50,10 +49,10 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 
     private ICallback mICallback;//回调接口必须设置
     private long progressBar;//进度，计算方式不明
-    private IndexUtil mIndexUtil;
+//    private IndexUtil mIndexUtil;
 
     public OrderAdapter(ArrayList<OrderEntity> mlist) {
-        mIndexUtil = new IndexUtil();
+//        mIndexUtil = new IndexUtil();
         addAll(mlist);
     }
 
@@ -84,7 +83,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 //            }
         }
         itemHolder.tvPurchase.setText(entity.getHexIndex() + "");//购买指数
-        itemHolder.tvMoney2.setText(entity.getMoney() + "");//购买金额
+        itemHolder.tvMoney2.setText((int) entity.getMoney() + "");//购买金额
 
         if (isOpen(entity)) {//开奖完成
             itemHolder.cvProgressBar.setVisibility(View.GONE);
@@ -117,7 +116,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
             } else if (!entity.isResult() && entity.getHexIndex() > entity.getBonusHexIndex()) {
                 itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
             } else {//买输了
-                itemHolder.tvMoney.setText("￥0");//收益金额
+                itemHolder.tvMoney.setText("¥0");//收益金额
             }
             itemHolder.tvPurchase2.setText(entity.getBonusHexIndex() + "");//卖出价格
         } else {//交易中

@@ -54,7 +54,7 @@
             android:gravity="center"
             android:singleLine="true"
             android:tag="10"
-            android:text="￥100"
+            android:text="¥100"
             android:textColor="@color/red"
             android:textSize="@dimen/sp_13"/>
 
@@ -86,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:text="￥"
+        android:text="¥"
         android:textColor="@color/red"
         android:textSize="@dimen/sp_18"/>
 

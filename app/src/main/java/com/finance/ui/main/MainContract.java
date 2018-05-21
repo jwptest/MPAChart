@@ -17,6 +17,7 @@ import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.model.http.BaseCallback;
 import com.finance.model.http.CallbackIssues;
 import com.finance.model.http.HttpConnection;
+import com.finance.model.https.BaseCallback3;
 
 import java.util.ArrayList;
 
@@ -72,11 +73,11 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
-        void getHistoryIssues(int ProductId, int timer, CallbackIssues issues);
+        void getHistoryIssues(int ProductId, int timer,BaseCallback3  callback);
 
         void getOpenIndex(int ProductId, String productName, String issue, String Time);
 
-        HttpConnection getAlwaysIssues(int ProductId, final BaseCallback callback);
+        void getAlwaysIssues(int ProductId, BaseCallback3 callback);
 
         void getOrderRecord(int PageSize, int Page, ICallback<OrdersEntity> callback);
 

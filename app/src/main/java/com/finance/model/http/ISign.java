@@ -13,6 +13,14 @@ public interface ISign {
      * @param params 所有参数
      * @return 设置签名后的参数Json
      */
-    String getSign(HashMap<String, Object> params, int T, String Token);
+    String getSendJson(HashMap<String, Object> params,String D, int T, String Token);
+
+    /**
+     * 获取签名
+     *
+     * @param params 所有参数
+     * @return 设置签名后的参数Json
+     */
+    String getDJson(HashMap<String, Object> params);
 
 }

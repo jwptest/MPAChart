@@ -107,7 +107,7 @@ public class OrderEntity {
 
     public String getExpectsStr() {
         if (ExpectsStr == null)
-            ExpectsStr = "￥" + ((100 + Expects) * Money / 100);
+            ExpectsStr = "¥" + ((100 + Expects) * (int) Money / 100);
         return ExpectsStr;
     }
 

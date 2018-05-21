@@ -7,8 +7,7 @@ import com.finance.interfaces.ICallback;
 import com.finance.model.ben.TokenEntity;
 import com.finance.model.ben.UserInfoEntity;
 import com.finance.model.http.BaseParams;
-import com.finance.model.http.JsonCallback;
-import com.finance.model.http.JsonCallback2;
+import com.finance.model.https.JsonCallback;
 import com.finance.model.imps.NetworkRequest;
 
 /**
@@ -62,14 +61,11 @@ public class UserCommon {
      */
     private static void getUserInfo1(Context context, final String token, final ICallback<UserInfoEntity> iCallback) {
         BaseParams baseParams = new BaseParams(105);
-        baseParams.addParam("Token", token);
+        baseParams.setToken(token);
+        baseParams.setTag(context);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setTag(context)
-                .setT(200)
-                .setToken(token)
-                .setParams(baseParams)
-                .execute(new JsonCallback2<UserInfoEntity>(UserInfoEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(baseParams), new JsonCallback<UserInfoEntity>(UserInfoEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, UserInfoEntity result) {
                         UserShell shell = UserShell.getInstance();
@@ -89,6 +85,11 @@ public class UserCommon {
                             iCallback.onCallback(code, null, msg);
                     }
                 });
+//                .setTag(context)
+//                .setT(200)
+//                .setToken(token)
+//                .setParams(baseParams)
+//                .execute();
     }
 
     /**
@@ -99,13 +100,12 @@ public class UserCommon {
      */
     private static void register(Context context, final ICallback<TokenEntity> iCallback) {
         BaseParams baseParams = new BaseParams(101);
+        baseParams.setT(1101);
+        baseParams.setToken("");
+        baseParams.setTag(context);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .setT(1101)
-                .setTag(context)
-                .setToken("")
-                .setParams(baseParams)
-                .execute(new JsonCallback2<TokenEntity>(TokenEntity.class) {
+                .request(NetworkRequest.getRequestParamSignImp(baseParams), new JsonCallback<TokenEntity>(TokenEntity.class) {
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, TokenEntity result) {
                         if (iCallback != null)
@@ -118,6 +118,11 @@ public class UserCommon {
                             iCallback.onCallback(code, null, msg);
                     }
                 });
+//                .setT(1101)
+//                .setTag(context)
+//                .setToken("")
+//                .setParams(baseParams)
+//                .execute();
     }
 
 }

@@ -62,22 +62,22 @@ public class NetworkActivity extends BaseActivity {
 //            }
 //        }, baseParams.getParams());
 
-        NetworkRequest.getInstance()
-                .getHttpConnection()
-                .setTag(this)
-                .setT(1101)
-                .setParams(baseParams)
-                .execute(new JsonCallback2<String>(String.class) {
-                    @Override
-                    public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
-
-                    }
-
-                    @Override
-                    public void onFailed(int code, String msg, boolean isFromCache) {
-
-                    }
-                });
+//        NetworkRequest.getInstance()
+//                .getHttpConnection()
+//                .setTag(this)
+//                .setT(1101)
+//                .setParams(baseParams)
+//                .execute(new JsonCallback2<String>(String.class) {
+//                    @Override
+//                    public void onSuccessed(int code, String msg, boolean isFromCache, String result) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailed(int code, String msg, boolean isFromCache) {
+//
+//                    }
+//                });
     }
 
     @OnClick(R.id.tvSend2)

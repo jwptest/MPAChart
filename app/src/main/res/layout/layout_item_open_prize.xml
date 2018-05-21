@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_55"
-    android:background="#333333"
     android:orientation="vertical"
     android:paddingTop="@dimen/dp_10">
 
@@ -27,7 +26,7 @@
         <TextView
             android:id="@+id/tvProfit"
             style="@style/open_prize_product1"
-            android:text="￥17.9"/>
+            android:text="¥17.9"/>
     </LinearLayout>
 
     <LinearLayout
@@ -72,7 +71,7 @@
             android:id="@+id/tvMoney"
             style="@style/open_prize_product"
             android:layout_marginTop="@dimen/dp_5"
-            android:text="￥10"/>
+            android:text="¥10"/>
     </LinearLayout>
 
 

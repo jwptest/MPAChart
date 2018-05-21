@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+//应用 Bugtags 插件
+apply plugin: 'com.bugtags.library.plugin'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -16,6 +18,10 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
+        }
+        ndk {
+            moduleName "jnikey"
+            abiFilters 'armeabi-v7a', 'x86'
         }
     }
 
@@ -36,7 +42,7 @@ android {
     }
 
     dataBinding {
-        enabled = true
+        enabled = false
     }
 
     buildTypes {
@@ -78,6 +84,10 @@ dependencies {
     //other
     compile rootProject.ext.dependencies["logger"]
     //错误统计
-    compile rootProject.ext.dependencies["bugly-crashreport"]
-
+//    compile rootProject.ext.dependencies["bugly-crashreport"]
+    compile 'com.bugtags.metrics:bugtags-lib:3.0.0'
+//    //debug 包
+//    debugCompile 'com.bugtags.library:bugtags-lib:3.0.0'
+////release 包
+//    releaseCompile 'com.bugtags.metrics:bugtags-lib:3.0.0'
 }

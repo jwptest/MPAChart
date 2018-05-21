@@ -81,9 +81,11 @@ public class EventDistribution {
     public void removeIssue(IIssueChecked purchase) {
         mIssueCheckeds.remove(purchase);
     }
+
     public void addIssue(IIssueChecked purchase) {
         mIssueCheckeds.add(purchase);
     }
+
     public void issue(IssueEntity entity) {
         for (IIssueChecked issue : mIssueCheckeds) {
             issue.issueChecked(entity);

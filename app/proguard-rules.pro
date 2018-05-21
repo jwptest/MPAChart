@@ -72,6 +72,19 @@
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 
+ # ProGuard configurations for Bugtags
+  -keepattributes LineNumberTable,SourceFile
+
+  -keep class com.bugtags.library.** {*;}
+  -dontwarn com.bugtags.library.**
+  -keep class io.bugtags.** {*;}
+  -dontwarn io.bugtags.**
+  -dontwarn org.apache.http.**
+  -dontwarn android.net.http.AndroidHttpClient
+
+  # End Bugtags
+
+
 -keepclassmembers public class * extends android.view.View {
     void set*(***);
     *** get*();

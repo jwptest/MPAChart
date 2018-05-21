@@ -30,7 +30,7 @@ import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.ui.main.MainContract;
 import com.finance.ui.main.PurchaseViewAnimation;
 import com.finance.utils.HandlerUtil;
-import com.finance.utils.NumberUtil;
+import com.finance.utils.IndexFormatUtil;
 import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
@@ -107,6 +107,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ArrayList<PurchaseViewEntity> removePurchaseViews;
     //获取结束点和开奖点
     private IChartData mIChartData;
+    //格式化指数工具
+    protected IndexFormatUtil format;
     //画布的X轴
     private XAxis mXAxis;
     //刷新购买点坐标工具类
@@ -129,6 +131,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mPurchaseViewEntities = new ArrayList<>(4);
         temporaryList = new ArrayList<>(4);
         removePurchaseViews = new ArrayList<>(4);
+        format = new IndexFormatUtil(Constants.INDEXDIGIT);
     }
 
     @Override
@@ -676,6 +679,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         }
     }
 
+
     //设置当前点Icon坐标
     private void refreshLocation(Entry last, IDataSet dataSet) {
         //当前点
@@ -688,7 +692,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             tranConParams.topMargin = currentY;
             //横向描线描述
             tranConDesParams.topMargin = currentY - tranConDesHight / 2;
-            tvTransverseContrastDes.setText(NumberUtil.digitDouble(last.getY(), Constants.INDEXDIGIT) + "");
+            tvTransverseContrastDes.setText(format.format(last.getY()));
         }
 //        if (mRightAxisValueFormatter != null) {
 //            //右边轴标签显示偏移值
@@ -766,7 +770,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
             if (isEnd && currentTimer - endTimerIs >= 0) {
                 isEnd = false;
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
-                endLine();
+                if (currentTimer - endTimer >= 0) {
+                    endLine();
+                }
                 if (isOrder) {
 //                    long end = TimerUtil.timerToLong(currentEntry.getTime());
                     long open = TimerUtil.timerToLong(mCurrentIssueEntity.getBonusTime());

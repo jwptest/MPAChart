@@ -1,7 +1,6 @@
 package com.finance.ui.popupwindow;
 
 import android.app.Activity;
-import android.os.CountDownTimer;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,18 +20,17 @@ import com.finance.ui.adapters.OrderAdapter;
 import com.finance.ui.main.MainContract;
 import com.finance.utils.TimerUtil;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersDecoration;
+import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-import static com.finance.utils.TimerUtil.timerToLong;
-
 /**
  * 订单PopupWindow
  */
-public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDistribution.IPurchase, OrderAdapter.ICallback {
+public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDistribution.IPurchase, EventDistribution.IChartDraw, OrderAdapter.ICallback {
 
     @BindView(R.id.tvTitle)
     TextView tvTitle;
@@ -48,11 +46,12 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     private Activity mActivity;
     private MainContract.View mView;
     private MainContract.Presenter mPresenter;
+    private boolean isRefesh = false;//是否刷新列表
 
     private OrderAdapter mAdapter;
 
-    private CountDownTimer timer;//倒计时
-    private long serviceTimer;//服务器时间
+    //    private CountDownTimer timer;//倒计时
+//    private long serviceTimer;//服务器时间
     private OrderDataSource mDataSource;
 
     @OnClick(R.id.ivClose)
@@ -108,34 +107,6 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
         }
     }
 
-    private void stopCountDown() {
-        if (timer != null) timer.cancel();
-    }
-
-    private void startCountDown(final long l) {
-        stopCountDown();
-        if (l < 1000) return;
-        timer = new CountDownTimer(l, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                if (!isShowing()) {
-                    stopCountDown();
-                    return;
-                }
-                serviceTimer -= 1000;
-                if (mAdapter == null) return;
-                mAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFinish() {
-                if (!isShowing()) return;
-                mDataSource.refresh();//刷新数据
-            }
-        };
-        timer.start();
-    }
-
     @Override
     protected boolean isBindView() {
         return true;
@@ -143,8 +114,9 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
 
     @Override
     public void dismiss() {
+        EventDistribution.getInstance().removeChartDraws(this);
+        EventDistribution.getInstance().removePurchase(this);
         super.dismiss();
-        stopCountDown();//结束倒计时
     }
 
     public void showPopupWindow(View parent) {
@@ -153,6 +125,8 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
             mDataSource = new OrderDataSource();
         }
         mDataSource.refresh();//加载数据
+        EventDistribution.getInstance().addChartDraws(this);
+        EventDistribution.getInstance().addPurchase(this);
     }
 
     @Override
@@ -163,7 +137,6 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     @Override
     public void openPrize(boolean isOrder) {
         if (isOrder) return;
-        stopCountDown();
         dismiss();
     }
 
@@ -182,7 +155,11 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
         if (entity != null) {
             openTotal[0] = TimerUtil.timerToLong(entity.getBonusTime());//开奖时间
             openTotal[1] = TimerUtil.timerToLong(entity.getStartTime());//开始时间
-            openTotal[1] = (openTotal[0] - openTotal[1]) / 1000;
+            if (openTotal[1] < Constants.SERVERCURRENTTIMER) {
+                openTotal[1] = (openTotal[0] - openTotal[1]) / 1000;
+            } else {
+                openTotal[1] = (openTotal[0] - Constants.SERVERCURRENTTIMER) / 1000;
+            }
         }
         return openTotal;
     }
@@ -191,6 +168,12 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     public long getServerTimer() {
         //服务器时间
         return Constants.SERVERCURRENTTIMER;
+    }
+
+    @Override
+    public void onDraw(Entry entry) {
+        if (mAdapter == null || !isRefesh) return;
+        mAdapter.notifyDataSetChanged();
     }
 
     private class OrderDataSource extends DataSource implements ICallback<OrdersEntity> {
@@ -205,6 +188,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
 
         @Override
         public void load(int page, int size) {
+            isRefesh = false;
             mPresenter.getOrderRecord(size, page, this);
         }
 
@@ -215,7 +199,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
                 loadFail();
                 return;
             }
-            serviceTimer = timerToLong(ordersEntity.getCurrDateTime());
+//            serviceTimer = timerToLong(ordersEntity.getCurrDateTime());
             mOrderEntities.addAll(ordersEntity.getOrders());
             maxOpenTimer = 0;
             for (OrderEntity entity : mOrderEntities) {
@@ -223,7 +207,8 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
             }
             initData(mOrderEntities);
             long d = maxOpenTimer - getServerTimer();
-            startCountDown(d);//启动倒计时
+            if (d > 0) isRefesh = true;
+//            startCountDown(d);//启动倒计时
         }
     }
 

@@ -135,14 +135,14 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
                         orderEntity.setOpenIndex(openIndex.getY() + "");
                         orderEntity.setIcon(viewEntity.isResult() ? R.drawable.add_icon_item : R.drawable.fall_icon_item);
                         orderTMoney += viewEntity.getMoney();//订单金额
-                        orderEntity.setOrderMoney("￥" + viewEntity.getMoney());
+                        orderEntity.setOrderMoney("¥" + viewEntity.getMoney());
                         int profit = 0;
                         if (viewEntity.isResult() && openIndex.getY() > indexMarkEntity.getY()) {//猜涨
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         } else if (!viewEntity.isResult() && openIndex.getY() < indexMarkEntity.getY()) {//猜跌
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         }
-                        orderEntity.setProfit("￥" + profit);
+                        orderEntity.setProfit("¥" + profit);
                         profitTMoney += profit;
                         mOrderEntities.add(orderEntity);
                         //购买点数据
@@ -151,8 +151,8 @@ public class OpenPrizeDialog extends Dialog implements OnDrawCompletion {
                     }
                 }
                 if (!OpenPrizeDialog.this.isShowing()) return;
-                OpenPrizeDialog.this.orderTMoney = "￥" + orderTMoney;
-                OpenPrizeDialog.this.profitTMoney = "￥" + profitTMoney;
+                OpenPrizeDialog.this.orderTMoney = "¥" + orderTMoney;
+                OpenPrizeDialog.this.profitTMoney = "¥" + profitTMoney;
                 OpenPrizeDialog.this.mOrderEntities = mOrderEntities;
                 OpenPrizeDialog.this.mMarkEntities = entities;
                 OpenPrizeDialog.this.viewEntities = viewEntities;

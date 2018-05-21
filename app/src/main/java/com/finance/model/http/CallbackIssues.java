@@ -17,6 +17,6 @@ public abstract class CallbackIssues {
         onMessages(issues);
     }
 
-    public abstract void onMessages(ArrayList<String> issues);
+    protected abstract void onMessages(ArrayList<String> issues);
 
 }

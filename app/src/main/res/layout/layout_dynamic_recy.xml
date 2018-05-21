@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_50"
+    android:background="#333333"
     android:orientation="vertical"
     android:paddingLeft="@dimen/dp_10"
     android:paddingRight="@dimen/dp_10">
@@ -23,7 +24,7 @@
             android:singleLine="true"
             android:text="交易者"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_12"/>
+            android:textSize="@dimen/sp_11"/>
 
         <TextView
             android:id="@+id/tvProduct"
@@ -33,28 +34,38 @@
             android:singleLine="true"
             android:text="资产"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_12"/>
+            android:textSize="@dimen/sp_11"/>
 
-        <TextView
-            android:id="@+id/tvMoney"
+        <LinearLayout
             android:layout_width="0.0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:paddingRight="@dimen/dp_3"
-            android:singleLine="true"
-            android:text="投资金额"
-            android:textColor="#a0ffffff"
-            android:textSize="@dimen/sp_12"/>
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-        <ProgressBar
-            android:id="@+id/vProportion"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="0.0dp"
-            android:layout_height="@dimen/dp_3"
-            android:layout_weight="0.5"
-            android:max="400"
-            android:progress="10"
-            android:progressDrawable="@drawable/dynamic_progressbar"/>
+            <TextView
+                android:id="@+id/tvMoney"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="@dimen/dp_43"
+                android:paddingRight="@dimen/dp_3"
+                android:singleLine="true"
+                android:text="¥4000"
+                android:textColor="#a0ffffff"
+                android:textSize="@dimen/sp_11"/>
+
+            <ProgressBar
+                android:id="@+id/vProportion"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="0.0dp"
+                android:layout_height="@dimen/dp_3"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:max="400"
+                android:progress="10"
+                android:progressDrawable="@drawable/dynamic_progressbar"/>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

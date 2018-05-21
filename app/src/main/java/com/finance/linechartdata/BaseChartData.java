@@ -81,12 +81,12 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         });
         combinedData = new CombinedData();
         onInit();
+        EventDistribution.getInstance().addPurchase(this);
     }
 
     @Override
     public void onResume(int type) {
         currentChartType = type;
-        EventDistribution.getInstance().addPurchase(this);
     }
 
     @Override
@@ -94,7 +94,21 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         if (chartType != Constants.CHART_LINEFILL && chartType != Constants.CHART_LINE) {
             EventBus.post(new DataRefreshEvent(false));
         }
-        EventDistribution.getInstance().removePurchase(this);
+//        EventDistribution.getInstance().removePurchase(this);
+    }
+
+    @Override
+    public void stopPurchase(boolean isOrder) {
+        if (isOrder) {
+            return;
+        }
+        mView.refreshIessue();//刷新期号
+        isAnimation = true;
+    }
+
+    @Override
+    public void openPrize(boolean isOrder) {
+        isAnimation = true;
     }
 
     @Override
@@ -108,13 +122,16 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             //去掉部分历史数据
             removeBasicData();
         } else {
+            if (this.productEntity != null) {
+                //取消订阅产品
+                mPresenter.unSubscribeProduct(this.productEntity.getProductId());
+            }
             this.productEntity = productEntity;
             this.issueEntity = issueEntity;
             if (topProductEntity == null) {
                 topProductEntity = productEntity;
             }
-//            ViewUtil.setViewVisibility(animView, View.VISIBLE);
-//            ViewUtil.setViewVisibility(animView, View.GONE);
+            isAnimation = false;
             updateData();
         }
     }
@@ -181,10 +198,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             en.setValue(TimerUtil.getHourMin(calendar));
             xentitys.add(en);
         }
-
         ((XAxisValueFormatter) f).setStartTimer(xentitys);
-
-
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis(openTimer);
 //
@@ -211,26 +225,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        Log.d("123", "setAxisMaximum: " + (totalTimer - startTimer) / 1000);
     }
 
-    @Override
-    public void stopPurchase(boolean isOrder) {
-        if (isOrder) {
-            return;
-        }
-        mView.refreshIessue();//刷新期号
-        isAnimation = true;
-//        stopNetwork();
-    }
-
-    @Override
-    public void openPrize(boolean isOrder) {
-        if (isOrder) {
-            isAnimation = true;
-        } else {
-            mView.refreshIessue();//刷新期号
-        }
-//        stopNetwork();
-    }
-
     //刷新走势图
     protected void invalidateChart() {
         combinedData.notifyDataChanged();
@@ -238,55 +232,15 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChart.invalidate();
     }
 
-//    private int removeCount = 0;//已经删除的个数
-
-    //启动删除数据动画
-    protected void startRemoveDataAnimation() {
-        final int maxIndex = mChartDatas.size() - 1;
-        if (maxIndex < 0) return;
-//        mChart.isStopDraw(false);
-        if (valueAnimator != null) {
-            valueAnimator.cancel();
-        }
-        isAnimation = true;
-//        removeCount = 0;
-        //清除数据
-        mChartDatas.clear();
-//        mChart.isStopDraw(true, 0);
-        invalidateChart();
-        isAnimation = false;
-        stopRemoveAnimation();
-
-//        valueAnimator = staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                int endIndex = (int) animation.getAnimatedValue();
-//                int size = 0;
-//                for (int i = 0; i <= endIndex - removeCount; i++) {
-//                    size = mChartDatas.size() - 1;
-//                    if (size >= 0)
-//                        mChartDatas.remove(size);
-//                    else break;
-//                    removeCount++;
-//                }
-//                invalidateChart();
-//            }
-//        }, false, 0, maxIndex);
-    }
-
-    private int addCount = 0;//已经添加的数据条数
-
     //启动添加数据动画
     protected void startAddDataAnimation(ArrayList<T> entitys) {
         final int maxIndex = entitys.size() - 1;
         mChartDatas.clear();
-//        mChart.isStopDraw(false, 0);
         if (maxIndex > 0) {
             mChartDatas.addAll(entitys);
             setAxisMaximum(maxIndex + 1);//刷新X周显示条数
         }
         dataMinCount = entitys.size();//保存基础数据条数
-//        mChart.isStopDraw(true, dataMinCount);
         if (combinedData == null) {
             combinedData = new CombinedData();
             combinedData.setData(getLineData());
@@ -296,55 +250,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         }
         stopAddAnimation();
         isAnimation = false;
-
-//        dataMinCount = entitys.size();//保存基础数据条数
-//        mChart.isStopDraw(false);
-//        if (valueAnimator != null) {
-//            valueAnimator.cancel();
-//        }
-//        final int maxIndex = entitys.size() - 1;
-//        if (maxIndex < 0) return;
-//        isAnimation = true;
-//        addCount = 1;
-//        mChartDatas.clear();
-//        mChartDatas.add(entitys.get(0));
-//        setAxisMaximum(entitys.size());//刷新X轴显示条数
-//        mChart.isStopDraw(true);
-//        valueAnimator = staetValueAnimator(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                int endIndex = (int) animation.getAnimatedValue();
-//                for (int i = addCount; i <= endIndex; i++) {
-//                    mChartDatas.add(entitys.get(i));
-//                    addCount++;
-//                }
-//                invalidateChart();
-//            }
-//        }, true, 0, maxIndex);
-    }
-
-    private ValueAnimator staetValueAnimator(ValueAnimator.AnimatorUpdateListener listener, final boolean isAddAnimation, int... values) {
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(values);
-        valueAnimator.setDuration(duration);
-        valueAnimator.addUpdateListener(listener);
-        valueAnimator.addListener(new BaseAminatorListener() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                isAnimation = false;
-                if (isAddAnimation) stopAddAnimation();
-                else stopRemoveAnimation();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                isAnimation = false;
-                if (isAddAnimation) {
-                    stopAddAnimation();
-                } else stopRemoveAnimation();
-            }
-        });
-        valueAnimator.start();
-        return valueAnimator;
     }
 
     private void removeBasicData() {//去掉部分基础数据
@@ -357,29 +262,11 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             isAnimation = false;
             return;
         }
-//        mChart.isStopDraw(false);
-//        ArrayList<T> entitys;
-//        if (dataMinCount >= size) {
-//            entitys = new ArrayList<>(size);
-//        } else {
-//            int step = getDrawSetp();
-//            if (step != -1) {
-//                dataMinCount += dataMinCount % step;//保障步长一致
-//            }
-//            entitys = new ArrayList<>(mChartDatas.subList(size - dataMinCount, size - 1));
-//        }
-//        int index = 0;
-//        for (T t : entitys) {
-//            t.setX(index);
-//            index++;
-//        }
-
         ArrayList<T> entitys = getShowData();
         mChartDatas.clear();//清理了，如果走势图还在刷新就会报下标超界
         mChartDatas.addAll(entitys);
         dataMinCount = mChartDatas.size();
         setAxisMaximum(0);
-//        mChart.isStopDraw(true, dataMinCount);
         isAnimation = false;
         invalidateChart();
         //走势图数据查询事件
@@ -388,33 +275,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //添加动画执行完成
     protected void stopAddAnimation() {
-//        if (animView == null) return;
-//        if (mAnimation == null) {
-//            mAnimation = AnimationUtils.loadAnimation(mContext, R.anim.animation_chart_complete);
-//            mAnimation.setAnimationListener(new Animation.AnimationListener() {
-//                @Override
-//                public void onAnimationStart(Animation animation) {
-//
-//                }
-//
-//                @Override
-//                public void onAnimationEnd(Animation animation) {
-//                    animView.clearAnimation();
-//                    ViewUtil.setViewVisibility(animView, View.GONE);
-//                }
-//
-//                @Override
-//                public void onAnimationRepeat(Animation animation) {
-//
-//                }
-//            });
-//        }
-//        animView.startAnimation(mAnimation);
-    }
-
-    //删除动画执行完成
-    protected void stopRemoveAnimation() {
-
     }
 
     //初始化操作
@@ -432,8 +292,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected LineData getLineData() {
         return null;
     }
-
-//    protected abstract int getDrawSetp();
 
     protected abstract int getXIndex(long timer);
 

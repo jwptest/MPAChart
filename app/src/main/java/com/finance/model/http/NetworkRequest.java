@@ -1,8 +1,6 @@
 package com.finance.model.http;
 
-import com.finance.BuildConfig;
 import com.finance.utils.NetWorkUtils;
-import com.orhanobut.logger.Logger;
 
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
@@ -91,11 +89,11 @@ public class NetworkRequest {
     }
 
     private void send() {
-        String json = mISign.getSign(params.getParams(), T, Token);
-        if (BuildConfig.DEBUG) {
-            Logger.d("提交参数：" + json);
-        }
-        connection.send(json);
+//        String json = mISign.getSign(params.getParams(), T, Token);
+//        if (BuildConfig.DEBUG) {
+//            Logger.d("提交参数：" + json);
+//        }
+//        connection.send(json);
     }
 
 
