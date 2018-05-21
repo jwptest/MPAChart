@@ -19,8 +19,8 @@ public class RequestCallBack {
     }
 
     public void done() {
-        this.countTime = this.timeOut;
-        this.isSuccess = true;
+//        this.countTime = this.timeOut;
+//        this.isSuccess = true;
     }
 
     public void error(String msg) {
@@ -61,6 +61,14 @@ public class RequestCallBack {
 
     public void setCallback(BaseCallback3 callback) {
         mCallback = callback;
+    }
+
+    public long getStartTimer() {
+        return mOptions.getStart();
+    }
+
+    public long getTimeOut() {
+        return timeOut;
     }
 
 }

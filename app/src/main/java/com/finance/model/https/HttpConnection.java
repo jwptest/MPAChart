@@ -11,6 +11,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.orhanobut.logger.Logger;
 
+import java.net.SocketTimeoutException;
+
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
 import microsoft.aspnet.signalr.client.ConnectionState;
@@ -44,10 +46,10 @@ public class HttpConnection {
             public void onMessageReceived(JsonElement json) {
                 if (json instanceof JsonPrimitive) {
                     parseIndexMark(json); //获取指数
+                } else if (json instanceof JsonObject) {//普通请求或者推送
+                    parseNoIndexMark(json);
                 } else if (json instanceof JsonArray) {
                     parseHistoryIndex(json);//获取历史数据
-                } else if (json instanceof JsonObject) {
-                    parseNoIndexMark(json);
                 }
             }
         });
@@ -64,7 +66,7 @@ public class HttpConnection {
     private void parseIndexMark(JsonElement json) {
         String indexMark = json.getAsString();
         long productId = parseProductId(indexMark);
-        RequestCallBack indexRequestCallBack = ApiCache.findCallBackById(String.valueOf(productId));
+        RequestCallBack indexRequestCallBack = ApiCache.findCallBackById(String.valueOf(productId), false);
         if (indexRequestCallBack == null) return;
         indexRequestCallBack.getCallback().onMessageReceived(indexMark);
     }
@@ -72,7 +74,7 @@ public class HttpConnection {
     private void parseHistoryIndex(JsonElement jsonarray) {
         String historyHead_IndexMark = jsonarray.getAsJsonArray().get(0).getAsString();
         long productId = parseProductId(historyHead_IndexMark);
-        RequestCallBack historyRequestCallBack = ApiCache.findCallBackById(String.valueOf(productId) + "-" + "0");
+        RequestCallBack historyRequestCallBack = ApiCache.findCallBackById(String.valueOf(productId) + "-" + "0", true);
         if (historyRequestCallBack == null) return;
         historyRequestCallBack.getCallback().onMessageReceived(jsonarray.toString());
     }
@@ -88,12 +90,13 @@ public class HttpConnection {
 
     private void handleNormalRequest(JsonObject noIndexObject) {
         String key = noIndexObject.get("MessageId").getAsString().trim();
-        RequestCallBack normalRequest = ApiCache.findCallBackById(key);
+        RequestCallBack normalRequest = ApiCache.findCallBackById(key, true);
         if (normalRequest == null) return;
         normalRequest.getCallback().onMessageReceived(noIndexObject.toString());
     }
 
     private void backEndSendMessage(JsonObject noIndexObject) {
+        if (!BuildConfig.DEBUG) return;
         String backEndMessage = "backEndMessage";
         long T = noIndexObject.get("T").getAsLong();
         switch ((int) T) {
@@ -137,7 +140,12 @@ public class HttpConnection {
         if (BuildConfig.DEBUG) {
             Logger.d("提交参数：" + json);
         }
-        connection.send(json);
+        try {
+            connection.send(json);
+        } catch (Exception e) {
+            callback3.error(params.getSourceCode(), "请求失败");
+            return;
+        }
         ApiCache.addRequestCallBack(params, callback3);
     }
 

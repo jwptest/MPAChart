@@ -16,53 +16,61 @@
         android:layout_marginRight="@dimen/dp_12"
         android:layout_marginTop="@dimen/dp_10"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/dp_30"
-        android:paddingRight="@dimen/dp_30"
+        android:paddingLeft="@dimen/dp_10"
+        android:paddingRight="@dimen/dp_10"
         android:paddingTop="@dimen/dp_30">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0.0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_marginRight="@dimen/dp_5"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvTitleType"
-                style="@style/open_prize_product"
-                android:text="资产类型"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvTitleMoney"
-                style="@style/open_prize_product"
-                android:layout_centerHorizontal="true"
-                android:text="投资"/>
+                <TextView
+                    android:id="@+id/tvTitleType"
+                    style="@style/open_prize_product"
+                    android:text="资产类型"/>
 
-            <TextView
-                android:id="@+id/tvTitleProfit"
-                style="@style/open_prize_product"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="@dimen/dp_30"
-                android:text="收益"/>
+                <TextView
+                    android:id="@+id/tvTitleMoney"
+                    style="@style/open_prize_product"
+                    android:layout_centerHorizontal="true"
+                    android:text="投资"/>
 
-            <TextView
-                android:id="@+id/tvTitleTypeValue"
-                style="@style/open_prize_product_value"
-                android:layout_alignLeft="@+id/tvTitleType"
-                android:layout_below="@+id/tvTitleType"
-                android:text="--"/>
+                <TextView
+                    android:id="@+id/tvTitleProfit"
+                    style="@style/open_prize_product"
+                    android:text="收益"/>
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvTitleMoneyValue"
-                style="@style/open_prize_product_value"
-                android:layout_alignLeft="@+id/tvTitleMoney"
-                android:layout_below="@+id/tvTitleType"
-                android:text="--"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvTitleProfitValue"
-                style="@style/open_prize_product_value"
-                android:layout_alignLeft="@+id/tvTitleProfit"
-                android:layout_below="@+id/tvTitleType"
-                android:text="--"/>
+                <TextView
+                    android:id="@+id/tvTitleTypeValue"
+                    style="@style/open_prize_product_value"
+                    android:text="--"/>
+
+                <TextView
+                    android:id="@+id/tvTitleMoneyValue"
+                    style="@style/open_prize_product_value"
+                    android:text="--"/>
+
+                <TextView
+                    android:id="@+id/tvTitleProfitValue"
+                    style="@style/open_prize_product_value"
+                    android:text="--"/>
+            </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/rlChart"
@@ -96,7 +104,7 @@
 
             </RelativeLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
         <View
             android:layout_width="@dimen/dp_0.6"
@@ -107,9 +115,8 @@
             android:id="@+id/rvList"
             android:layout_width="0.0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/dp_10"
-            android:paddingRight="@dimen/dp_10"/>
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 

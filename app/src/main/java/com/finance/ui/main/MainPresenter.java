@@ -241,6 +241,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     public void onFailed(int code, String msg, boolean isFromCache) {
                         if (mView == null) return;
                         App.getInstance().showErrorMsg(msg);
+                        EventBus.post(new OpenPrizeDialogEvent(false));
                     }
                 });
     }

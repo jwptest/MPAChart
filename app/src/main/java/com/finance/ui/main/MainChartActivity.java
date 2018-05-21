@@ -405,6 +405,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //            isNextIssue = false;
 //        }
         refreshIessue();//刷新期号
+        onEvent(new UpdateUserInfoEvent(false));
     }
 
 //    @Subscribe

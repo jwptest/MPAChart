@@ -12,9 +12,11 @@ import com.finance.event.EventBus;
 import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.http.HttpConnection;
+import com.finance.model.https.ApiCache;
 import com.finance.model.imps.NetworkRequest;
 import com.finance.ui.main.MainContract;
 import com.finance.utils.HandlerUtil;
+import com.finance.utils.IndexFormatUtil;
 import com.finance.utils.IndexUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
@@ -36,6 +38,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     private LineData lineData;//显示数据
     private HttpConnection /*mHttpConnection0,*/ mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
+    private IndexUtil mIndexUtil;//指数解析工具类
     //    private MThread mMThread;//解析数据线程
     //    private ArrayList<Entry> mAllIndexMarks;//全部数据
 //    private ArrayList<Entry> mIndexMarkEntities;//推送的指数数据
@@ -53,6 +56,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         super(context, view, chart, presenter, animView);
 //        this.mIndexMarkEntities = new ArrayList<>(6);
 //        this.mAllIndexMarks = new ArrayList<>(600);
+        mIndexUtil = new IndexUtil();
         this.mPointAnimation = new ChartCurrentPointAnimation(new ChartCurrentPointAnimation.IinvalidateChart() {
             @Override
             public void invalidateChart() {
@@ -78,10 +82,11 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         if (mChartDatas == null || mChartDatas.isEmpty() || TextUtils.isEmpty(indexMark))
             return null;
         int size = mChartDatas.size();
+        IndexMarkEntity indexMarkEntity = mIndexUtil.parseExponentially(0, indexMark, Constants.INDEXDIGIT);
         IndexMarkEntity entity;
         for (int i = size - 1; i >= 0; i--) {
             entity = (IndexMarkEntity) mChartDatas.get(i);
-            if (TextUtils.equals(entity.getId(), indexMark))
+            if (TextUtils.equals(entity.getId(), indexMark) || (indexMarkEntity != null && indexMarkEntity.getTimeLong() >= entity.getTimeLong()))
                 return entity;
         }
         return null;
@@ -191,14 +196,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     protected void updateData() {
         if (issueEntity == null || productEntity == null) return;
         isRefrshChartData = true;
-        if (mCallback != null) {
-            mCallback.isStop = true;
-            mCallback = null;
-        }
+
         //重置介入绘制参数
 //        mChart.setDrawIntervention(-1, 0, 300);
         EventBus.post(new DataRefreshEvent(false));
-        mCallback = new Callback(this);
         stopNetwork();//停止以前的网络请求
         isTimer = false;//设置不可以转换时间
 //        startRemoveDataAnimation();//启动删除动画
@@ -207,7 +208,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //        mHttpConnection0 = mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
         mPresenter.getHistoryIssues(productEntity.getProductId(), (int) (timer / 1000), getCallbackIssues());
         //获取时时数据
-        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
+        mPresenter.getAlwaysIssues(productEntity.getProductId(), getAlwaysCallback());
 //        mPresenter.getAlwaysIssues(productEntity.getProductId(), mCallback);
     }
 
@@ -251,6 +252,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         } else {
             entitys = new ArrayList<>(arrayList);
         }
+        IndexFormatUtil.sortEntry(entitys);//排序
         updateStartTime(entitys.get(0));
         return entitys;
     }
@@ -356,7 +358,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     private MCallbackIssues mCallbackIssues;
 //    private MThread mMThread;
 
-    public MCallbackIssues getCallbackIssues() {
+    private MCallbackIssues getCallbackIssues() {
         if (mCallbackIssues != null) {
             //设置为废弃
             mCallbackIssues.isDiscarded = true;
@@ -377,6 +379,16 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //            }
 //        };
     }
+
+    private Callback getAlwaysCallback() {
+        if (mCallback != null) {
+            ApiCache.removeCallBacks(mCallback);
+            mCallback.isStop = true;
+            mCallback = null;
+        }
+        return mCallback = new Callback(this);
+    }
+
 
     private static class Callback extends NetworkRequest.BaseCallback {
 
@@ -453,6 +465,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
             final ArrayList<IndexMarkEntity> entities2 = getIndexMark(entities, entities.size(), startTimer);
             if (isDiscarded) return;
             isTimer = true;
+            IndexFormatUtil.sortIndex(entities2);
             updateStartTime(entities2.get(0));//更新起始时间
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override
@@ -464,47 +477,48 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         }
     }
 
-    private static class MThread extends Thread {
-        private boolean isDiscarded = false;//是否废弃
-        private ArrayList<String> strings;
-        private IndexUtil mIndexUtil;
-        private LineChartData1 mLineChartData;
-
-        private MThread(LineChartData1 mLineChartData, ArrayList<String> strings) {
-            this.strings = strings;
-            this.mLineChartData = mLineChartData;
-            mIndexUtil = new IndexUtil();
-        }
-
-        @Override
-        public void run() {
-            if (isDiscarded || mLineChartData == null) return;
-            IndexMarkEntity entity = mIndexUtil.parseExponentially(0, strings.get(0), Constants.INDEXDIGIT);
-//            Constants.setReferenceX(entity.getTime());//更新基准下标
-//            添加时时推送的指数
-            if (mLineChartData.mCallback != null && mLineChartData.mCallback.indexStrs != null) {
-                strings.addAll(mLineChartData.mCallback.indexStrs);
-                mLineChartData.mCallback.indexStrs.clear();
-            }
-            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(entity.getTimeLong(), strings, Constants.INDEXDIGIT);
-            long startTimer = mLineChartData.getStartTimer(Constants.SERVERCURRENTTIMER);
-            final ArrayList<IndexMarkEntity> entities2 = mLineChartData.getIndexMark(entities, entities.size(), startTimer);
-//            Collections.sort(entities2, new Comparator<IndexMarkEntity>() {
+//    private static class MThread extends Thread {
+//        private boolean isDiscarded = false;//是否废弃
+//        private ArrayList<String> strings;
+//        private IndexUtil mIndexUtil;
+//        private LineChartData1 mLineChartData;
+//
+//        private MThread(LineChartData1 mLineChartData, ArrayList<String> strings) {
+//            this.strings = strings;
+//            this.mLineChartData = mLineChartData;
+//            mIndexUtil = new IndexUtil();
+//        }
+//
+//        @Override
+//        public void run() {
+//            if (isDiscarded || mLineChartData == null) return;
+//            IndexMarkEntity entity = mIndexUtil.parseExponentially(0, strings.get(0), Constants.INDEXDIGIT);
+////            Constants.setReferenceX(entity.getTime());//更新基准下标
+////            添加时时推送的指数
+//            if (mLineChartData.mCallback != null && mLineChartData.mCallback.indexStrs != null) {
+//                strings.addAll(mLineChartData.mCallback.indexStrs);
+//                mLineChartData.mCallback.indexStrs.clear();
+//            }
+//            final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(entity.getTimeLong(), strings, Constants.INDEXDIGIT);
+//            long startTimer = mLineChartData.getStartTimer(Constants.SERVERCURRENTTIMER);
+//            final ArrayList<IndexMarkEntity> entities2 = mLineChartData.getIndexMark(entities, entities.size(), startTimer);
+////            Collections.sort(entities2, new Comparator<IndexMarkEntity>() {
+////                @Override
+////                public int compare(IndexMarkEntity o1, IndexMarkEntity o2) {
+////                    return o1.getTimeLong() > o2.getTimeLong() ? 1 : -1;
+////                }
+////            });
+//            if (isDiscarded || mLineChartData == null) return;
+//            mLineChartData.isTimer = true;
+//            IndexFormatUtil.sortIndex(entities2);
+//            mLineChartData.updateStartTime(entities2.get(0));
+//            HandlerUtil.runOnUiThread(new Runnable() {
 //                @Override
-//                public int compare(IndexMarkEntity o1, IndexMarkEntity o2) {
-//                    return o1.getTimeLong() > o2.getTimeLong() ? 1 : -1;
+//                public void run() {
+//                    mLineChartData.updateHistoryData(entities2);
 //                }
 //            });
-            if (isDiscarded || mLineChartData == null) return;
-            mLineChartData.isTimer = true;
-            mLineChartData.updateStartTime(entities2.get(0));
-            HandlerUtil.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mLineChartData.updateHistoryData(entities2);
-                }
-            });
-        }
-    }
+//        }
+//    }
 
 }

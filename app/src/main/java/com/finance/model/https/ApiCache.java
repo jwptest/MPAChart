@@ -23,7 +23,7 @@ public class ApiCache {
         callback3.setTag(options.getTag());
         requestCallBack.setCallback(callback3);
         isRunning = true;
-        RequestCallBack tempCallBack = findCallBackById(requestCallBacks, key);
+        RequestCallBack tempCallBack = findCallBackById(requestCallBacks, key, true);
         if (tempCallBack != null) tempCallBack.done();
         requestCallBacks.add(requestCallBack);
         isRunning = false;
@@ -32,25 +32,37 @@ public class ApiCache {
     }
 
     //        在请求缓存池中，寻找Key相等的对象
-    private static RequestCallBack findCallBackById(ArrayList<RequestCallBack> requestCallBacks, String key) {
+    private static RequestCallBack findCallBackById(ArrayList<RequestCallBack> requestCallBacks, String key, boolean isRemove) {
         RequestCallBack backCallBack = null;
         for (RequestCallBack requestCallback : requestCallBacks) {
             if (requestCallback.getId().equals(key)) {
                 backCallBack = requestCallback;
+                break;
             }
+        }
+        if (isRemove && backCallBack != null) {
+            requestCallBacks.remove(backCallBack);
         }
         return backCallBack;
     }
 
-    //        在请求缓存池中，寻找Key相等的对象
-    public static RequestCallBack findCallBackById(String key) {
-        RequestCallBack backCallBack = null;
+    public static void removeCallBacks(BaseCallback3 callback) {
+        RequestCallBack requestCallback0 = null;
         for (RequestCallBack requestCallback : requestCallBacks) {
-            if (requestCallback.getId().equals(key)) {
-                backCallBack = requestCallback;
+            if (requestCallback.getCallback() == callback) {
+                requestCallback0 = requestCallback;
+                break;
             }
         }
-        return backCallBack;
+        if (requestCallback0 != null) {
+            requestCallBacks.remove(requestCallback0);
+        }
+    }
+
+
+    //        在请求缓存池中，寻找Key相等的对象
+    public static RequestCallBack findCallBackById(String key, boolean isRemove) {
+        return findCallBackById(requestCallBacks, key, isRemove);
     }
 
     //返回发送池中的KEY
@@ -71,17 +83,34 @@ public class ApiCache {
             mRunnable = null;
             return;
         }
-        for (RequestCallBack requestCallBack : requestCallBacks) {
-            requestCallBack.addCountTime(1000);
-            if (requestCallBack.getCountTime() < requestCallBack.getCountTime() || requestCallBack.isRate())
-                continue;
-//            移除掉超时的，非指数的，requestCallback,
-//            如果超时中，没有成功的，调用失败方法
-            if (!requestCallBack.isSuccess()) {
-                requestCallBack.error("超时"); //看你怎么处理
-            }
-            requestCallBacks.remove(requestCallBack);
+        int size = requestCallBacks == null ? 0 : requestCallBacks.size();
+        if (size == 0) {
+            mRunnable = null;
+            return;
         }
+        long timer = System.currentTimeMillis();
+        ArrayList<RequestCallBack> arrayList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            RequestCallBack requestCallBack = requestCallBacks.get(i);
+            if (requestCallBack.isRate()) return;
+            if (timer - requestCallBack.getStartTimer() < requestCallBack.getTimeOut()) continue;
+            requestCallBack.error("超时"); //看你怎么处理
+            arrayList.add(requestCallBack);
+        }
+        for (RequestCallBack callBack : arrayList) {
+            requestCallBacks.remove(callBack);
+        }
+//        for (RequestCallBack requestCallBack : requestCallBacks) {
+//            requestCallBack.addCountTime(1000);
+//            if (requestCallBack.getCountTime() < requestCallBack.getCountTime() || requestCallBack.isRate())
+//                continue;
+////            移除掉超时的，非指数的，requestCallback,
+////            如果超时中，没有成功的，调用失败方法
+//            if (!requestCallBack.isSuccess()) {
+//                requestCallBack.error("超时"); //看你怎么处理
+//            }
+//            requestCallBacks.remove(requestCallBack);
+//        }
         if (requestCallBacks == null || !requestCallBacks.isEmpty()) {
             mRunnable = null;
         } else {

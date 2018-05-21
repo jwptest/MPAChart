@@ -158,7 +158,8 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         new Thread() {
             @Override
             public void run() {
-                ArrayList<IndexMarkEntity> entities = new IndexUtil().parseExponentially2(0, entity.getIndexMarks(), Constants.INDEXDIGIT);
+                IndexUtil indexUtil = new IndexUtil();
+                ArrayList<IndexMarkEntity> entities = indexUtil.parseExponentially2(0, entity.getIndexMarks(), Constants.INDEXDIGIT);
                 if (entities == null) return;
                 //设置下标
                 for (int i = 0, size = entities.size(); i < size; i++) {
@@ -171,9 +172,13 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 
                 for (PurchaseViewEntity viewEntity : viewEntities) {
                     IndexMarkEntity indexMarkEntity = null;
+                    IndexMarkEntity indexMarkEntity1 = indexUtil.parseExponentially(0, viewEntity.getIndexMark(), Constants.INDEXDIGIT);
                     for (int i = size; i >= 0; i--) {
                         indexMarkEntity = entities.get(i);
                         if (TextUtils.equals(viewEntity.getIndexMark(), indexMarkEntity.getId())) {
+                            indexMarkEntity.setData(indexMarkEntity.getId());
+                            break;
+                        } else if (indexMarkEntity1 != null && indexMarkEntity1.getTimeLong() >= indexMarkEntity.getTimeLong()) {
                             indexMarkEntity.setData(indexMarkEntity.getId());
                             break;
                         }

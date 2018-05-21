@@ -61,8 +61,8 @@
                 android:id="@+id/ivIcon"
                 android:layout_width="@dimen/dp_10"
                 android:layout_height="@dimen/dp_10"
-                android:layout_marginLeft="@dimen/dp_15"
-                android:layout_marginTop="@dimen/dp_6"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="@dimen/dp_5"
                 android:scaleType="centerInside"
                 android:src="@drawable/fall_icon_item"/>
         </LinearLayout>
