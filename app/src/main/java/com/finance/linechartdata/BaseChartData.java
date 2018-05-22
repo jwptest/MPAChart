@@ -1,6 +1,5 @@
 package com.finance.linechartdata;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
 
 import com.finance.R;
-import com.finance.base.BaseAminatorListener;
 import com.finance.common.Constants;
 import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
@@ -68,7 +66,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         this.mPresenter = presenter;
         this.mXAxis = mChart.getXAxis();
         this.mChartDatas = new ArrayList<>(100);
-        this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_30);
+        this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_15);
 //        this.animView = animView;
         minsPacing = ViewConfiguration.get(context).getScaledTouchSlop();
         this.mChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -109,6 +107,10 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     @Override
     public void openPrize(boolean isOrder) {
         isAnimation = true;
+//        if (this.productEntity != null) {
+//            //取消订阅产品
+//            mPresenter.unSubscribeProduct(this.productEntity.getProductId());
+//        }
     }
 
     @Override
@@ -119,6 +121,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
                 return;
             }
             this.issueEntity = issueEntity;
+            isAnimation = true;
             //去掉部分历史数据
             removeBasicData();
         } else {
@@ -137,7 +140,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     }
 
     //刷新X轴显示的最大值
-    protected void setAxisMaximum(int count) {
+    protected void setAxisMaximum() {
 //        long trimL = getLengthTime() / Constants.ISSUEINTERVAL;
 //        if (trimL <= 0) return;
 //        //有效绘制的X轴条数
@@ -238,7 +241,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChartDatas.clear();
         if (maxIndex > 0) {
             mChartDatas.addAll(entitys);
-            setAxisMaximum(maxIndex + 1);//刷新X周显示条数
+            setAxisMaximum();//刷新X周显示条数
         }
         dataMinCount = entitys.size();//保存基础数据条数
         if (combinedData == null) {
@@ -266,7 +269,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChartDatas.clear();//清理了，如果走势图还在刷新就会报下标超界
         mChartDatas.addAll(entitys);
         dataMinCount = mChartDatas.size();
-        setAxisMaximum(0);
+        setAxisMaximum();
         isAnimation = false;
         invalidateChart();
         //走势图数据查询事件

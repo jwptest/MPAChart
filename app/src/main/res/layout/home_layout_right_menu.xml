@@ -26,20 +26,32 @@
         <ImageView
             android:id="@+id/ivMoneyReduce"
             android:layout_width="@dimen/dp_30"
-            android:layout_height="@dimen/dp_30"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:clickable="true"
             android:scaleType="fitXY"
             android:src="@drawable/home_money_fall_button"/>
 
+        <ImageView
+            android:id="@+id/ivMoneyAdd"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/home_money_add_button"/>
+
         <!--宽高比1.53-->
         <ImageView
             android:id="@+id/ivEditBg"
-            android:layout_width="@dimen/dp_61"
-            android:layout_height="@dimen/dp_30"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="@dimen/dp_2"
-            android:layout_marginRight="@dimen/dp_2"
+            android:layout_marginLeft="@dimen/dp_3"
+            android:layout_marginRight="@dimen/dp_3"
+            android:layout_toLeftOf="@+id/ivMoneyAdd"
+            android:layout_toRightOf="@+id/ivMoneyReduce"
             android:scaleType="fitXY"
             android:src="@drawable/money_edit_bg"/>
 
@@ -49,24 +61,14 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/dp_2"
-            android:layout_marginRight="@dimen/dp_2"
+            android:layout_marginLeft="@dimen/dp_3"
+            android:layout_marginRight="@dimen/dp_3"
             android:gravity="center"
             android:singleLine="true"
             android:tag="10"
             android:text="¥100"
             android:textColor="@color/red"
-            android:textSize="@dimen/sp_13"/>
-
-        <ImageView
-            android:id="@+id/ivMoneyAdd"
-            android:layout_width="@dimen/dp_30"
-            android:layout_height="@dimen/dp_30"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:clickable="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/home_money_add_button"/>
+            android:textSize="@dimen/sp_12.5"/>
 
     </RelativeLayout>
 

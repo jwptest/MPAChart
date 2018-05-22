@@ -87,6 +87,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
     private int productId;
     private String issue;
     private ViewUtil mViewUtil;
+    private int digit;
 
     private RelativeLayout.LayoutParams tranConParams, tranConDesParams;//横向对比线
     private int tranConDesHight;
@@ -101,7 +102,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
      */
     public OpenPrizePopWindow(@NonNull Activity context, MainContract.View view,
                               HistoryIssueEntity entity, IndexMarkEntity openIndex,
-                              int productId, String issue, String productName, int screenWidth, int screenHeight) {
+                              int productId, String issue, String productName, int digit, int screenWidth, int screenHeight) {
         super(context, (int) (screenWidth * 0.6f), (int) (screenHeight * 0.6f), (int) (screenWidth * 0.2f), (int) (screenHeight * 0.2));
         this.mContext = context;
 //        this.mChartSetting = mChartSetting;
@@ -111,6 +112,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         this.productId = productId;
         this.issue = issue;
         this.productName = productName;
+        this.digit = digit;
         this.mViewUtil = new ViewUtil();
         setTouchable(true);
         setOutsideTouchable(false);   //设置外部点击关闭ppw窗口
@@ -159,7 +161,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
             @Override
             public void run() {
                 IndexUtil indexUtil = new IndexUtil();
-                ArrayList<IndexMarkEntity> entities = indexUtil.parseExponentially2(0, entity.getIndexMarks(), Constants.INDEXDIGIT);
+                ArrayList<IndexMarkEntity> entities = indexUtil.parseExponentially2(0, entity.getIndexMarks(), digit);
                 if (entities == null) return;
                 //设置下标
                 for (int i = 0, size = entities.size(); i < size; i++) {
@@ -172,7 +174,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 
                 for (PurchaseViewEntity viewEntity : viewEntities) {
                     IndexMarkEntity indexMarkEntity = null;
-                    IndexMarkEntity indexMarkEntity1 = indexUtil.parseExponentially(0, viewEntity.getIndexMark(), Constants.INDEXDIGIT);
+                    IndexMarkEntity indexMarkEntity1 = indexUtil.parseExponentially(0, viewEntity.getIndexMark(), digit);
                     for (int i = size; i >= 0; i--) {
                         indexMarkEntity = entities.get(i);
                         if (TextUtils.equals(viewEntity.getIndexMark(), indexMarkEntity.getId())) {
@@ -189,18 +191,18 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                         String createTime = viewEntity.getCreateTime();
                         orderEntity.setTimerStr(TimerUtil.getTimer(createTime));//时间
                         orderEntity.setDateStr(TimerUtil.getDate(createTime));
-                        orderEntity.setPurchaseIndex(indexMarkEntity.getY() + "");//指数
-                        orderEntity.setOpenIndex(openIndex.getY() + "");
+                        orderEntity.setPurchaseIndex(indexMarkEntity.getY() + "");//购买指数
+                        orderEntity.setOpenIndex(openIndex.getY() + "");//开奖指数
                         orderEntity.setIcon(viewEntity.isResult() ? R.drawable.add_icon_item : R.drawable.fall_icon_item);
                         orderTMoney += viewEntity.getMoney();//订单金额
-                        orderEntity.setOrderMoney("¥" + viewEntity.getMoney());
+                        orderEntity.setOrderMoney("¥" + viewEntity.getMoney());//购买金额
                         int profit = 0;
                         if (viewEntity.isResult() && openIndex.getY() > indexMarkEntity.getY()) {//猜涨
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         } else if (!viewEntity.isResult() && openIndex.getY() < indexMarkEntity.getY()) {//猜跌
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         }
-                        orderEntity.setProfit("¥" + profit);
+                        orderEntity.setProfit("¥" + profit);//收益金额
                         profitTMoney += profit;
                         mOrderEntities.add(orderEntity);
                         //购买点数据
@@ -242,10 +244,10 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
             @Override
             protected void onBindData(RecyclerViewHolder viewHolder, int position, OpenOrderEntity item) {
                 viewHolder.setText(R.id.tvTimer, item.getTimerStr())
-                        .setText(R.id.tvIndex, item.getPurchaseIndex())
+                        .setText(R.id.tvIndex, item.getOpenIndex())
                         .setText(R.id.tvProfit, item.getProfit())
                         .setText(R.id.tvDate, item.getDateStr())
-                        .setText(R.id.tvIndexValue, item.getOpenIndex())
+                        .setText(R.id.tvIndexValue, item.getPurchaseIndex())
                         .setImageResource(R.id.ivIcon, item.getIcon())
                         .setText(R.id.tvMoney, item.getOrderMoney());
             }

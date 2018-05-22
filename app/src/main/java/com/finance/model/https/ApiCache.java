@@ -59,7 +59,6 @@ public class ApiCache {
         }
     }
 
-
     //        在请求缓存池中，寻找Key相等的对象
     public static RequestCallBack findCallBackById(String key, boolean isRemove) {
         return findCallBackById(requestCallBacks, key, isRemove);

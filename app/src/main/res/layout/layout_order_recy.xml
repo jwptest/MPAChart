@@ -131,6 +131,7 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0.6"
         android:layout_marginLeft="@dimen/dp_10"

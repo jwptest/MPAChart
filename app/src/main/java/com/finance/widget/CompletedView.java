@@ -147,7 +147,7 @@ public class CompletedView extends View {
             canvas.drawArc(oval, -90, ((float) mProgress / mTotalProgress) * 360, false, mRingPaint); //
 
             //字体
-            String txt = mProgress + "";
+            String txt = mProgress > 99 ? "99+" : mProgress + "";
             mTxtWidth = mTextPaint.measureText(txt, 0, txt.length());
             canvas.drawText(txt, mXCenter - mTxtWidth / 2, mYCenter + mTxtHeight / 4, mTextPaint);
         }

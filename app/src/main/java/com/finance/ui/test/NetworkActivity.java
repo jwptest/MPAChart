@@ -45,8 +45,6 @@ public class NetworkActivity extends BaseActivity {
 //        baseParams.addParam("NickName", "123456");
         baseParams.addParam("Password", "123456");
         baseParams.addParam("UserName", "tt1234567");
-
-
     }
 
     @OnClick(R.id.tvSend)
@@ -61,7 +59,6 @@ public class NetworkActivity extends BaseActivity {
 //                Log.d("123", "received message: " + jsonElement.toString());
 //            }
 //        }, baseParams.getParams());
-
 //        NetworkRequest.getInstance()
 //                .getHttpConnection()
 //                .setTag(this)

@@ -47,6 +47,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     private MainContract.View mView;
     private MainContract.Presenter mPresenter;
     private boolean isRefesh = false;//是否刷新列表
+    private boolean isGetData;//是否正在获取数据
 
     private OrderAdapter mAdapter;
 
@@ -142,27 +143,34 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
 
     @Override
     public void openPrize() {
+        if (isGetData) return;
         //到达开奖点
         if (mDataSource != null)
             mDataSource.refresh();//重新加载数据
     }
 
     @Override
-    public long[] getIssueOpenTotalTime(int productId, String issueName) {
-        //开奖时间和当前期总时长
-        IssueEntity entity = mView.getIssue(productId, issueName);
-        long[] openTotal = new long[]{1, 1};
-        if (entity != null) {
-            openTotal[0] = TimerUtil.timerToLong(entity.getBonusTime());//开奖时间
-            openTotal[1] = TimerUtil.timerToLong(entity.getStartTime());//开始时间
-            if (openTotal[1] < Constants.SERVERCURRENTTIMER) {
-                openTotal[1] = (openTotal[0] - openTotal[1]) / 1000;
-            } else {
-                openTotal[1] = (openTotal[0] - Constants.SERVERCURRENTTIMER) / 1000;
-            }
-        }
-        return openTotal;
+    public long getOpenTimer(int productId, String issue) {
+        IssueEntity entity = mView.getIssue(productId, issue);
+        return TimerUtil.timerToLong(entity.getBonusTime());
     }
+
+//    @Override
+//    public long[] getIssueOpenTotalTime(int productId, String issueName) {
+//        //开奖时间和当前期总时长
+//        IssueEntity entity = mView.getIssue(productId, issueName);
+//        long[] openTotal = new long[]{1, 1};
+//        if (entity != null) {
+//            openTotal[0] = TimerUtil.timerToLong(entity.getBonusTime());//开奖时间
+//            openTotal[1] = TimerUtil.timerToLong(entity.getStartTime());//开始时间
+//            if (openTotal[1] < Constants.SERVERCURRENTTIMER) {
+//                openTotal[1] = (openTotal[0] - openTotal[1]) / 1000;
+//            } else {
+//                openTotal[1] = (openTotal[0] - Constants.SERVERCURRENTTIMER) / 1000;
+//            }
+//        }
+//        return openTotal;
+//    }
 
     @Override
     public long getServerTimer() {
@@ -189,11 +197,13 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
         @Override
         public void load(int page, int size) {
             isRefesh = false;
+            isGetData = true;
             mPresenter.getOrderRecord(size, page, this);
         }
 
         @Override
         public void onCallback(int code, OrdersEntity ordersEntity, String message) {
+            isGetData = false;
             if (!isShowing()) return;
             if (ordersEntity == null || ordersEntity.getOrders().isEmpty()) {
                 loadFail();

@@ -48,7 +48,9 @@ public class MYAxisRightRenderer extends YAxisRenderer {
     }
 
     public float getLabelWidth() {
-        if (TextUtils.isEmpty(measureText)) return 0;
+        if (TextUtils.isEmpty(measureText)) {
+            measureText = "1.000000";
+        }
         return mAxisLabelPaint.measureText(measureText);
     }
 

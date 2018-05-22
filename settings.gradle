@@ -1,3 +1,4 @@
 //include  ':SignalA', ':parallel-basic-http-client', ':SignalA.LongPolling'
 include ':app'
 include 'MPChartLib'
+include ':bugtagsAndroidEclipseLib'

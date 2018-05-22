@@ -20,6 +20,7 @@ import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
 import com.finance.event.OpenPrizeDialogEvent;
+import com.finance.event.UpdateIssueEvent;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
 import com.finance.linechartview.BaseAxisValueFormatter;
@@ -74,11 +75,13 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 
     //当前点的坐标
     private int currentX, currentY;
+    private float currentXAxis;
     //当前点的值
     private IndexMarkEntity currentEntry;
     //当前点的值
     private Entry endEntry, openEntry;
     private long endTimer, openTimer, oneEndTimer, oneOpenTimer;//截止时间和开奖时间
+    private float endX, openX, oneEndX, oneOpenX;
     private ProductEntity mProductEntity;//当前产品
     //当前期号
     private IssueEntity oneIssueEntity, mCurrentIssueEntity;
@@ -115,9 +118,13 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     //刷新购买点坐标工具类
     private ViewUtil mViewUtil;
     private int childCount;
-    private int dpPx10;
+    //    private int dpPx10;
     private boolean isOrder = false;//是否有订单
     private long currentTimer;//当前点转换为时间
+    private boolean isEnd = true;//是否判断截止
+    private long endTimerIs, openTimerIs;//用于判断的开奖时间和结束时间
+    private float endXIs, openXIs;//用于判断的开奖时间和结束时间
+
 
     public LineChartListener(Activity activity, ViewGroup rlPurchaseView, MainContract.View view, MCombinedChart lineChart) {
         this.mActivity = activity;
@@ -126,7 +133,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         this.mXAxis = lineChart.getXAxis();
         mAnimator = AnimationUtils.loadAnimation(activity, R.anim.animation_chart_current_point);
         mParent = rlPurchaseView;
-        dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_15);
+//        dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_15);
         mViewUtil = new ViewUtil();
         childCount = mParent.getChildCount() - 1;
         mPurchaseViewEntities = new ArrayList<>(4);
@@ -423,6 +430,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mProductEntity = productEntity;
         this.mCurrentIssueEntity = mCurrentIssueEntity;
         this.oneIssueEntity = oneIssueEntity;
+        format = new IndexFormatUtil(mProductEntity.getDigit());
     }
 
 //    //将所有布局添加到控件
@@ -558,13 +566,18 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
         boolean isShow;
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
-            if (mProductEntity.getProductId() != entity.getProductId()) continue;
+            if (mProductEntity.getProductId() != entity.getProductId()) {//不是当前产品的订单
+                //设置不需要显示
+                ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
+                continue;
+            }
             IndexMarkEntity indexMarkEntity = mView.getIndexMarkEntity(entity.getIndexMark());
             if (indexMarkEntity == null) {
                 //设置不需要显示
                 ViewUtil.setViewVisibility(entity.getRootView(), View.GONE);
                 continue;
             }
+            //判断是否显示订单
             isShow = (TextUtils.equals(mCurrentIssueEntity.getIssueName(), entity.getIssue())) ||
                     (isOtherIssue && productId == entity.getProductId() && TextUtils.equals(issueName, entity.getIssue()));
             if (isShow) {//是否是当前产品下购买的
@@ -600,11 +613,34 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (mIChartData != null && mCurrentIssueEntity != null && oneIssueEntity != null) {
             endEntry = mIChartData.getEntry(mCurrentIssueEntity.getStopTime());
             openEntry = mIChartData.getEntry(mCurrentIssueEntity.getBonusTime());
+
             endTimer = TimerUtil.timerToLong(mCurrentIssueEntity.getStopTime());
             openTimer = TimerUtil.timerToLong(mCurrentIssueEntity.getBonusTime());
 
             oneEndTimer = TimerUtil.timerToLong(oneIssueEntity.getStopTime());
             oneOpenTimer = TimerUtil.timerToLong(oneIssueEntity.getBonusTime());
+            if (endEntry != null) {
+                endX = endEntry.getX();
+            } else {
+                endX = Integer.MAX_VALUE;
+            }
+            if (openEntry != null) {
+                openX = openEntry.getX();
+            } else {
+                openX = Integer.MAX_VALUE;
+            }
+            Entry entry = mIChartData.getEntry(oneIssueEntity.getStopTime());
+            if (entry != null) {
+                oneEndX = entry.getX();
+            } else {
+                oneEndX = Integer.MAX_VALUE;
+            }
+            entry = mIChartData.getEntry(oneIssueEntity.getBonusTime());
+            if (entry != null) {
+                oneOpenX = entry.getX();
+            } else {
+                oneOpenX = Integer.MAX_VALUE;
+            }
 //            long startTimer = mIChartData.getStartTimer();
 //            int timerLength = (int) ((openTimer - startTimer) / 60000);
 //            mChart.getXAxis().setLabelCount(timerLength, true);
@@ -618,11 +654,12 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     public void completion(IndexMarkEntity lastEntry, IDataSet dataSet) {
         currentEntry = lastEntry;
         currentTimer = currentEntry.getTimeLong();//TimerUtil.timerToLong(lastEntry.getTime());
+        currentXAxis = currentEntry.getX();
         Constants.SERVERCURRENTTIMER = currentTimer;//服务器当前时间
         if (!isRefresh) return;
         currentDataSet = dataSet;
         if (mView.isRefrshChartData()) return;
-        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentEntry.getX(), currentEntry.getY());
+        MPPointD pointD = ViewUtil.getMPPointD(mChart, dataSet, currentXAxis, currentEntry.getY());
 //        Log.d("123", "completion: " + (long) currentEntry.getX());
 //        Log.d("123", "open: " + (long) openEntry.getX());
 //        Log.d("123", "Xmax: " + mXAxis.getAxisMaximum());
@@ -679,7 +716,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         }
     }
 
-
     //设置当前点Icon坐标
     private void refreshLocation(Entry last, IDataSet dataSet) {
         //当前点
@@ -712,18 +748,20 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private void refreshPurchaseViews(IDataSet dataSet) {
         isOrder = false;
         if (mPurchaseViewEntities == null || mPurchaseViewEntities.isEmpty()) return;
-        boolean isIndex = false;
+//        boolean isIndex = false;
         boolean isOpenPrizeDialogEvent = false;
         if (!removePurchaseViews.isEmpty())
             removePurchaseViews.clear();
+        PurchaseViewEntity entity0 = null;
         //移除到达开奖点的购买点
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             if (entity.getOpenTimer() <= currentTimer) {
                 entity.getRootView().clearAnimation();
                 mParent.removeView(entity.getRootView());
                 if (entity.getProductId() == mProductEntity.getProductId()) {
-                    isIndex = true;
+//                    isIndex = true;
                     temporaryList.add(entity.copy());
+                    entity0 = entity;
                 }
                 removePurchaseViews.add(entity);
                 isOpenPrizeDialogEvent = true;
@@ -739,8 +777,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         for (PurchaseViewEntity entity : mPurchaseViewEntities) {
             refreshPurchaseView(entity, dataSet);
         }
-        if (isIndex) {//判断当前产品是否到有到达开奖点的
-            EventBus.post(new IndexEvent());
+        if (entity0 != null) {//判断当前产品是否到有到达开奖点的
+            EventBus.post(new IndexEvent(entity0.getProductId(), mProductEntity.getProductName(), entity0.getIssue(), TimerUtil.timerFormatStr(entity0.getOpenTimer()), mProductEntity.getDigit()));
         } else if (isOpenPrizeDialogEvent) {
             //有达到开奖时间的订单，但不是当前产品
             EventBus.post(new OpenPrizeDialogEvent(false));
@@ -755,10 +793,6 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         mViewUtil.refreshPurchaseView(mChart, entity, dataSet);
     }
 
-    private boolean isEnd = true;//是否判断截止
-
-    private long endTimerIs, openTimerIs;//用于判断的开奖时间和结束时间
-
     //绘制完成执行
     private void onDraws() {
         //绘制完成事件
@@ -766,16 +800,21 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         if (isOrder) {
             endTimerIs = endTimer;
             openTimerIs = openTimer;
+            endXIs = endX;
+            openXIs = openX;
         } else {
             endTimerIs = oneEndTimer;
             openTimerIs = oneOpenTimer;
+            endXIs = oneEndX;
+            openXIs = oneOpenX;
         }
         //截止购买和开奖
         if (openEntry != null && endEntry != null) {
-            if (isEnd && currentTimer - endTimerIs >= 0) {
+            if (isEnd && (endXIs == Integer.MAX_VALUE ? currentTimer - endTimerIs >= 0 : currentXAxis >= endXIs)) {
                 isEnd = false;
                 EventDistribution.getInstance().purchase(false, isOrder);//截止购买
                 if (currentTimer - endTimer >= 0) {
+                    EventBus.post(new UpdateIssueEvent(true));
                     endLine();
                 }
                 if (isOrder) {
@@ -784,27 +823,15 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                     if (open - currentTimer > 0)//开始倒计时
                         OpenCountDown.getInstance().startCountDown(open - currentTimer);
                 }
-            } else if (currentTimer - openTimerIs >= 0) {
+            } else if (openXIs == Integer.MAX_VALUE ? currentTimer - openTimerIs >= 0 : currentXAxis >= openXIs) {
                 isEnd = true;
                 EventDistribution.getInstance().purchase(true, isOrder);//开奖
                 openLine();
+                EventBus.post(new UpdateIssueEvent(false));
                 if (isOrder) {
                     OpenCountDown.getInstance().stopCountDown();//停止倒计时
                 }
             }
-//            if (currentEntry.getX() == endEntry.getX()) {
-//                EventDistribution.getInstance().purchase(false, isOrder);//截止购买
-//                if (isOrder) {
-//                    long end = TimerUtil.timerToLong(currentEntry.getTime());
-//                    long open = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
-//                    if (open - end > 0)//开始倒计时
-//                        OpenCountDown.getInstance().startCountDown(open - end);
-//                }
-//            } else if (currentEntry.getX() >= openEntry.getX()) {
-//                EventDistribution.getInstance().purchase(true, isOrder);//开奖
-//                if (isOrder)
-//                    OpenCountDown.getInstance().stopCountDown();//停止倒计时
-//            }
         }
     }
 

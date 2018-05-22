@@ -28,7 +28,7 @@ public class Constants {
     public static final int SUCCESSCODE = 0;//请求成功code
     public static final int DEFAULTCODE = -1;//请求成功code
 
-    public static final int INDEXDIGIT = 6;//指数
+    public static int INDEXDIGIT = 6;//指数
 
     private static int sReferenceX = 0;
     public static final int ISSUEINTERVAL = 500;//每一期间隔时间

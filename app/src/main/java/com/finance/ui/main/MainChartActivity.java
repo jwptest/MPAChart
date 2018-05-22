@@ -22,6 +22,7 @@ import com.finance.event.EventBus;
 import com.finance.event.IndexEvent;
 import com.finance.event.NetWorkStateEvent;
 import com.finance.event.OpenPrizeDialogEvent;
+import com.finance.event.UpdateIssueEvent;
 import com.finance.event.UpdateUserInfoEvent;
 import com.finance.event.UserLoginEvent;
 import com.finance.interfaces.ICallback;
@@ -168,6 +169,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private IChartData dataSetting;
     //走势图参数配置接口
     private IChartSetting mChartSetting;
+    //Y轴数据格式工具类
+    private BaseAxisValueFormatter mRightAxisValue;
     //数据处理
     private LineChartData1 mLineChartData;//折线图
     private CandleChartData mCandleData;//蜡烛图
@@ -182,6 +185,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private int issuesSelectIndex = 0;
     private int statusBarHigh = 0;
     private boolean isConnectService = false;//是否连接服务器成功
+    private boolean checkProductUpdateIssue = false;//期号产品是否刷新期号
 
     @Override
     protected int getLayoutId() {
@@ -268,7 +272,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             rlTitleBar.getLayoutParams().height = statusBarHigh + getResources().getDimensionPixelOffset(R.dimen.home_titleBar_height);
         }
         //右边轴value显示格式类
-        BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter(Constants.INDEXDIGIT);
+        mRightAxisValue = new BaseAxisValueFormatter();
         XAxisValueFormatter mXAxisValue = new XAxisValueFormatter();
 //        lineChart.setVisibility(View.GONE);
         mChartSetting = new LineChartSetting(mActivity);
@@ -396,7 +400,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Subscribe
     public void onEvent(IndexEvent event) {
         if (event == null) return;//获取开奖指数事件
-        mMainPresenter.getOpenIndex(currentProduct.getProductId(), currentProduct.getProductName(), currentIssue.getIssueName(), TimerUtil.formatStr(currentIssue.getBonusTime()));
+        mMainPresenter.getOpenIndex(event.getProductId(), event.getProductName(), event.getIssueName(), event.getTime(), event.getDigit());
     }
 
     @Subscribe
@@ -472,6 +476,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //        Toast.makeText(this, event.getState() + "," + event.isNetWork() + "," + this.isNetWork, Toast.LENGTH_SHORT).show();
     }
 
+    @Subscribe
+    public void onEvent(UpdateIssueEvent event) {
+        if (event == null) return;
+        checkProductUpdateIssue = event.isUpdate();
+    }
+
     private void initViewUser() {
         UserInfoEntity entity = UserShell.getInstance().getUserInfo();
         Glide.with(mActivity)
@@ -491,15 +501,21 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     private void initViewProduct(ProductEntity entity) {
         if (entity == null || entity == currentProduct) return;
+        Constants.INDEXDIGIT = entity.getDigit();
+        mRightAxisValue.setDigit(Constants.INDEXDIGIT);
         //清空开奖时间
         tvMoneyType.setText(entity.getProductName());
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
         EventDistribution.getInstance().product(entity);
-        if (mIssueEntities == null) {
+        if (mIssueEntities == null || checkProductUpdateIssue) {
             refreshIessue();//刷新期号
         } else {
             currentIssues = mMainPresenter.getProductIssue(entity.getProductId(), mIssueEntities);
+            if (currentIssues == null) {
+                App.getInstance().showErrorMsg("当前产品没有期号");
+                return;
+            }
             initViewIssue(0);
         }
     }
@@ -620,7 +636,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private OpenPrizePopWindow prizePopWindow;//开奖对话框
 
     @Override
-    public void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName) {
+    public void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName, int digit) {
         if (entity == null) {
             App.getInstance().showErrorMsg(msg);
             return;
@@ -631,7 +647,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         int width = PhoneUtil.getScreenWidth(mActivity);
         int height = PhoneUtil.getScreenHeight(mActivity);
         //显示开奖对话框
-        prizePopWindow = new OpenPrizePopWindow(mActivity, this, entity, openIndex, productId, issue, productName, width, height);
+        prizePopWindow = new OpenPrizePopWindow(mActivity, this, entity, openIndex, productId, issue, productName, digit, width, height);
         prizePopWindow.showPopupWindow(rlTitleBar);
         prizePopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override

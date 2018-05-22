@@ -39,6 +39,7 @@ public class App extends Application {
                 trackingNetworkURLFilter("(.*)").//自定义网络请求跟踪的 url 规则，默认 null
                 build();
         Bugtags.start(BuildConfig.DEBUG ? "8fa3ec82825f6cea1cc7dac777f9da19" : "3431fd00d8f4cb0d477bac0e866b2c8c", this, Bugtags.BTGInvocationEventBubble, options);
+        Bugtags.sendException(new Throwable("测试错误"));
     }
 
     public static App getInstance() {

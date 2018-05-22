@@ -184,8 +184,17 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     }
 
+//    private void startOpenDataTimer(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName) {
+//        EventDistribution.getInstance().addChartDraws(new EventDistribution.IChartDraw() {
+//            @Override
+//            public void onDraw(Entry entry) {
+//                gg
+//            }
+//        });
+//    }
+
     //获取开奖数据
-    private void getOpenData(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName) {
+    private void getOpenData(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName, int digit) {
         BaseParams param = new BaseParams(210);
         param.addParam("ProductId", ProductId);
         param.addParam("Issue", Issue);
@@ -197,20 +206,20 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, HistoryIssueEntity result) {
                         if (mView == null) return;
-                        mView.openPrizeDialog(result, msg, indexEntity, ProductId, Issue, productName);
+                        mView.openPrizeDialog(result, msg, indexEntity, ProductId, Issue, productName, digit);
                     }
 
                     @Override
                     public void onFailed(int code, String msg, boolean isFromCache) {
                         if (mView == null) return;
                         EventBus.post(new OpenPrizeDialogEvent(false));
-                        mView.openPrizeDialog(null, msg, indexEntity, ProductId, Issue, productName);
+                        mView.openPrizeDialog(null, msg, indexEntity, ProductId, Issue, productName, digit);
                     }
                 });
     }
 
     @Override
-    public void getOpenIndex(final int ProductId, final String productName, final String issue, String Time) {
+    public void getOpenIndex(final int ProductId, final String productName, final String issue, String Time, final int digit) {
         BaseParams param = new BaseParams(12);
         param.addParam("ProductId", ProductId);
         param.addParam("Time", Time);//默认值
@@ -221,16 +230,17 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
                     @Override
                     public void onSuccessed(int code, String msg, boolean isFromCache, OpenIndexEntity result) {
                         if (mView == null) return;
-                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
+                        final IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
                         if (indexEntity == null) return;
-                        new ToastDialog(mActivity, indexEntity.getY() + "").show();//显示指数
+                        new ToastDialog(mActivity, "结算点数：" + indexEntity.getY()).show();//显示指数
 //                        App.getInstance().showErrorMsg(indexEntity.getY() + "");//显示指数
+//                        getOpenData(indexEntity, ProductId, issue, productName);
                         HandlerUtil.runOnUiThreadDelay(new Runnable() {
                             @Override
                             public void run() {
-                                getOpenData(indexEntity, ProductId, issue, productName);
+                                getOpenData(indexEntity, ProductId, issue, productName, digit);
                             }
-                        }, 1500);
+                        }, 1000);
 //                        if (mView == null) return;
 //                        IndexMarkEntity indexEntity = new IndexUtil().parseExponentially(0, result.getIndexMark(), Constants.INDEXDIGIT);
 //                        if (indexEntity == null) return;
@@ -495,18 +505,21 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     public void unSubscribeProduct(int productId) {
         BaseParams param = new BaseParams();
         param.setT(10);
-        param.setD("");
+        param.setD("" + productId);
         param.addParam("productId", productId);
         param.setTag(mActivity);
         NetworkRequest.getInstance()
                 .getHttpConnection()
-                .request(getRequestParamSignBasic(param), NetworkRequest.getBaseCallback());
-//                .setTag(mActivity)
-//                .setT(0)
-//                .setISign(NetworkRequest.getInstance().getSignBasic())
-//                .setToken(param.getToken())
-//                .setParams(param)
-//                .execute(BaseCallback2.getBaseCallback());
+                .request(getRequestParamSignBasic(param), null);//没有回调
+
+//        BaseParams param = new BaseParams();
+//        param.setT(10);
+//        param.setD("");
+//        param.addParam("productId", productId);
+//        param.setTag(mActivity);
+//        NetworkRequest.getInstance()
+//                .getHttpConnection()
+//                .request(getRequestParamSignBasic(param), NetworkRequest.getBaseCallback());
     }
 
 }

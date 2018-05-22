@@ -40,7 +40,7 @@
                     android:id="@+id/vEndLine"
                     android:layout_width="@dimen/dp_0.6"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dp_62"
+                    android:layout_marginBottom="@dimen/dp_22"
                     android:background="#696458"
                     tools:tooltipText="截止线"/>
 
@@ -61,7 +61,7 @@
                     android:layout_width="@dimen/dp_25"
                     android:layout_height="@dimen/dp_25"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/dp_50"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:scaleType="centerInside"
                     android:src="@drawable/end_line_icon"/>
 
@@ -69,7 +69,7 @@
                     android:id="@+id/vSettlementLine"
                     android:layout_width="@dimen/dp_0.6"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dp_62"
+                    android:layout_marginBottom="@dimen/dp_22"
                     android:background="#D43625"
                     tools:tooltipText="结算线"/>
 
@@ -90,7 +90,7 @@
                     android:layout_width="@dimen/dp_25"
                     android:layout_height="@dimen/dp_25"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/dp_50"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:scaleType="centerInside"
                     android:src="@drawable/settlement_line_icon"/>
 
@@ -108,7 +108,7 @@
                     android:layout_alignParentRight="true"
                     android:background="@drawable/tvtransversecontrastdes_icon"
                     android:gravity="center"
-                    android:paddingLeft="@dimen/dp_10"
+                    android:paddingLeft="@dimen/dp_1"
                     android:text="横向对比"
                     android:textColor="#444444"
                     android:textSize="11sp"/>
@@ -125,9 +125,9 @@
 
             <View
                 android:id="@+id/vAnimation"
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <include
@@ -154,6 +154,7 @@
                 android:layout_marginBottom="@dimen/dp_m_1"
                 android:layout_marginLeft="@dimen/dp_35"
                 android:gravity="bottom"
+                android:visibility="gone"
                 app:rv_backgroundColor="@color/centre_menu_bg_color"
                 app:rv_cornerRadius="@dimen/dp_3"
                 app:rv_strokeColor="@color/centre_menu_from_color"

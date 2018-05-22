@@ -69,7 +69,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     public Entry getEntry(String trim) {
         if (mChartDatas == null || mChartDatas.isEmpty()) return null;
         long trimL1 = timerToLong(trim);
-        long trimL2 = timerToLong(((IndexMarkEntity) mChartDatas.get(0)).getTime());
+        long trimL2 = getStartTimer();//timerToLong(((IndexMarkEntity) mChartDatas.get(0)).getTime());
 //        long trimL2 = timerToLong(startTimer);
         trimL1 = trimL1 - trimL2;
         int x = (int) (trimL1 / Constants.ISSUEINTERVAL);
@@ -193,10 +193,15 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     }
 
     @Override
+    public void openPrize(boolean isOrder) {
+        super.openPrize(isOrder);
+//        stopAlways();
+    }
+
+    @Override
     protected void updateData() {
         if (issueEntity == null || productEntity == null) return;
         isRefrshChartData = true;
-
         //重置介入绘制参数
 //        mChart.setDrawIntervention(-1, 0, 300);
         EventBus.post(new DataRefreshEvent(false));
@@ -380,13 +385,19 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //        };
     }
 
-    private Callback getAlwaysCallback() {
+    private void stopAlways() {
         if (mCallback != null) {
             ApiCache.removeCallBacks(mCallback);
             mCallback.isStop = true;
             mCallback = null;
         }
-        return mCallback = new Callback(this);
+    }
+
+    private Callback getAlwaysCallback() {
+        stopAlways();
+        mCallback = new Callback(this);
+        mCallback.isStop = false;
+        return mCallback;
     }
 
 
@@ -395,12 +406,12 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         private IndexUtil mIndexUtil;
         private LineChartData1 mChartData;
         private boolean isStop = false;
-        private ArrayList<String> indexStrs;
+//        private ArrayList<String> indexStrs;
 
         private Callback(LineChartData1 chartData) {
             mIndexUtil = new IndexUtil();
             mChartData = chartData;
-            indexStrs = new ArrayList<>(10);
+//            indexStrs = new ArrayList<>(10);
         }
 
         @Override
@@ -415,10 +426,9 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
                 return;
             }
             final IndexMarkEntity entity = mIndexUtil.parseExponentially(0, data, Constants.INDEXDIGIT);
-            if (isStop /*|| entity.getTime() == -1*/) {//断开链接
+            if (isStop || entity == null /*|| entity.getTime() == -1*/) {//断开链接
                 return;
             }
-            if (entity == null) return;
             HandlerUtil.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -456,10 +466,10 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
             IndexMarkEntity entity = mIndexUtil.parseExponentially(0, issues.get(0), Constants.INDEXDIGIT);
 //            Constants.setReferenceX(entity.getTime());//更新基准下标
 //            添加时时推送的指数
-            if (mCallback != null && mCallback.indexStrs != null) {
-                issues.addAll(mCallback.indexStrs);
-                mCallback.indexStrs.clear();
-            }
+//            if (mCallback != null && mCallback.indexStrs != null) {
+//                issues.addAll(mCallback.indexStrs);
+//                mCallback.indexStrs.clear();
+//            }
             final ArrayList<IndexMarkEntity> entities = mIndexUtil.parseExponentially(entity.getTimeLong(), issues, Constants.INDEXDIGIT);
             long startTimer = getStartTimer(Constants.SERVERCURRENTTIMER);
             final ArrayList<IndexMarkEntity> entities2 = getIndexMark(entities, entities.size(), startTimer);

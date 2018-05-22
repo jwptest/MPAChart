@@ -18,10 +18,6 @@ public class BaseAxisValueFormatter implements IAxisValueFormatter {
 
     }
 
-    public BaseAxisValueFormatter(int digit) {
-        format = new IndexFormatUtil(digit);
-    }
-
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
         lasTwo = lasOne;
@@ -35,6 +31,11 @@ public class BaseAxisValueFormatter implements IAxisValueFormatter {
 
     public float getLasTwo() {
         return lasTwo;
+    }
+
+
+    public void setDigit(int digit) {
+        format = new IndexFormatUtil(digit);
     }
 
 }

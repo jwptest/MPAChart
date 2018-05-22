@@ -275,14 +275,14 @@
     <dimen name="home_puy_item_height">20dp</dimen>
     <dimen name="home_puy_item_text_width">40dp</dimen>
     <dimen name="home_puy_item_icon_width">15dp</dimen>
-    <dimen name="home_puy_item_icon_left">-2dp</dimen>
+    <dimen name="home_puy_item_icon_left">0dp</dimen>
     <dimen name="home_end_money_paddLeft">20dp</dimen>
     <dimen name="home_end_line_bottom">30dp</dimen>
     <dimen name="home_titleBar_height">40dp</dimen>
     <dimen name="home_centre_height">25dp</dimen>
 
     <!--2.76-->
-    <dimen name="home_TransverseContrast_width">63dp</dimen>
-    <dimen name="home_TransverseContrast_height">23dp</dimen>
+    <dimen name="home_TransverseContrast_width">53dp</dimen>
+    <dimen name="home_TransverseContrast_height">19dp</dimen>
 
 </resources>

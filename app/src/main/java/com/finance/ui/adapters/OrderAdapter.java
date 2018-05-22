@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.base.StickyBaseAdapter;
 import com.finance.model.ben.OrderEntity;
+import com.finance.utils.TimerUtil;
 import com.finance.widget.CompletedView;
 import com.finance.widget.commonadapter.viewholders.RecyclerViewHolder;
 import com.finance.widget.indexrecyclerview.expandRecyclerviewadapter.StickyRecyclerHeadersAdapter;
@@ -82,7 +83,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 //                entity.setHexIndex(markEntity.getY());
 //            }
         }
-        itemHolder.tvPurchase.setText(entity.getHexIndex() + "");//购买指数
+        itemHolder.tvPurchase2.setText(entity.getHexIndex() + "");//购买指数
         itemHolder.tvMoney2.setText((int) entity.getMoney() + "");//购买金额
 
         if (isOpen(entity)) {//开奖完成
@@ -108,42 +109,49 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
                 if (markEntity != null) {
                     entity.setBonusHexIndex(markEntity.getSellPrice());
                 } else {
-                    entity.setBonusHexIndex(1.000000f);
+                    entity.setBonusHexIndex(0);
                 }
             }
-            if (entity.isResult() && entity.getHexIndex() < entity.getBonusHexIndex()) {
-                itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
-            } else if (!entity.isResult() && entity.getHexIndex() > entity.getBonusHexIndex()) {
-                itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
-            } else {//买输了
-                itemHolder.tvMoney.setText("¥0");//收益金额
+            if (entity.getBonusHexIndex() != 0) {
+                if (entity.isResult() && entity.getHexIndex() < entity.getBonusHexIndex()) {
+                    itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
+                } else if (!entity.isResult() && entity.getHexIndex() > entity.getBonusHexIndex()) {
+                    itemHolder.tvMoney.setText(entity.getExpectsStr());//收益金额
+                } else {//买输了
+                    itemHolder.tvMoney.setText("¥0");//收益金额
+                }
+                itemHolder.tvPurchase.setText(entity.getBonusHexIndex() + "");//卖出价格
+            } else {
+                itemHolder.tvPurchase.setText("--");//卖出价格
             }
-            itemHolder.tvPurchase2.setText(entity.getBonusHexIndex() + "");//卖出价格
         } else {//交易中
             itemHolder.cvProgressBar.setVisibility(View.VISIBLE);
             itemHolder.llTimer.setVisibility(View.GONE);
             //计算开奖时间和这期的总时长
-            if (entity.getOpenTimer() == 0 || entity.getItemTimer() == 0) {
-                long[] openTotalTime = mICallback.getIssueOpenTotalTime(entity.getProductId(), entity.getIssue());
-                entity.setOpenTimer(openTotalTime[0]);
-                entity.setItemTimer(openTotalTime[1] / 100f);
+            if (entity.getOpenTimer() == 0) {
+                long openTimer = mICallback.getOpenTimer(entity.getProductId(), entity.getIssue());
+                if (openTimer == 0) {
+                    openTimer = TimerUtil.timerToLong(entity.getBonusTime());
+                }
+                entity.setOpenTimer(openTimer);
             }
             //设置进度
             progressBar = (entity.getOpenTimer() - mICallback.getServerTimer()) / 1000;
             if (progressBar < 0) {
                 progressBar = 0;
                 if (mICallback != null) mICallback.openPrize();
+            } else if (progressBar > 100) {
+                progressBar = 100;
             }
-            progressBar = (int) (progressBar * entity.getItemTimer());
             //计算进度
             itemHolder.cvProgressBar.setProgress((int) progressBar);
             //时时指数
             OrderEntity.BonusIndexMarkEntity bonusEntity = entity.getIndexMark();
             //指数
             if (bonusEntity != null) {
-                itemHolder.tvPurchase2.setText(bonusEntity.getSellPrice() + "");//卖出价格
+                itemHolder.tvPurchase.setText(bonusEntity.getSellPrice() + "");//卖出价格
             } else {
-                itemHolder.tvPurchase2.setText("--");//卖出价格
+                itemHolder.tvPurchase.setText("--");//卖出价格
             }
             itemHolder.tvMoney.setText(entity.getExpectsStr() + "");//预计收益金额
         }
@@ -238,8 +246,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         //有到开奖时间的订单
         void openPrize();
 
-        //获取开奖时间和总时长0=开奖时间，1=总时长
-        long[] getIssueOpenTotalTime(int productId, String issueName);
+        long getOpenTimer(int productId, String issue);
 
         //服务器当前时间
         long getServerTimer();

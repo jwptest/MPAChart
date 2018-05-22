@@ -13,7 +13,7 @@ public class OrderEntity {
     private double BonusMoney;//Decimal 中奖金额
     private String BonusTime;// DateTime 开奖时间
     transient private long openTimer = 0;//开奖时间
-    transient private float itemTimer = 0;//总时长
+//    transient private float itemTimer = 0;//总时长
     transient private String data;
     transient private String timer;
     private String CreateTime;//DateTime 创建时间
@@ -81,13 +81,13 @@ public class OrderEntity {
         this.hexIndex = hexIndex;
     }
 
-    public float getItemTimer() {
-        return itemTimer;
-    }
-
-    public void setItemTimer(float itemTimer) {
-        this.itemTimer = itemTimer;
-    }
+//    public float getItemTimer() {
+//        return itemTimer;
+//    }
+//
+//    public void setItemTimer(float itemTimer) {
+//        this.itemTimer = itemTimer;
+//    }
 
     public BonusIndexMarkEntity getBonusIndexMark() {
         return BonusIndexMark;

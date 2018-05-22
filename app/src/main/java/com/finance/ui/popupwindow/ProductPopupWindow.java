@@ -16,15 +16,23 @@ import java.util.ArrayList;
  */
 public class ProductPopupWindow extends RecyclerPopupWindow<ProductEntity> {
 
+    private int size;
+
     public ProductPopupWindow(Context context, int width, int x, int y, ArrayList<ItemEntity<ProductEntity>> mArrayList) {
         super(context, width, ViewGroup.LayoutParams.WRAP_CONTENT, x, y, mArrayList);
         selectIndex = 0;
+        size = mArrayList == null ? -1 : mArrayList.size() - 1;
     }
 
     @Override
     protected void onBindData(RecyclerViewHolder viewHolder, int position, ItemEntity<ProductEntity> item) {
         viewHolder.setText(R.id.tvTitle, item.getTitle());
         viewHolder.setText(R.id.tvBFB, item.getMessage());
+        if (size == position) {
+            viewHolder.setVisibility(R.id.line, View.GONE);
+        } else {
+            viewHolder.setVisibility(R.id.line, View.VISIBLE);
+        }
     }
 
     @Override

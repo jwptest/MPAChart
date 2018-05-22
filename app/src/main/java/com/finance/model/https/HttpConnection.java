@@ -11,8 +11,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.orhanobut.logger.Logger;
 
-import java.net.SocketTimeoutException;
-
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
 import microsoft.aspnet.signalr.client.ConnectionState;
@@ -110,7 +108,8 @@ public class HttpConnection {
 
     public void request(final RequestParams params, final BaseCallback3 callback3) {
         if (!NetWorkUtils.isNetworkConnected()) {
-            callback3.noNetworkConnected(params.getSourceCode());//没有网络
+            if (callback3 != null)
+                callback3.noNetworkConnected(params.getSourceCode());//没有网络
             return;
         }
         if (connection.getState() != ConnectionState.Connected) {
@@ -143,10 +142,12 @@ public class HttpConnection {
         try {
             connection.send(json);
         } catch (Exception e) {
-            callback3.error(params.getSourceCode(), "请求失败");
+            if (callback3 != null)
+                callback3.error(params.getSourceCode(), "请求失败");
             return;
         }
-        ApiCache.addRequestCallBack(params, callback3);
+        if (callback3 != null)
+            ApiCache.addRequestCallBack(params, callback3);
     }
 
 }

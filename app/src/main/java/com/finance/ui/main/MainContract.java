@@ -56,7 +56,7 @@ public interface MainContract {
 
         void placeOrder(PlaceOrderEntity entity, String msg);
 
-        void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName);
+        void openPrizeDialog(HistoryIssueEntity entity, String msg, IndexMarkEntity openIndex, int productId, String issue, String productName, int digit);
 
         IssueEntity getIssue(int productId, String issue);
 
@@ -73,9 +73,9 @@ public interface MainContract {
 
         void getProductIssue(int[] productIds);
 
-        void getHistoryIssues(int ProductId, int timer,BaseCallback3  callback);
+        void getHistoryIssues(int ProductId, int timer, BaseCallback3 callback);
 
-        void getOpenIndex(int ProductId, String productName, String issue, String Time);
+        void getOpenIndex(int ProductId, String productName, String issue, String Time,int digit);
 
         void getAlwaysIssues(int ProductId, BaseCallback3 callback);
 

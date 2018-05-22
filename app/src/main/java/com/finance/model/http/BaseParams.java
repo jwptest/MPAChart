@@ -4,9 +4,11 @@ package com.finance.model.http;
  * 公共参数
  */
 
+import com.finance.BuildConfig;
 import com.finance.common.Constants;
 import com.finance.common.UserShell;
 import com.finance.utils.MD5Util;
+import com.orhanobut.logger.Logger;
 
 import java.util.HashMap;
 
@@ -127,6 +129,10 @@ public class BaseParams {
     }
 
     public String sendMessage() {
+        String json = getD();
+        if (BuildConfig.DEBUG) {
+            Logger.d("提交参数D：" + json);
+        }
         return mISign.getSendJson(params, getD(), T, Token);
 //        if (isEmpty) {
 //            return com.finance.model.imps.NetworkRequest.getInstance().getSignBasic().getSendJson(params, getD(), T, Token);

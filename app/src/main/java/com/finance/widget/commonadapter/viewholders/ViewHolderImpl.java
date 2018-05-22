@@ -168,7 +168,8 @@ public class ViewHolderImpl {
 
     public void setVisibility(int viewId, int visible) {
         View view = findViewById(viewId);
-        view.setVisibility(visible);
+        if (view.getVisibility() != visible)
+            view.setVisibility(visible);
     }
 
 

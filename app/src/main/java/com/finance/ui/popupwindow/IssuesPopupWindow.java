@@ -16,9 +16,12 @@ import java.util.ArrayList;
  */
 public class IssuesPopupWindow extends RecyclerPopupWindow<IssueEntity> {
 
+    private int size;
+
     public IssuesPopupWindow(Context context, int width, int x, int y, ArrayList<ItemEntity<IssueEntity>> mArrayList) {
         super(context, width, ViewGroup.LayoutParams.WRAP_CONTENT, x, y, mArrayList);
         selectIndex = 0;
+        size = mArrayList == null ? -1 : mArrayList.size() - 1;
     }
 
     @Override
@@ -39,6 +42,11 @@ public class IssuesPopupWindow extends RecyclerPopupWindow<IssueEntity> {
     @Override
     protected void onBindData(RecyclerViewHolder viewHolder, int position, ItemEntity<IssueEntity> item) {
         viewHolder.setText(R.id.tvTitle, item.getTitle());
+        if (size == position) {
+            viewHolder.setVisibility(R.id.line, View.GONE);
+        } else {
+            viewHolder.setVisibility(R.id.line, View.VISIBLE);
+        }
     }
 
     @Override
