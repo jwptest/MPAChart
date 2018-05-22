@@ -9,11 +9,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.finance.R;
-import com.finance.common.Constants;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.linechartview.LineChartSetting2;
@@ -72,6 +72,11 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
     View vTransverseContrast;
     @BindView(R.id.tvTransverseContrastDes)
     TextView tvTransverseContrastDes;
+    @BindView(R.id.vSettlementLine)
+    View vSettlementLine;
+    @BindView(R.id.ivSettlementIcon)
+    ImageView ivSettlementIcon;
+
 
     private Activity mContext;
     private MainContract.View mView;
@@ -90,7 +95,9 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
     private int digit;
 
     private RelativeLayout.LayoutParams tranConParams, tranConDesParams;//横向对比线
+    private RelativeLayout.LayoutParams settParams, settIconParams;//结算线
     private int tranConDesHight;
+    private int settIconHight;
     private boolean isAddPurchase = false;//是否可以返回关闭对话框
 
     /**
@@ -126,6 +133,15 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                 tvTransverseContrastDes.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+
+        ivSettlementIcon.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                settIconHight = ivSettlementIcon.getHeight();
+                if (settIconHight <= 0) return;
+                ivSettlementIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         //界面显示出来再处理数据
 //        mLineChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
@@ -137,6 +153,10 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
 //        });
         tranConParams = (RelativeLayout.LayoutParams) vTransverseContrast.getLayoutParams();
         tranConDesParams = (RelativeLayout.LayoutParams) tvTransverseContrastDes.getLayoutParams();
+
+        settParams = (RelativeLayout.LayoutParams) vSettlementLine.getLayoutParams();
+        settIconParams = (RelativeLayout.LayoutParams) ivSettlementIcon.getLayoutParams();
+
         EventBus.post(new OpenPrizeDialogEvent(true));//打开开奖对话框事件
         initData(mHistoryIssueEntity, openIndex);
     }
@@ -273,7 +293,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         int xCount = mMarkEntities.size();
         float labelX = mLineChart.getFixedPosition();//标签开始绘制坐标
         float labelWidth = mLineChart.getLabelWidth();//标签长度
-        int dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_48);
+        int dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_15);
         float endX = labelX - labelWidth - dpPxRight;
         float itemWidth = endX / xCount;
         float addItem = (labelWidth + dpPxRight) / itemWidth;
@@ -293,15 +313,21 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
             //启动动画
             PurchaseViewAnimation.getCompleteAnimation(entity.getTvBuyingMone()).start();
         }
+        IndexMarkEntity entity = mMarkEntities.get(xCount - 1);
+        MPPointD pointD = ViewUtil.getMPPointD(mLineChart, dataSet, entity.getX(), entity.getY());
         //开奖点
         if (tranConDesParams != null && tranConParams != null) {
-            IndexMarkEntity entity = mMarkEntities.get(xCount - 1);
-            MPPointD pointD = ViewUtil.getMPPointD(mLineChart, dataSet, entity.getX(), entity.getY());
             //横向描述线
             tranConParams.topMargin = (int) pointD.y;
             //横向描线描述
             tranConDesParams.topMargin = (int) (pointD.y - tranConDesHight / 2);
             tvTransverseContrastDes.setText(entity.getY() + "");
+        }
+        if (settParams != null && settIconParams != null) {
+            //结算线
+            settParams.leftMargin = (int) pointD.x;
+            //图标
+            settIconParams.leftMargin = settParams.leftMargin - settIconHight / 2;
         }
         //刷新位置
         rlChart.requestLayout();

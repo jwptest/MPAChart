@@ -100,8 +100,8 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         if (isOrder) {
             return;
         }
-        mView.refreshIessue();//刷新期号
         isAnimation = true;
+        mView.refreshIessue();//刷新期号
     }
 
     @Override
@@ -125,6 +125,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             //去掉部分历史数据
             removeBasicData();
         } else {
+            isAnimation = true;
             if (this.productEntity != null) {
                 //取消订阅产品
                 mPresenter.unSubscribeProduct(this.productEntity.getProductId());
@@ -134,7 +135,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             if (topProductEntity == null) {
                 topProductEntity = productEntity;
             }
-            isAnimation = false;
             updateData();
         }
     }
@@ -270,10 +270,10 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChartDatas.addAll(entitys);
         dataMinCount = mChartDatas.size();
         setAxisMaximum();
-        isAnimation = false;
         invalidateChart();
         //走势图数据查询事件
         EventBus.post(new ChartDataUpdateEvent());
+        isAnimation = false;
     }
 
     //添加动画执行完成
@@ -287,7 +287,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected abstract void updateData();
 
     //
-    protected abstract void updateStartTime(T t);
+//    protected abstract void updateStartTime(T t);
 
     protected abstract ArrayList<T> getShowData();
 

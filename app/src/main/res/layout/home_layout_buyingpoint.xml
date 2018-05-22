@@ -19,7 +19,7 @@
         android:id="@+id/tvBuyingMoney"
         android:layout_width="@dimen/home_puy_item_text_width"
         android:layout_height="match_parent"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:paddingLeft="@dimen/home_end_money_paddLeft"
         android:text="100"
         android:lines="1"

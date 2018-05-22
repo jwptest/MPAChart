@@ -5,6 +5,7 @@
     android:id="@+id/llRootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#333333"
     android:orientation="vertical">
 
     <LinearLayout
@@ -31,29 +32,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginRight="@dimen/dp_6"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tvTitleType"
                     style="@style/open_prize_product"
+                    android:lines="1"
                     android:text="资产类型"/>
 
                 <TextView
                     android:id="@+id/tvTitleMoney"
                     style="@style/open_prize_product"
-                    android:layout_centerHorizontal="true"
+                    android:lines="1"
                     android:text="投资"/>
 
                 <TextView
                     android:id="@+id/tvTitleProfit"
-                    style="@style/open_prize_product"
-                    android:text="收益"/>
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:text="收益"
+                    android:textColor="@color/dynamic_title_color"
+                    android:textSize="@dimen/sp_12"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginRight="@dimen/dp_6"
                 android:orientation="horizontal">
 
                 <TextView
@@ -68,8 +76,13 @@
 
                 <TextView
                     android:id="@+id/tvTitleProfitValue"
-                    style="@style/open_prize_product_value"
-                    android:text="--"/>
+                    android:layout_width="@dimen/dp_43"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:lines="1"
+                    android:text="--"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_13"/>
             </LinearLayout>
 
             <RelativeLayout
@@ -101,6 +114,35 @@
                     android:text="1.235689"
                     android:textColor="#444444"
                     android:textSize="@dimen/sp_9"/>
+
+                <View
+                    android:id="@+id/vSettlementLine"
+                    android:layout_width="@dimen/dp_0.6"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/dp_15"
+                    android:background="#D43625"
+                    tools:tooltipText="结算线"/>
+
+                <!--<TextView-->
+                <!--android:id="@+id/tvSettlementDes"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginRight="@dimen/dp_3"-->
+                <!--android:layout_marginTop="@dimen/home_line_describe_top"-->
+                <!--android:rotation="90"-->
+                <!--android:text="结算线描述"-->
+                <!--android:textColor="#D43625"-->
+                <!--android:textSize="@dimen/sp_10"/>-->
+
+                <!--@dimen/home_end_line_bottom-->
+                <ImageView
+                    android:id="@+id/ivSettlementIcon"
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="@dimen/dp_10"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/settlement_line_icon"/>
 
             </RelativeLayout>
 

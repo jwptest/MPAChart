@@ -616,7 +616,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IndexMarkEntity markEntity = getIndexMarkEntity(entity.getHexIndexMark());
         if (markEntity == null) return;
         int money = (int) entity.getMoney();
-        markEntity.setData(entity.getBonusHexIndexMark());//设置当前点指数
+        markEntity.setData(entity.getHexIndexMark());//设置当前点指数
         PurchaseViewEntity viewEntity = ViewUtil.getPurchase(mActivity, money + "", entity.isResult());
         viewEntity.setIndexMark(entity.getHexIndexMark());//购买指数
         viewEntity.setMoney(money);//设置金额
