@@ -2,8 +2,6 @@ package com.finance.linechartdata;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 
 import com.finance.App;
 import com.finance.common.Constants;
@@ -34,7 +32,7 @@ import static com.finance.utils.TimerUtil.timerToLong;
 /**
  *
  */
-public class LineChartData1 extends BaseChartData<Entry> implements EventDistribution.IChartDraw {
+public class LineChartData1 extends BaseChartData<Entry> {
 
     private LineData lineData;//显示数据
     private HttpConnection /*mHttpConnection0,*/ mHttpConnection1;
@@ -54,8 +52,8 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
     private IndexMarkEntity currentPoint;
     private IndexMarkEntity previou;
 
-    public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter, View animView) {
-        super(context, view, chart, presenter, animView);
+    public LineChartData1(Context context, MainContract.View view, MCombinedChart chart, MainContract.Presenter presenter) {
+        super(context, view, chart, presenter);
 //        this.mIndexMarkEntities = new ArrayList<>(6);
 //        this.mAllIndexMarks = new ArrayList<>(600);
         mIndexUtil = new IndexUtil();
@@ -141,14 +139,14 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
                 set.setDrawFilled(false);
             }
         }
-        EventDistribution.getInstance().addChartDraws(this);
+//        EventDistribution.getInstance().addChartDraws(this);
         super.onResume(type);
     }
 
     @Override
     public void onDestroy(int chartType) {
         super.onDestroy(chartType);
-        EventDistribution.getInstance().removeChartDraws(this);
+//        EventDistribution.getInstance().removeChartDraws(this);
         if (chartType != Constants.CHART_LINEFILL && chartType != Constants.CHART_LINE) {
             if (mCallback != null) {
                 mCallback.isStop = true;
@@ -262,7 +260,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         IndexFormatUtil.sortEntry(entitys);//排序
         updateStartTime(entitys.get(0));
         previou = (IndexMarkEntity) entitys.get(entitys.size() - 1);
-        Log.d("123", "到达截止点数据: " + previou.getX());
+//        Log.d("123", "到达截止点数据: " + previou.getX());
         return entitys;
     }
 
@@ -299,7 +297,7 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
         currentPoint = ((IndexMarkEntity) entries.get(entries.size() - 1)).copy();
         updateStartTime(entries.get(0));//更新起始时间
         previou = currentPoint;
-        Log.d("123", "更新历史数据: " + previou.getX());
+//        Log.d("123", "更新历史数据: " + previou.getX());
 //        isRefrshChartData = false;
         startAddDataAnimation(entries);
     }
@@ -326,13 +324,13 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 
     //刷新时时数据
     private void updateAlwaysData(IndexMarkEntity entity) {
-        Log.d("123", "isAnimation:" + isAnimation);
+//        Log.d("123", "isAnimation:" + isAnimation);
 //        if (!isTimer) return;
 //        if (isRefrshChartData || isAnimation) return;
         if (isAnimation) return;
 //        mAllIndexMarks.add(entity);
         entity.setX(getXIndex(entity.getTimeLong()));
-        Log.d("123", "更新时时数据: " + entity.getX());
+//        Log.d("123", "更新时时数据: " + entity.getX());
         int r = addIndexEntity(entity);
         if (r == 1) return;
         mChartDatas.add(entity);
@@ -370,12 +368,12 @@ public class LineChartData1 extends BaseChartData<Entry> implements EventDistrib
 //        startTestData(indexMarkEntities);
     }
 
-    @Override
-    public void onDraw(Entry entry) {
-//        if (isDraw) return;
-////        setAxisMaximum();
-//        isDraw = true;
-    }
+//    @Override
+//    public void onDraw(Entry entry) {
+////        if (isDraw) return;
+//////        setAxisMaximum();
+////        isDraw = true;
+//    }
 
     private MCallbackIssues mCallbackIssues;
 //    private MThread mMThread;

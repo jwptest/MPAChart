@@ -23,8 +23,6 @@ import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.event.UpdateIssueEvent;
 import com.finance.interfaces.IChartData;
 import com.finance.interfaces.IChartListener;
-import com.finance.linechartview.BaseAxisValueFormatter;
-import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
@@ -37,7 +35,6 @@ import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
 import com.finance.widget.combinedchart.MCombinedChart;
 import com.finance.widget.combinedchart.OnDrawCompletion;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.MPPointD;
@@ -67,8 +64,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ImageView ivSettlementIcon;
     private ViewGroup mParent;//父布局
 
-    private BaseAxisValueFormatter mRightAxisValueFormatter;
-    private XAxisValueFormatter mXAxisValueFormatter;
+    //    private BaseAxisValueFormatter mRightAxisValueFormatter;
+//    private XAxisValueFormatter mXAxisValueFormatter;
     private RelativeLayout.LayoutParams iconParams, endParams, endDesParams, endIconParams;//截止线
     private RelativeLayout.LayoutParams tranConParams, tranConDesParams;//横向对比线
     private RelativeLayout.LayoutParams settParams, settDesParams, settIconParams;//结算线
@@ -113,8 +110,8 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private IChartData mIChartData;
     //格式化指数工具
     protected IndexFormatUtil format;
-    //画布的X轴
-    private XAxis mXAxis;
+    //    //画布的X轴
+//    private XAxis mXAxis;
     //刷新购买点坐标工具类
     private ViewUtil mViewUtil;
     private int childCount;
@@ -130,12 +127,12 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         this.mActivity = activity;
         this.mView = view;
         this.mChart = lineChart;
-        this.mXAxis = lineChart.getXAxis();
+//        this.mXAxis = lineChart.getXAxis();
         mAnimator = AnimationUtils.loadAnimation(activity, R.anim.animation_chart_current_point);
         mParent = rlPurchaseView;
 //        dpPx10 = activity.getResources().getDimensionPixelOffset(R.dimen.dp_15);
         mViewUtil = new ViewUtil();
-        childCount = mParent.getChildCount() - 1;
+        childCount = mParent.getChildCount() - 3;
         mPurchaseViewEntities = new ArrayList<>(4);
         temporaryList = new ArrayList<>(4);
         removePurchaseViews = new ArrayList<>(4);
@@ -360,15 +357,15 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         return this;
     }
 
-    public LineChartListener setRightAxisValueFormatter(BaseAxisValueFormatter rightAxisValueFormatter) {
-        mRightAxisValueFormatter = rightAxisValueFormatter;
-        return this;
-    }
-
-    public LineChartListener setXAxisValueFormatter(XAxisValueFormatter XAxisValueFormatter) {
-        mXAxisValueFormatter = XAxisValueFormatter;
-        return this;
-    }
+//    public LineChartListener setRightAxisValueFormatter(BaseAxisValueFormatter rightAxisValueFormatter) {
+//        mRightAxisValueFormatter = rightAxisValueFormatter;
+//        return this;
+//    }
+//
+//    public LineChartListener setXAxisValueFormatter(XAxisValueFormatter XAxisValueFormatter) {
+//        mXAxisValueFormatter = XAxisValueFormatter;
+//        return this;
+//    }
 
     @Override
     public void setIChartData(IChartData iChartData) {
@@ -465,7 +462,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //                    .dontAnimate()
 //                    .into(ivIcon);
             //启动动画
-//            ivIcon.startAnimation(mAnimator);
+            ivIcon.startAnimation(mAnimator);
         }
         if (vEndLine != null && tvEndLineDes != null && ivEndLineIcon != null) {//截止
             ViewUtil.setViewVisibility(vEndLine, View.VISIBLE);
@@ -796,7 +793,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     //绘制完成执行
     private void onDraws() {
         //绘制完成事件
-        EventDistribution.getInstance().onDraw(currentEntry);
+        EventDistribution.getInstance().onDraw(currentEntry, isOrder);
         if (isOrder) {
             endTimerIs = endTimer;
             openTimerIs = openTimer;

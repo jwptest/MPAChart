@@ -25,7 +25,6 @@ import java.util.ArrayList;
  */
 public class CandleChartData implements IChartData {
 
-
     private MCombinedChart mChart;
     private Activity activity;
     private XAxis mXAxis;
@@ -38,12 +37,14 @@ public class CandleChartData implements IChartData {
         mXAxis = mChart.getXAxis();
     }
 
-//    @Override
-//    protected void onInit() {
-//        mCombinedData = new CombinedData();
-////        data.setData(generateLineData());//折线图
-//        mCombinedData.setData(generateCandleData());//蜡烛图
-//    }
+
+    protected void onInit() {
+        mCombinedData = new CombinedData();
+//        data.setData(generateLineData());//折线图
+        mCombinedData.setData(generateCandleData());//蜡烛图
+
+        //K线图绘制  CandleStickChartRenderer
+    }
 
     @Override
     public void onResume(int type) {

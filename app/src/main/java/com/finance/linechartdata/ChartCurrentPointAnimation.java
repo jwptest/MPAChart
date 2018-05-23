@@ -1,9 +1,7 @@
 package com.finance.linechartdata;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 
-import com.finance.base.BaseAminatorListener;
 import com.github.mikephil.charting.data.Entry;
 
 /**
@@ -17,12 +15,18 @@ public class ChartCurrentPointAnimation {
     private Entry current;//当前移动点
     private IinvalidateChart mChart;
     private ValueAnimator mValueAnimator;
+    private boolean isAnimation;
 
     public ChartCurrentPointAnimation(IinvalidateChart chart) {
         this.mChart = chart;
     }
 
     public ChartCurrentPointAnimation updateParam(Entry current, Entry previous) {
+//        if (current.getX() <= previous.getX()) {
+//            isAnimation = false;
+//            return this;
+//        }
+//        isAnimation = true;
         this.current = current;
         bX = previous.getX();
         bY = previous.getY();
@@ -46,7 +50,14 @@ public class ChartCurrentPointAnimation {
                 }
             });
         }
+
         mValueAnimator.start();
+//        if (isAnimation) {
+//            mValueAnimator.start();
+//        } else {
+//            mChart.invalidateChart();
+//        }
+
 
 //        mValueAnimator.addListener(new BaseAminatorListener() {
 //            @Override

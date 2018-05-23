@@ -40,9 +40,9 @@ public class EventDistribution {
     }
 
     //执行IChartDraw接口方法
-    public void onDraw(Entry entry) {
+    public void onDraw(Entry entry, boolean isOrder) {
         for (IChartDraw draw : mChartDraws) {
-            draw.onDraw(entry);
+            draw.onDraw(entry, isOrder);
         }
     }
 
@@ -94,7 +94,7 @@ public class EventDistribution {
 
     public interface IChartDraw {
         //走势图绘制完成回调方法
-        void onDraw(Entry entry);
+        void onDraw(Entry entry, boolean isOrder);
     }
 
     public interface IPurchase {

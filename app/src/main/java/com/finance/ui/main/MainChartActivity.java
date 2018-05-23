@@ -38,7 +38,6 @@ import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
 import com.finance.listener.EventDistribution;
 import com.finance.listener.LineChartListener;
-import com.finance.listener.OpenCountDown;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.ben.IssueEntity;
@@ -68,7 +67,7 @@ import butterknife.OnClick;
 /**
  * 首页
  */
-public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu, ICentreMenu, OpenCountDown.ICallback {
+public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu, ICentreMenu{
 
     @BindView(R.id.rlTitleBar)
     View rlTitleBar;
@@ -150,8 +149,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     TextView tvInterestRate;
     @BindView(R.id.rlPurchaseView)
     ViewGroup rlPurchaseView;
-    @BindView(R.id.vAnimation)
-    View vAnimation;
+//    @BindView(R.id.vAnimation)
+//    View vAnimation;
 
     //    @BindView(R.id.llRise)
 //    LinearLayout llRise;
@@ -213,7 +212,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         mNetWorkStateReceiver = NetWorkStateReceiver.registerReceiver(mActivity);
         isResume = true;
         if (dataSetting != null) dataSetting.onResume(chartType);
-        OpenCountDown.getInstance().addCallback(this);
         if (isConnectService) {
             refreshData();
         }
@@ -222,7 +220,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     @Override
     protected void onStop() {
         super.onStop();
-        OpenCountDown.getInstance().removeCallback(this);
         if (dataSetting != null) dataSetting.onDestroy(0);
         if (mNetWorkStateReceiver != null) {
             NetWorkStateReceiver.unregisterReceiver(mActivity, mNetWorkStateReceiver);
@@ -237,7 +234,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         if (leftMenu != null) leftMenu.onDestroy();
         if (rightMenu != null) rightMenu.onDestroy();
         if (centreMenu != null) centreMenu.onDestroy();
-        OpenCountDown.getInstance().removeCallback(this);
         EventBus.unregister(this);
         if (mNetWorkStateReceiver != null) {
             NetWorkStateReceiver.unregisterReceiver(mActivity, mNetWorkStateReceiver);
@@ -290,9 +286,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 .setTvTransverseContrastDes(tvTransverseContrastDes)
                 .setSettlementLine(vSettlementLine)
                 .setTvSettlementDes(tvSettlementDes)
-                .setIvSettlementIcon(ivSettlementIcon)
-                .setRightAxisValueFormatter(mRightAxisValue)
-                .setXAxisValueFormatter(mXAxisValue);
+                .setIvSettlementIcon(ivSettlementIcon);
+//                .setRightAxisValueFormatter(mRightAxisValue)
+//                .setXAxisValueFormatter(mXAxisValue);
         chartListener.hideView();//默认隐藏控件
         leftMenu = new LeftMenu(mActivity, this, mMainPresenter).onInit(llLeftMenu);
         rightMenu = new RightMenu(mActivity, this, this).onInit(llRightMenu);
@@ -305,7 +301,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         ViewUtil.setBackground(mActivity, llRightMenu, R.drawable.right_bg);
         ViewUtil.setBackground(mActivity, llLeftMenu, R.drawable.left_menu_bg);
         ViewUtil.setBackground(mActivity, rlZst, R.drawable.zst_bg);
-        ViewUtil.setBackground(mActivity, vAnimation, R.drawable.zst_bg);
+//        ViewUtil.setBackground(mActivity, vAnimation, R.drawable.zst_bg);
         initLayoutParam();
         initViewUser();
     }
@@ -315,7 +311,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         IChartData dataSetting = null;
         if (type == Constants.CHART_LINEFILL || type == Constants.CHART_LINE) {
             if (mLineChartData == null) {
-                mLineChartData = new LineChartData1(mActivity, this, lineChart, mMainPresenter, vAnimation);
+                mLineChartData = new LineChartData1(mActivity, this, lineChart, mMainPresenter);
             }
             dataSetting = mLineChartData;
         } else if (type == Constants.CHART_CANDLE) {
@@ -424,7 +420,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             @Override
             public void onCallback(int code, UserInfoEntity userInfoEntity, String message) {
                 ivRefresh.clearAnimation();//停止动画
-                if (userInfoEntity == null) return;
+                if (userInfoEntity == null) {
+                    if (event.isTipMsg()) {
+                        App.getInstance().showErrorMsg(message);
+                    }
+                    return;
+                }
                 initViewUser();//刷新用户信息
                 if (!event.isTip()) return;
                 App.getInstance().showErrorMsg(event.getMsg());
@@ -709,27 +710,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                     animation = AnimationUtils.loadAnimation(mActivity, R.anim.animation_refresh_userinfo);
                 }
                 ivRefresh.startAnimation(animation);
-                onEvent(new UpdateUserInfoEvent(true));
+                onEvent(new UpdateUserInfoEvent(false, true));
                 break;
         }
     }
-
-    @Override
-    public void startTick() {
-        //开始开奖倒计时
-    }
-
-    @Override
-    public void onTick(long millisUntilFinished) {
-
-    }
-
-    @Override
-    public void onFinish() {
-//        //结束开奖倒计时
-//        //获取开奖结果
-//        chartListener.clearPurchaseView();
-    }
-
 
 }

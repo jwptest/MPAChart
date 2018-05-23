@@ -69,6 +69,10 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
         setOutsideTouchable(true);   //设置外部点击关闭ppw窗口
         tvTitle.setText("交易订单");
         tvEmptyText.setText("暂无购买记录");
+        if (mDataSource == null) {
+            mDataSource = new OrderDataSource();
+        }
+        mDataSource.refresh();//加载数据
     }
 
     @Override
@@ -122,10 +126,6 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
 
     public void showPopupWindow(View parent) {
         super.showPopupWindow(parent);
-        if (mDataSource == null) {
-            mDataSource = new OrderDataSource();
-        }
-        mDataSource.refresh();//加载数据
         EventDistribution.getInstance().addChartDraws(this);
         EventDistribution.getInstance().addPurchase(this);
     }
@@ -179,7 +179,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
     }
 
     @Override
-    public void onDraw(Entry entry) {
+    public void onDraw(Entry entry, boolean isOrder) {
         if (mAdapter == null || !isRefesh) return;
         mAdapter.notifyDataSetChanged();
     }

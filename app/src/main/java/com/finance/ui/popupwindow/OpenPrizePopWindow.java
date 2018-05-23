@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
+import com.finance.linechartview.BaseAxisValueFormatter;
 import com.finance.linechartview.LineChartSetting2;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
@@ -24,6 +25,7 @@ import com.finance.model.ben.PurchaseViewEntity;
 import com.finance.ui.main.MainContract;
 import com.finance.ui.main.PurchaseViewAnimation;
 import com.finance.utils.HandlerUtil;
+import com.finance.utils.IndexFormatUtil;
 import com.finance.utils.IndexUtil;
 import com.finance.utils.TimerUtil;
 import com.finance.utils.ViewUtil;
@@ -99,6 +101,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
     private int tranConDesHight;
     private int settIconHight;
     private boolean isAddPurchase = false;//是否可以返回关闭对话框
+    private IndexFormatUtil mIndexFormatUtil;
 
     /**
      * 开奖对话框
@@ -124,7 +127,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         setTouchable(true);
         setOutsideTouchable(false);   //设置外部点击关闭ppw窗口
         ViewUtil.setBackground(mContext, llContent, R.drawable.dialog_open_prize_bg);
-
+        mIndexFormatUtil = new IndexFormatUtil(digit);
         tvTransverseContrastDes.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -158,7 +161,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         settIconParams = (RelativeLayout.LayoutParams) ivSettlementIcon.getLayoutParams();
 
         EventBus.post(new OpenPrizeDialogEvent(true));//打开开奖对话框事件
-        initData(mHistoryIssueEntity, openIndex);
+        initData(mHistoryIssueEntity, openIndex.getY(), mIndexFormatUtil.format(openIndex.getY()));
     }
 
     @Override
@@ -176,7 +179,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         return false;
     }
 
-    private void initData(final HistoryIssueEntity entity, final IndexMarkEntity openIndex) {
+    private void initData(final HistoryIssueEntity entity, final float openIndex, final String openIndexStr) {
         new Thread() {
             @Override
             public void run() {
@@ -211,15 +214,15 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
                         String createTime = viewEntity.getCreateTime();
                         orderEntity.setTimerStr(TimerUtil.getTimer(createTime));//时间
                         orderEntity.setDateStr(TimerUtil.getDate(createTime));
-                        orderEntity.setPurchaseIndex(indexMarkEntity.getY() + "");//购买指数
-                        orderEntity.setOpenIndex(openIndex.getY() + "");//开奖指数
+                        orderEntity.setPurchaseIndex(mIndexFormatUtil.format(indexMarkEntity.getY()));//购买指数
+                        orderEntity.setOpenIndex(openIndexStr);//开奖指数
                         orderEntity.setIcon(viewEntity.isResult() ? R.drawable.add_icon_item : R.drawable.fall_icon_item);
                         orderTMoney += viewEntity.getMoney();//订单金额
                         orderEntity.setOrderMoney("¥" + viewEntity.getMoney());//购买金额
                         int profit = 0;
-                        if (viewEntity.isResult() && openIndex.getY() > indexMarkEntity.getY()) {//猜涨
+                        if (viewEntity.isResult() && openIndex > indexMarkEntity.getY()) {//猜涨
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
-                        } else if (!viewEntity.isResult() && openIndex.getY() < indexMarkEntity.getY()) {//猜跌
+                        } else if (!viewEntity.isResult() && openIndex < indexMarkEntity.getY()) {//猜跌
                             profit = viewEntity.getMoney() * (viewEntity.getExpects() + 100) / 100;
                         }
                         orderEntity.setProfit("¥" + profit);//收益金额
@@ -276,7 +279,11 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         mRvList.setAdapter(adapter);
 
         mLineChart.setOnDrawCompletion(this);//设置绘制完成回调时间
-        new LineChartSetting2(mContext).initLineChart(mLineChart, false);//配置走势图参数
+        //右边轴value显示格式类
+        BaseAxisValueFormatter mRightAxisValue = new BaseAxisValueFormatter();
+        mRightAxisValue.setDigit(digit);
+        new LineChartSetting2(mContext).setRightIAxisValueFormatter(mRightAxisValue)
+                .initLineChart(mLineChart, false);//配置走势图参数
         //设置数据
 //        CombinedData combinedData = new CombinedData();
         LineDataSet set = ViewUtil.createLineDataSet(mContext, new ArrayList<>(mMarkEntities));
@@ -313,6 +320,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
             //启动动画
             PurchaseViewAnimation.getCompleteAnimation(entity.getTvBuyingMone()).start();
         }
+        isAddPurchase = true;
         IndexMarkEntity entity = mMarkEntities.get(xCount - 1);
         MPPointD pointD = ViewUtil.getMPPointD(mLineChart, dataSet, entity.getX(), entity.getY());
         //开奖点
@@ -321,7 +329,7 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
             tranConParams.topMargin = (int) pointD.y;
             //横向描线描述
             tranConDesParams.topMargin = (int) (pointD.y - tranConDesHight / 2);
-            tvTransverseContrastDes.setText(entity.getY() + "");
+            tvTransverseContrastDes.setText(mIndexFormatUtil.format(entity.getY()));
         }
         if (settParams != null && settIconParams != null) {
             //结算线
@@ -331,7 +339,6 @@ public class OpenPrizePopWindow extends BasePopupWindow implements OnDrawComplet
         }
         //刷新位置
         rlChart.requestLayout();
-        isAddPurchase = true;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.finance.widget.combinedchart;
 
 import android.graphics.Canvas;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.renderer.YAxisRenderer;
@@ -27,6 +28,11 @@ public class MYAxisRightRenderer extends YAxisRenderer {
                 ? mYAxis.mEntryCount
                 : (mYAxis.mEntryCount - 1);
         this.fixedPosition = fixedPosition;
+//        Log.d("1234", "-------------------------");
+//        for (int i = from; i < to; i++) {
+//            String text = mYAxis.getFormattedLabel(i);
+//            Log.d("1234", "drawYLabels: " + text);
+//        }
         // draw
         for (int i = from + 1; i < to - 1; i++) {
             String text = mYAxis.getFormattedLabel(i);

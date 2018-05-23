@@ -5,7 +5,6 @@
     android:id="@+id/llRootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#333333"
     android:orientation="vertical">
 
     <LinearLayout
@@ -123,6 +122,15 @@
                     android:background="#D43625"
                     tools:tooltipText="结算线"/>
 
+                <ImageView
+                    android:id="@+id/ivSettlementIcon"
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_below="@+id/vSettlementLine"
+                    android:layout_marginTop="@dimen/dp_m_20"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/settlement_line_icon"/>
+
                 <!--<TextView-->
                 <!--android:id="@+id/tvSettlementDes"-->
                 <!--android:layout_width="wrap_content"-->
@@ -135,14 +143,7 @@
                 <!--android:textSize="@dimen/sp_10"/>-->
 
                 <!--@dimen/home_end_line_bottom-->
-                <ImageView
-                    android:id="@+id/ivSettlementIcon"
-                    android:layout_width="@dimen/dp_20"
-                    android:layout_height="@dimen/dp_20"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/dp_10"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/settlement_line_icon"/>
+
 
             </RelativeLayout>
 

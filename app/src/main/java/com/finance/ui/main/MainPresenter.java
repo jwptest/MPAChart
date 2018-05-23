@@ -10,6 +10,7 @@ import com.finance.common.Constants;
 import com.finance.common.UserShell;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
+import com.finance.event.UpdateUserInfoEvent;
 import com.finance.interfaces.ICallback;
 import com.finance.interfaces.IDismiss;
 import com.finance.model.ben.DynamicsEntity;
@@ -24,6 +25,7 @@ import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.ProductsEntity;
+import com.finance.model.ben.ResponseEntity;
 import com.finance.model.http.BaseParams;
 import com.finance.model.https.BaseCallback3;
 import com.finance.model.https.JsonCallback;
@@ -434,7 +436,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     public void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark) {
         if (UserShell.getInstance().getUserMoney() < Money) {
             //余额不足
-            new UpdateUserInfoDialog(mActivity).show();
+            new UpdateUserInfoDialog(mActivity, this).show();
             return;
         }
         BaseParams baseParams = new BaseParams(201);
@@ -467,6 +469,33 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 //                .setToken(baseParams.getToken())
 //                .setParams(baseParams)
 //                .execute();
+    }
+
+    @Override
+    public void receiveExperienceMoney() {
+        BaseParams params = new BaseParams(401);
+        params.setTag(mActivity);
+        params.addParam("PaymentType", 100);
+        params.addParam("Money", 400);
+        params.addParam("Source", 100);
+        params.addParam("ActivityCode", "Virtual");
+        NetworkRequest.getInstance()
+                .getHttpConnection()
+                .request(NetworkRequest.getRequestParamSignImp(params), new JsonCallback<ResponseEntity>(ResponseEntity.class) {
+                    @Override
+                    public void onSuccessed(int code, String msg, boolean isFromCache, ResponseEntity result) {
+                        if (mView == null) return;
+                        App.getInstance().showErrorMsg(TextUtils.isEmpty(msg) ? "今天已成功领取1次，每天共可领取3次" : msg);
+                        //发送刷新用户信息事件
+                        EventBus.post(new UpdateUserInfoEvent(false, true));
+                    }
+
+                    @Override
+                    public void onFailed(int code, String msg, boolean isFromCache) {
+                        if (mView == null) return;
+                        App.getInstance().showErrorMsg(msg);
+                    }
+                });
     }
 
     @Override

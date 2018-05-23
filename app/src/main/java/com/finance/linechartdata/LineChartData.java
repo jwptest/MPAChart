@@ -286,7 +286,7 @@ public class LineChartData implements IChartData, ICallback<ArrayList<String>>, 
     }
 
     @Override
-    public void onDraw(Entry entry) {
+    public void onDraw(Entry entry, boolean isOrder) {
 //        if (isDraw) return;
 //        //绘制完成回调
 //        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数

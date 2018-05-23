@@ -14,9 +14,6 @@ import com.finance.model.ben.OrdersEntity;
 import com.finance.model.ben.PlaceOrderEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.model.ben.PurchaseViewEntity;
-import com.finance.model.http.BaseCallback;
-import com.finance.model.http.CallbackIssues;
-import com.finance.model.http.HttpConnection;
 import com.finance.model.https.BaseCallback3;
 
 import java.util.ArrayList;
@@ -75,7 +72,7 @@ public interface MainContract {
 
         void getHistoryIssues(int ProductId, int timer, BaseCallback3 callback);
 
-        void getOpenIndex(int ProductId, String productName, String issue, String Time,int digit);
+        void getOpenIndex(int ProductId, String productName, String issue, String Time, int digit);
 
         void getAlwaysIssues(int ProductId, BaseCallback3 callback);
 
@@ -94,6 +91,8 @@ public interface MainContract {
         void showDynamicPopWindow(android.view.View anchor, android.view.View leftView, int width, int y, IDismiss dismiss);
 
         void placeOrder(String Issue, int IssueType, int Money, int ProductId, boolean Result, String StrIndexMark);
+
+        void receiveExperienceMoney();
 
         void notesMessage(ICallback<NotesMessage> callback);
 

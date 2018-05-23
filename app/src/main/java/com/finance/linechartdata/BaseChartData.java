@@ -66,7 +66,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         this.mPresenter = presenter;
         this.mXAxis = mChart.getXAxis();
         this.mChartDatas = new ArrayList<>(100);
-        this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_15);
+        this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_20);
 //        this.animView = animView;
         minsPacing = ViewConfiguration.get(context).getScaledTouchSlop();
         this.mChart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

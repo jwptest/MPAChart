@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.finance.R;
 import com.finance.event.EventBus;
 import com.finance.event.UpdateUserInfoEvent;
+import com.finance.ui.main.MainContract;
+import com.finance.ui.main.MainPresenter;
 import com.finance.utils.ViewUtil;
 
 import butterknife.BindView;
@@ -40,10 +42,12 @@ public class UpdateUserInfoDialog extends Dialog {
     @BindView(R.id.llRootView)
     RelativeLayout llRootView;
     private Activity mActivity;
+    private MainContract.Presenter presenter;
 
-    public UpdateUserInfoDialog(@NonNull Activity activity) {
+    public UpdateUserInfoDialog(@NonNull Activity activity, MainContract.Presenter presenter) {
         super(activity, R.style.noBackDialog);
         mActivity = activity;
+        this.presenter = presenter;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class UpdateUserInfoDialog extends Dialog {
         dismiss();
         switch (view.getId()) {
             case R.id.tvEdit:
-                EventBus.post(new UpdateUserInfoEvent(true));
+                presenter.receiveExperienceMoney();//获取体验金
                 break;
             case R.id.tvCancel:
                 break;

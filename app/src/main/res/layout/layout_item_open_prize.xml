@@ -3,9 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_55"
-    android:background="#333333"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/dp_10">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -85,6 +83,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0.6"
+        android:layout_marginBottom="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
         android:background="@color/line_color"/>
 </LinearLayout>

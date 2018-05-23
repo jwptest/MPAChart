@@ -29,7 +29,7 @@ import butterknife.OnClick;
 /**
  * 右菜单处理
  */
-public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase, EventDistribution.IIssueChecked, OpenCountDown.ICallback {
+public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase, EventDistribution.IIssueChecked, OpenCountDown.ICallback, EventDistribution.IChartDraw {
 
     @BindView(R.id.ivMoneyAdd)
     ImageView ivMoneyAdd;
