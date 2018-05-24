@@ -30,31 +30,12 @@ public class Constants {
 
     public static int INDEXDIGIT = 6;//指数
 
-    private static int sReferenceX = 0;
     public static final int ISSUEINTERVAL = 500;//每一期间隔时间
-
-    public static void setReferenceX(long x) {
-        Log.d("123", "setReferenceX: " + x);
-        sReferenceX = 0;
-    }
-
-    //获取数据的下标
-    public static int getIndexX(long x) {
-        return sReferenceX += 1;
-////        Log.d("123", "getIndexX: " + x);
-//        x = x - sReferenceX;
-//        if (x <= 0) return 0;
-//        return (int) (int) (x / ISSUEINTERVAL);
-    }
-
 
     public static final int WIFI = 1;//wifi网络
     public static final int MOBILE = 2;//移动网络
     public static final int ALLNET = 3;//wifi网络
     public static final int UNNET = 4;//未知网络,没有网络
-
-
-
 
 
 //    NormalData: 200, //普通数据请求
@@ -67,6 +48,5 @@ public class Constants {
 //    IssueBounusNotify: 550,//每一期开奖
 //    IssuePrized: 900,
 //    AutoRegister: 1101//自动注册
-
 
 }

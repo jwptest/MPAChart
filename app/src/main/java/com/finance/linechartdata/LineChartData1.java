@@ -28,6 +28,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static com.finance.utils.TimerUtil.timerToLong;
 
 /**
@@ -68,6 +69,28 @@ public class LineChartData1 extends BaseChartData<Entry> {
     }
 
     @Override
+    protected void onInit() {
+        LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+        LineData lineData = new LineData(set);
+        combinedData.setData(lineData);
+        mChart.setData(combinedData);
+    }
+
+    @Override
+    public LineData getLineData() {
+//        if (lineData == null) {
+//            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+//            lineData = new LineData(set);
+//        }
+//        return lineData;
+//        if (set == null) {
+//            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+//        }
+        LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+        return new LineData(set);
+    }
+
+    @Override
     public Entry getEntry(String trim) {
         if (mChartDatas == null || mChartDatas.isEmpty()) return null;
         long trimL1 = timerToLong(trim);
@@ -101,35 +124,6 @@ public class LineChartData1 extends BaseChartData<Entry> {
     }
 
     @Override
-    protected void onInit() {
-//        if (set == null) {
-//            set = ViewUtil.createLineDataSet(mContext, mChartDatas);
-//        }
-//        LineData lineData = new LineData(set);
-//        combinedData.setData(lineData);
-//        mChart.setData(combinedData);
-    }
-
-    @Override
-    public LineData getLineData() {
-//        if (lineData == null) {
-//            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
-//            lineData = new LineData(set);
-//        }
-//        return lineData;
-//        if (set == null) {
-//            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
-//        }
-        LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
-        return new LineData(set);
-    }
-
-//    @Override
-//    protected int getDrawSetp() {
-//        return drawStep;
-//    }
-
-    @Override
     protected int getXIndex(long timer) {
         return (int) ((timer - startTimer) / Constants.ISSUEINTERVAL);
     }
@@ -156,13 +150,11 @@ public class LineChartData1 extends BaseChartData<Entry> {
     @Override
     public void onDestroy(int chartType) {
         super.onDestroy(chartType);
-//        EventDistribution.getInstance().removeChartDraws(this);
-        if (chartType != Constants.CHART_LINEFILL && chartType != Constants.CHART_LINE) {
-            if (mCallback != null) {
-                mCallback.isStop = true;
-                mCallback = null;
-            }
+        if (chartType == Constants.CHART_LINEFILL || chartType == Constants.CHART_LINE || mCallback == null) {
+            return;
         }
+        mCallback.isStop = true;
+        mCallback = null;
     }
 
     @Override
@@ -441,6 +433,7 @@ public class LineChartData1 extends BaseChartData<Entry> {
 
         @Override
         public void onMessageReceived(String data) {
+//            Log.d("123", "onMessageReceived: " + data);
             //在子线程运行
             if (isStop) {//断开链接
                 return;

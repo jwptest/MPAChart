@@ -83,8 +83,8 @@ dependencies {
     compile rootProject.ext.dependencies["gson"]
     //other
     compile rootProject.ext.dependencies["logger"]
-    //错误统计
-    compile project(':bugtagsAndroidEclipseLib')
+//    //错误统计
+//    compile project(':bugtagsAndroidEclipseLib')
 //    compile rootProject.ext.dependencies["bugly-crashreport"]
 //    compile 'com.bugtags.metrics:bugtags-lib:3.0.0'
 //    //debug 包

@@ -19,17 +19,17 @@ public class BaseStateChangedCallback implements StateChangedCallback {
 
     @Override
     public void stateChanged(ConnectionState connectionState, ConnectionState connectionState1) {
-        Log.d("123", "stateChanged: " + connectionState.toString());
-        Log.d("123", "stateChanged: " + connectionState1.name());
-        if (connectionState == Disconnected) {
-            Log.d("123", "stateChanged: 断开连接");
-        } else if (connectionState == Reconnecting) {
-            Log.d("123", "stateChanged: 重新连接");
-        } else if (connectionState == Connected) {
-            Log.d("123", "stateChanged: 连接成功");
-        } else if (connectionState == Connecting) {
-            Log.d("123", "stateChanged: 正在连接");
-        }
+//        Log.d("123", "stateChanged: " + connectionState.toString());
+//        Log.d("123", "stateChanged: " + connectionState1.name());
+//        if (connectionState == Disconnected) {
+//            Log.d("123", "stateChanged: 断开连接");
+//        } else if (connectionState == Reconnecting) {
+//            Log.d("123", "stateChanged: 重新连接");
+//        } else if (connectionState == Connected) {
+//            Log.d("123", "stateChanged: 连接成功");
+//        } else if (connectionState == Connecting) {
+//            Log.d("123", "stateChanged: 正在连接");
+//        }
 
     }
 

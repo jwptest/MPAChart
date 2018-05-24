@@ -21,9 +21,9 @@ public interface IChartListener extends IDestroy {
 
     void setIChartData(IChartData iChartData);
 
-    void setShowOrder(int productId, String issueName);
-
-    void setOtherIssue(boolean isOtherIssue);
+//    void setShowOrder(int productId, String issueName);
+//
+//    void setOtherIssue(boolean isOtherIssue);
 
     ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue);
 

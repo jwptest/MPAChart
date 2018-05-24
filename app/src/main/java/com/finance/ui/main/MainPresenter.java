@@ -52,6 +52,8 @@ import static com.finance.model.imps.NetworkRequest.getRequestParamSignBasic;
 public class MainPresenter extends BasePresenter<MainContract.View> implements MainContract.Presenter {
 
     private Activity mActivity;
+//    //用于存储推送期号
+//    private ArrayList<IssueEntity> issues;
 
     public MainPresenter(Activity activity, MainContract.View view) {
         super(view);
@@ -83,6 +85,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void getProduct() {
+//        issues = null;
         BaseParams params = new BaseParams(310);
         params.setTag(mActivity);
         NetworkRequest.getInstance()
@@ -103,6 +106,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
     public void getProductIssue(int[] productIds) {
+//        issues = null;
         if (productIds == null || productIds.length == 0) return;
         BaseParams params = new BaseParams(302);
         params.addParam("ProductId", productIds);
@@ -125,23 +129,16 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     }
 
 //    @Override
-//    public void getHistoryIssues(int ProductId, int timer, final CallbackIssues callbackIssues) {
-//        BaseParams param = new BaseParams();
-//        param.addParam("T", 20);
-//        param.addParam("D", ProductId + ":300");
-//        param.addParam("isRate", true);//默认值
-//        param.addParam("productId", ProductId);
-//        param.addParam("times", timer);//默认值
-//        param.addParam("Token", "");
-////        param.addParam("Token", UserShell.getInstance().getUserToken());
-//        NetworkRequest.getInstance()
-//                .getHttpConnection()
-//                .setTag(mActivity)
-//                .setT(20)
-//                .setISign(NetworkRequest.getInstance().getSignBasic())
-//                .setToken(param.getToken())
-//                .setParams(param)
-//                .execute(callbackIssues);
+//    public void setProductIssue(ArrayList<IssueEntity> issues) {
+//        this.issues = issues;
+//    }
+//
+//    @Override
+//    public ArrayList<IssueEntity> getProductIssue() {
+//        if (issues == null) return null;
+//        ArrayList<IssueEntity> arrayList = new ArrayList<>(issues);
+//        issues = null;
+//        return arrayList;
 //    }
 
     @Override
@@ -185,15 +182,6 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 //                });
 
     }
-
-//    private void startOpenDataTimer(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName) {
-//        EventDistribution.getInstance().addChartDraws(new EventDistribution.IChartDraw() {
-//            @Override
-//            public void onDraw(Entry entry) {
-//                gg
-//            }
-//        });
-//    }
 
     //获取开奖数据
     private void getOpenData(IndexMarkEntity indexEntity, int ProductId, String Issue, String productName, int digit) {
@@ -362,10 +350,8 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         return products;
     }
 
-    private int productSelectIndex;
-
     @Override
-    public void showProductPopWindow(View view, int x, int y, ArrayList<ProductEntity> entities, IDismiss dismiss) {
+    public void showProductPopWindow(View view, int x, int y, ArrayList<ProductEntity> entities, final int selIndex, IDismiss dismiss) {
         if (entities == null || entities.isEmpty()) return;
         ArrayList<ItemEntity<ProductEntity>> arrayList = getProducts(entities);
         final ProductPopupWindow mProductPopupWindow = new ProductPopupWindow(mActivity, view.getWidth(), x, y, arrayList);
@@ -373,13 +359,13 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
             @Override
             public void onClickListener(int privation, ItemEntity<ProductEntity> itemEntity) {
                 if (mView == null) return;
-                productSelectIndex = privation;
-                mView.setProduct(itemEntity.getData());
+//                if (selIndex != privation) issues = null;//切换了产品
+                mView.setProduct(itemEntity.getData(), privation);
                 mProductPopupWindow.dismiss();
             }
         });
         mProductPopupWindow.setDismiss(dismiss);
-        mProductPopupWindow.setSelectIndex(productSelectIndex);
+        mProductPopupWindow.setSelectIndex(selIndex);
         mProductPopupWindow.showPopupWindow(view);
     }
 

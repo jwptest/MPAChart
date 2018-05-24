@@ -83,9 +83,9 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ProductEntity mProductEntity;//当前产品
     //当前期号
     private IssueEntity oneIssueEntity, mCurrentIssueEntity;
-    private int productId;//需要显示的产品id
-    private String issueName;//需要显示的期号名称
-    private boolean isOtherIssue;//是否判断其他条件
+//    private int productId;//需要显示的产品id
+//    private String issueName;//需要显示的期号名称
+//    private boolean isOtherIssue;//是否判断其他条件
     //显示数据
     private IDataSet currentDataSet;
     //是否刷新子控件坐标
@@ -376,17 +376,17 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
         this.mIChartData = iChartData;
     }
 
-    @Override
-    public void setShowOrder(int productId, String issueName) {
-        this.productId = productId;
-        this.issueName = issueName;
-        this.isOtherIssue = true;
-    }
-
-    @Override
-    public void setOtherIssue(boolean isOtherIssue) {
-        this.isOtherIssue = isOtherIssue;
-    }
+//    @Override
+//    public void setShowOrder(int productId, String issueName) {
+//        this.productId = productId;
+//        this.issueName = issueName;
+//        this.isOtherIssue = true;
+//    }
+//
+//    @Override
+//    public void setOtherIssue(boolean isOtherIssue) {
+//        this.isOtherIssue = isOtherIssue;
+//    }
 
     @Override
     public ArrayList<PurchaseViewEntity> getPurchase(int productId, String issue) {

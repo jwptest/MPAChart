@@ -1,6 +1,5 @@
 package com.finance.ui.main;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -181,9 +180,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     private ArrayList<IssueEntity> currentIssues;//当前可供选折的期号
     private IssueEntity currentIssue;//当前选中的期号
     private Animation animation;//更新余额动画
+    private int productSelectIndex = 0;//当前选中产品
     private int issuesSelectIndex = 0;
     private int statusBarHigh = 0;
-    private boolean isConnectService = false;//是否连接服务器成功
+    //    private boolean isConnectService = false;//是否连接服务器成功
     private boolean checkProductUpdateIssue = false;//期号产品是否刷新期号
 
     @Override
@@ -212,9 +212,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         mNetWorkStateReceiver = NetWorkStateReceiver.registerReceiver(mActivity);
         isResume = true;
         if (dataSetting != null) dataSetting.onResume(chartType);
-        if (isConnectService) {
-            refreshData();
-        }
+        refreshData();
     }
 
     @Override
@@ -329,7 +327,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     //更新期号
     private void updateIssue() {
-        chartListener.setOtherIssue(issuesSelectIndex == 0);
+//        chartListener.setOtherIssue(issuesSelectIndex == 0);
         chartListener.updateProductIssue(currentProduct, currentIssue, currentIssues.get(0));//更新产品和期号
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
         rightMenu.updateProductIssue(currentProduct, currentIssue);
@@ -389,8 +387,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
     public void onEvent(UserLoginEvent event) {
         if (event == null) return;
         initViewUser();
-        isConnectService = true;
-        refreshData();//获取产品信息
+//        refreshData();//获取产品信息
     }
 
     @Subscribe
@@ -445,7 +442,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         if (mRunnable != null) {
             HandlerUtil.removeRunable(mRunnable);
         }
-        Log.d("123", event.isNetWork() + "");
+//        Log.d("123", event.isNetWork() + "");
         if (!event.isNetWork()) {
             App.getInstance().showErrorMsg("网络断开！");
             dataSetting.stopNetwork();//关闭网络连接
@@ -483,6 +480,12 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         checkProductUpdateIssue = event.isUpdate();
     }
 
+//    @Subscribe
+//    public void onEvent(PushIssuesEvent event) {
+//        if (event == null) return;
+//        mMainPresenter.setProductIssue(event.getIssues());
+//    }
+
     private void initViewUser() {
         UserInfoEntity entity = UserShell.getInstance().getUserInfo();
         Glide.with(mActivity)
@@ -509,7 +512,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
         if (mIssueEntities == null || checkProductUpdateIssue) {
-            refreshIessue();//刷新期号
+            refreshIessue();
         } else {
             currentIssues = mMainPresenter.getProductIssue(entity.getProductId(), mIssueEntities);
             if (currentIssues == null) {
@@ -535,7 +538,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
             return;
         }
         mProductEntities = Products;
-        initViewProduct(mProductEntities.get(0));
+        initViewProduct(mProductEntities.get(productSelectIndex));
     }
 
     @Override
@@ -546,15 +549,19 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         }
         issuesSelectIndex = 0;
         mIssueEntities = issues;
-        ArrayList<IssueEntity> issueEntities = mMainPresenter.getProductIssue(currentProduct.getProductId(), issues);
-        if (issueEntities == null || issueEntities.isEmpty()) return;
+        ArrayList<IssueEntity> issueEntities = mMainPresenter.getProductIssue(currentProduct.getProductId(), mIssueEntities);
+        if (issueEntities == null || issueEntities.isEmpty()) {
+            App.getInstance().showErrorMsg("没有当前产品期号");
+            return;
+        }
         currentIssues = issueEntities;
         initViewIssue(issuesSelectIndex);
     }
 
     @Override
-    public void setProduct(ProductEntity product) {
+    public void setProduct(ProductEntity product, int setProduct) {
         if (product == null) return;
+        productSelectIndex = setProduct;
         initViewProduct(product);
     }
 
@@ -593,8 +600,14 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Override
     public void refreshIessueNextIssue() {
-//        isNextIssue = true;
         refreshIessue();
+//        isNextIssue = true;
+//        currentIssues = mMainPresenter.getProductIssue();
+//        if (currentIssues == null || currentIssues.isEmpty()) {
+//            refreshIessue();
+//        } else {
+//            initViewIssue(0);
+//        }
     }
 
     @Override
@@ -667,10 +680,10 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //        return null;
 //    }
 
-    @Override
-    public void setShowOrder(int productId, String issueName) {
-        chartListener.setShowOrder(productId, issueName);
-    }
+//    @Override
+//    public void setShowOrder(int productId, String issueName) {
+//        chartListener.setShowOrder(productId, issueName);
+//    }
 
     @OnClick({R.id.ivExitLogin, R.id.llMoney, R.id.llTimer, R.id.ivRefresh})
     public void onClickListener(View view) {
@@ -690,7 +703,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                 ivMoneyIcon.setImageResource(R.drawable.xialaax);
                 int[] location = new int[2];
                 llMoney.getLocationOnScreen(location);
-                mMainPresenter.showProductPopWindow(llMoney, location[0], rlTitleBar.getHeight() - statusBarHigh, mProductEntities, new IDismiss() {
+                mMainPresenter.showProductPopWindow(llMoney, location[0], rlTitleBar.getHeight() - statusBarHigh, mProductEntities, productSelectIndex, new IDismiss() {
                     @Override
                     public void onDismiss() {
                         ivMoneyIcon.setImageResource(R.drawable.xiala);

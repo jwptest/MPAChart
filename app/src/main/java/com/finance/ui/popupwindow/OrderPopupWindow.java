@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.finance.App;
 import com.finance.R;
 import com.finance.common.Constants;
 import com.finance.interfaces.ICallback;
@@ -207,6 +208,7 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
             if (!isShowing()) return;
             if (ordersEntity == null || ordersEntity.getOrders().isEmpty()) {
                 loadFail();
+                App.getInstance().showErrorMsg(message);
                 return;
             }
 //            serviceTimer = timerToLong(ordersEntity.getCurrDateTime());
@@ -220,6 +222,8 @@ public class OrderPopupWindow extends LeftToRightPopupWindow implements EventDis
             if (d > 0) isRefesh = true;
 //            startCountDown(d);//启动倒计时
         }
+
+
     }
 
 }

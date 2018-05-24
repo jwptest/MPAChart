@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.finance.BuildConfig;
 import com.finance.common.Constants;
+import com.finance.utils.HandlerUtil;
 import com.finance.utils.NetWorkUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,9 +12,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
+
 import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.Connection;
 import microsoft.aspnet.signalr.client.ConnectionState;
+import microsoft.aspnet.signalr.client.ErrorCallback;
 import microsoft.aspnet.signalr.client.MessageReceivedHandler;
 import microsoft.aspnet.signalr.client.StateChangedCallback;
 
@@ -23,11 +27,17 @@ import microsoft.aspnet.signalr.client.StateChangedCallback;
 public class HttpConnection {
 
     private volatile static HttpConnection sHttpConnection;
+    private static ArrayList<RequestEntity> mArrayList;
+    private boolean isConnectionIn = false;//是否是在连接中
+
+    private HttpConnection() {
+    }
 
     public static HttpConnection getInstance() {
         if (sHttpConnection == null) {
             synchronized (HttpConnection.class) {
                 if (sHttpConnection == null) {
+                    mArrayList = new ArrayList<>(2);
                     sHttpConnection = new HttpConnection();
                 }
             }
@@ -37,7 +47,21 @@ public class HttpConnection {
 
     private Connection connection;
 
-    private HttpConnection() {
+    private void stopConnection() {
+        Log.d("123", "request: 断开连接");
+        if (connection != null) {
+            try {
+                connection.stop();
+            } catch (Exception e) {
+            }
+            connection = null;//置空下次请求重新连接
+        }
+        isConnectionIn = false;
+    }
+
+    //启动连接
+    private void startConnection() {
+        isConnectionIn = true;
         connection = new Connection(Constants.HTTPURL);
         connection.received(new MessageReceivedHandler() {
             @Override
@@ -51,8 +75,62 @@ public class HttpConnection {
                 }
             }
         });
+        //未连接
+        connection.start().done(new Action<Void>() {
+            @Override
+            public void run(Void aVoid) throws Exception {
+                //设置网络监听
+                connection.stateChanged(new StateChangedCallback() {
+                    @Override
+                    public void stateChanged(ConnectionState connectionState, ConnectionState connectionState1) {
+                        if (connection.getState() == ConnectionState.Connected) {
+                            return;
+                        }
+                        Log.d("123", "stateChanged: 断开连接");
+                        ApiCache.clearRequest();
+                        stopConnection();
+                    }
+                });
+                //将缓存的请求发送
+                HandlerUtil.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final int size = mArrayList == null || mArrayList.isEmpty() ? 0 : mArrayList.size();
+                        if (size == 0) return;
+                        RequestEntity request;
+                        for (int i = 0; i < size; i++) {
+                            request = mArrayList.get(i);
+                            send(request.params, request.callback3);
+                        }
+                        mArrayList.clear();
+                        isConnectionIn = false;
+                    }
+                });
+            }
+        }).onError(new ErrorCallback() {
+            @Override
+            public void onError(Throwable throwable) {
+                Log.d("123", "onError: 断开连接");
+                HandlerUtil.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final int size = mArrayList == null || mArrayList.isEmpty() ? 0 : mArrayList.size();
+                        if (size == 0) return;
+                        RequestEntity request;
+                        for (int i = 0; i < size; i++) {
+                            request = mArrayList.get(i);
+                            if (request.callback3 == null) continue;
+                            request.callback3.error(request.params.getSourceCode(), "网络连接失败");
+                        }
+                        mArrayList.clear();
+                        stopConnection();
+                    }
+                });
+            }
+        });
     }
 
+    //指数解析
     private long parseProductId(String indexMark) {
         if (indexMark == null) return 0;
         else {
@@ -99,6 +177,15 @@ public class HttpConnection {
         long T = noIndexObject.get("T").getAsLong();
         switch ((int) T) {
             case 300:
+//                String D = noIndexObject.get("D").getAsString();
+//                IssuesEntity entity;
+//                try {
+//                    entity = new Gson().fromJson(D, IssuesEntity.class);
+//                } catch (Exception e) {
+//                    entity = null;
+//                }
+//                ArrayList<IssueEntity> issues = entity == null ? null : entity.getIssueInfo();
+//                EventBus.post(new PushIssuesEvent(issues));
                 Log.v(backEndMessage + "——期号推送", String.valueOf(noIndexObject));
                 break;
             default:
@@ -106,29 +193,25 @@ public class HttpConnection {
         }
     }
 
-    public void request(final RequestParams params, final BaseCallback3 callback3) {
+    public void request(RequestParams params, BaseCallback3 callback3) {
         if (!NetWorkUtils.isNetworkConnected()) {
             if (callback3 != null)
                 callback3.noNetworkConnected(params.getSourceCode());//没有网络
             return;
         }
-        if (connection.getState() != ConnectionState.Connected) {
-            //未连接
-            connection.start().done(new Action<Void>() {
-                @Override
-                public void run(Void aVoid) throws Exception {
-                    send(params, callback3);
-                    //设置网络监听
-                    connection.stateChanged(new StateChangedCallback() {
-                        @Override
-                        public void stateChanged(ConnectionState connectionState, ConnectionState connectionState1) {
-                            if (connection.getState() == ConnectionState.Connected) return;
-                            ApiCache.clearRequest();
-                        }
-                    });
-                }
-            });
+        if (connection == null) {
+            Log.d("123", "request: 第一次请求网络");
+            startConnection();//连接网络
+            mArrayList.add(new RequestEntity(params, callback3));
+        } else if (connection.getState() != ConnectionState.Connected) {
+            Log.d("123", "request: 网络未连接" + isConnectionIn);
+            if (!isConnectionIn) {//已经断开
+                stopConnection();
+                startConnection();
+            }
+            mArrayList.add(new RequestEntity(params, callback3));
         } else {
+            Log.d("123", "request: 已经连接成功");
             //已经连接成功
             send(params, callback3);
         }
@@ -148,6 +231,16 @@ public class HttpConnection {
         }
         if (callback3 != null)
             ApiCache.addRequestCallBack(params, callback3);
+    }
+
+    private static class RequestEntity {
+        private RequestParams params;
+        private BaseCallback3 callback3;
+
+        private RequestEntity(RequestParams params, BaseCallback3 callback3) {
+            this.params = params;
+            this.callback3 = callback3;
+        }
     }
 
 }

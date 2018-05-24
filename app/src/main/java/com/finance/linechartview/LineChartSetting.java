@@ -138,9 +138,9 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setDrawGridLines(true);
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
-        rightAxis.setLabelCount(4, true);
+        rightAxis.setLabelCount(8, true);
 //        rightAxis.setSpaceBottom(0);
-                rightAxis.setAxisMinimum(0f); //
+        rightAxis.setAxisMinimum(0f); //
 //        rightAxis.setAxisMaximum(10f); //
 //        rightAxis.setDrawLimitLinesBehindData(true);
         //标签颜色

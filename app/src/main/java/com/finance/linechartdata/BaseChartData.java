@@ -38,8 +38,8 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected Context mContext;
     protected MainContract.View mView;
     protected MainContract.Presenter mPresenter;
-    protected XAxis mXAxis;
-    //    protected CombinedData combinedData;
+    //    protected XAxis mXAxis;
+    protected CombinedData combinedData;
     protected ArrayList<T> mChartDatas;//推送的指数数据
     protected int dpPxRight;//开奖线距离右边标签间距
     protected int mChartWidth;
@@ -64,7 +64,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         this.mView = view;
         this.mChart = chart;
         this.mPresenter = presenter;
-        this.mXAxis = mChart.getXAxis();
+//        this.mXAxis = mChart.getXAxis();
         this.mChartDatas = new ArrayList<>(100);
         this.dpPxRight = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_20);
 //        this.animView = animView;
@@ -77,7 +77,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
                 mChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-//        combinedData = new CombinedData();
+        combinedData = new CombinedData();
         onInit();
         EventDistribution.getInstance().addPurchase(this);
     }
@@ -89,10 +89,11 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     @Override
     public void onDestroy(int chartType) {
-        if (chartType != Constants.CHART_LINEFILL && chartType != Constants.CHART_LINE) {
-            EventBus.post(new DataRefreshEvent(false));
+        if (chartType == Constants.CHART_LINEFILL || chartType == Constants.CHART_LINE) {
+            return;
         }
-//        EventDistribution.getInstance().removePurchase(this);
+        EventBus.post(new DataRefreshEvent(false));
+        unSubscribeProduct();//取消订阅
     }
 
     @Override
@@ -126,16 +127,21 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             removeBasicData();
         } else {
             isAnimation = true;
-            if (this.productEntity != null) {
-                //取消订阅产品
-                mPresenter.unSubscribeProduct(this.productEntity.getProductId());
-            }
+            unSubscribeProduct();
             this.productEntity = productEntity;
             this.issueEntity = issueEntity;
             if (topProductEntity == null) {
                 topProductEntity = productEntity;
             }
             updateData();
+        }
+    }
+
+    //取消订阅
+    private void unSubscribeProduct() {
+        if (this.productEntity != null) {
+            //取消订阅产品
+            mPresenter.unSubscribeProduct(this.productEntity.getProductId());
         }
     }
 
@@ -166,6 +172,9 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         float endX = labelX - labelWidth - dpPxRight;
         float itemWidth = endX / xCount;
         float addItem = (labelWidth + dpPxRight) / itemWidth;
+
+        XAxis mXAxis = mChart.getXAxis();
+
         mXAxis.setAxisMaximum(xCount + addItem);
 
         //标签计算
@@ -205,7 +214,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 
     //刷新走势图
     protected void invalidateChart() {
-//        combinedData.notifyDataChanged();
+        combinedData.notifyDataChanged();
         mChart.notifyDataSetChanged();
         mChart.invalidate();
     }
@@ -214,30 +223,18 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected void startAddDataAnimation(ArrayList<T> entitys) {
         final int maxIndex = entitys.size() - 1;
         mChartDatas.clear();
-        if (maxIndex > 0) {
-            mChartDatas.addAll(entitys);
-            setAxisMaximum();//刷新X周显示条数
+        if (maxIndex <= 0) {
+            invalidateChart();
+            isAnimation = false;
+            return;
         }
-//        if (combinedData == null) {
-//            combinedData = new CombinedData();
-//            combinedData.setData(getLineData());
-//            mChart.setData(combinedData);
-//        } else {
-//            combinedData.setData(getLineData());
-//            invalidateChart();
-//        }
-        CombinedData combinedData = new CombinedData();
+        mChartDatas.addAll(entitys);
         combinedData.setData(getLineData());
         mChart.setData(combinedData);
+        mChart.invalidate();
+        setAxisMaximum();//刷新X周显示条数
         stopAddAnimation();
         isAnimation = false;
-//        invalidateChart();
-//        HandlerUtil.runOnUiThreadDelay(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        }, 20);
     }
 
     private void removeBasicData() {//去掉部分基础数据

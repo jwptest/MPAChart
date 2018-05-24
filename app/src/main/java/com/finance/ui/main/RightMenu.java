@@ -169,7 +169,7 @@ public class RightMenu extends BaseViewHandle implements IRightMenu, EventDistri
 //                isUpdateText = false;
                 buttonChecked(false);
                 mView.refreshIessueNextIssue();//刷新期号
-                mView.setShowOrder(mProductEntity.getProductId(), mIssueEntity.getIssueName());
+//                mView.setShowOrder(mProductEntity.getProductId(), mIssueEntity.getIssueName());
                 break;
         }
     }

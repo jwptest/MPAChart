@@ -29,7 +29,7 @@ public interface MainContract {
 
         void issue(ArrayList<IssueEntity> issues, String msg);
 
-        void setProduct(ProductEntity product);
+        void setProduct(ProductEntity product, int privation);
 
         void setIssue(IssueEntity issue, int issueSelIndex);
 
@@ -58,8 +58,7 @@ public interface MainContract {
         IssueEntity getIssue(int productId, String issue);
 
 //        IssueEntity getCountDownIssue();
-
-        void setShowOrder(int productId, String issueName);
+//        void setShowOrder(int productId, String issueName);
 //        void openIndex(OpenIndexEntity entity, String msg);
     }
 
@@ -71,6 +70,10 @@ public interface MainContract {
         void getProduct();
 
         void getProductIssue(int[] productIds);
+
+//        void setProductIssue(ArrayList<IssueEntity> issues);
+//
+//        ArrayList<IssueEntity> getProductIssue();
 
         void getHistoryIssues(int ProductId, int timer, BaseCallback3 callback);
 
@@ -84,7 +87,7 @@ public interface MainContract {
 
         IssueEntity getIssue(int productId, String issue, ArrayList<IssueEntity> issueEntities);
 
-        void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities, IDismiss dismiss);
+        void showProductPopWindow(android.view.View anchor, int x, int y, ArrayList<ProductEntity> entities, int selIndex, IDismiss dismiss);
 
         void showIssuePopWindow(android.view.View anchor, int x, int y, ArrayList<IssueEntity> entities, int selIndex, IDismiss dismiss);
 
