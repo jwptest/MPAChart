@@ -9,15 +9,17 @@ import android.widget.TextView;
 
 import com.finance.R;
 import com.finance.base.BaseViewHandle;
+import com.finance.common.Constants;
 import com.finance.event.EventBus;
 import com.finance.event.OpenPrizeDialogEvent;
 import com.finance.listener.EventDistribution;
-import com.finance.listener.OpenCountDown;
 import com.finance.model.ben.IssueEntity;
 import com.finance.model.ben.ProductEntity;
 import com.finance.ui.popupwindow.KeyboardPopupWindow;
 import com.finance.utils.BtnClickUtil;
 import com.finance.utils.NumberUtil;
+import com.finance.utils.TimerUtil;
+import com.github.mikephil.charting.data.Entry;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -29,7 +31,7 @@ import butterknife.OnClick;
 /**
  * 右菜单处理
  */
-public class RightMenu extends BaseViewHandle implements EventDistribution.IProductChecked, EventDistribution.IPurchase, EventDistribution.IIssueChecked, OpenCountDown.ICallback, EventDistribution.IChartDraw {
+public class RightMenu extends BaseViewHandle implements IRightMenu, EventDistribution.IPurchase, EventDistribution.IChartDraw {
 
     @BindView(R.id.ivMoneyAdd)
     ImageView ivMoneyAdd;
@@ -62,19 +64,19 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 
     private Activity mActivity;
     private MainContract.View mView;
-    private IRightMenu mRightMenu;
+    private IPurchase mRightMenu;
     private ProductEntity mProductEntity;//当前产品
     private IssueEntity mIssueEntity;//当前期号
 
     private int sept = 10;//金额步长
     private int minMoney = 10;//最少投资金额
     private int maxMoney = 400;//最多投资金额
+    //    private long serviceTimer;//服务器时间
+//    private boolean isUpdateText = true;
+    private boolean isCountDown = false;//是否显示倒计时
+    private long openTimer;//开奖时间
 
-    private long serviceTimer;//服务器时间
-    private boolean isUpdateText = true;
-    private boolean isCountDown = false;
-
-    public RightMenu(Activity activity, MainContract.View view, IRightMenu rightMenu) {
+    public RightMenu(Activity activity, MainContract.View view, IPurchase rightMenu) {
         this.mActivity = activity;
         this.mView = view;
         this.mRightMenu = rightMenu;
@@ -120,9 +122,10 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
 //            }
 //        });
         EventDistribution.getInstance().addPurchase(this);
-        EventDistribution.getInstance().addProduct(this);
-        EventDistribution.getInstance().addIssue(this);
-        OpenCountDown.getInstance().addCallback(this);
+//        EventDistribution.getInstance().addProduct(this);
+//        EventDistribution.getInstance().addIssue(this);
+        EventDistribution.getInstance().addChartDraws(this);
+//        OpenCountDown.getInstance().addCallback(this);
         //注册开奖对话框打开事件
         EventBus.register(RightMenu.this);
         setMoney(10);
@@ -133,9 +136,10 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     public void onDestroy() {
         super.onDestroy();
         EventDistribution.getInstance().removePurchase(this);
-        EventDistribution.getInstance().removeProduct(this);
-        EventDistribution.getInstance().removeIssue(this);
-        OpenCountDown.getInstance().removeCallback(this);
+//        EventDistribution.getInstance().removeProduct(this);
+//        EventDistribution.getInstance().removeIssue(this);
+        EventDistribution.getInstance().removeChartDraws(this);
+//        OpenCountDown.getInstance().removeCallback(this);
         EventBus.unregister(RightMenu.this);
     }
 
@@ -162,7 +166,7 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
                 openKeyboardPopupWindow();
                 break;
             case R.id.ivRightNext://下一期
-                isUpdateText = false;
+//                isUpdateText = false;
                 buttonChecked(false);
                 mView.refreshIessueNextIssue();//刷新期号
                 mView.setShowOrder(mProductEntity.getProductId(), mIssueEntity.getIssueName());
@@ -272,15 +276,6 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
         mRightMenu.placeOrder(getMoney(), false);
     }
 
-    @Override
-    public void productChecked(ProductEntity entity) {
-        mProductEntity = entity;
-        if (entity != null)
-            tvInterestRate.setText(String.format(Locale.CANADA, "收益率%s%s", entity.getExpects(), "%"));
-        else tvInterestRate.setText("收益率-%");
-        setMoney(getMoney());
-    }
-
     private void buttonChecked(boolean isNext) {
         isCountDown = isNext;//倒计时布局是否显示
         if (isNext) {
@@ -295,45 +290,56 @@ public class RightMenu extends BaseViewHandle implements EventDistribution.IProd
     }
 
     @Override
+    public void updateProductIssue(ProductEntity productEntity, IssueEntity issueEntity) {
+        mIssueEntity = issueEntity;
+        mProductEntity = productEntity;
+        if (mProductEntity != null)
+            tvInterestRate.setText(String.format(Locale.CANADA, "收益率%s%s", mProductEntity.getExpects(), "%"));
+        else tvInterestRate.setText("收益率-%");
+        setMoney(getMoney());
+        buttonChecked(false);
+    }
+
+    @Override
     public void stopPurchase(boolean isOrder) {
-        if (!isOrder) return;
+        if (isCountDown) return;
+        if (!isOrder) {
+            openTimer = 0;
+            return;
+        }
         buttonChecked(true);
+        openTimer = TimerUtil.timerToLong(mIssueEntity.getBonusTime());
     }
 
     @Override
     public void openPrize(boolean isOrder) {
-
-    }
-
-    @Override
-    public void issueChecked(IssueEntity entity) {
-        mIssueEntity = entity;
-    }
-
-    @Override
-    public void startTick() {
-        isUpdateText = true;
-        buttonChecked(true);
-    }
-
-    @Override
-    public void onTick(long millisUntilFinished) {
-        if (isUpdateText)
-            tvRightTimer.setText(millisUntilFinished / 1000 + "");
-    }
-
-    @Override
-    public void onFinish() {
-        isUpdateText = false;
-        tvRightTimer.setText("0");
-//        buttonChecked(false);
+//        if (!isOrder) buttonChecked(false);
+//        if (!isOrder) {
+//            return;
+//        }
+//        buttonChecked(true);
     }
 
     @Subscribe
     public void onEvent(OpenPrizeDialogEvent event) {
         if (isCountDown) {
+            openTimer = 0;
             buttonChecked(false);
         }
+    }
+
+    @Override
+    public void onDraw(Entry entry, boolean isOrder) {
+        if (!isOrder) {
+            if (isCountDown) {
+                tvRightTimer.setText("0");
+            }
+            return;
+        }
+        if (!isCountDown) return;
+        int m = (int) (openTimer - Constants.SERVERCURRENTTIMER) / 1000;
+        if (m > 0) tvRightTimer.setText(m + "");
+        else tvRightTimer.setText("0");
     }
 
 }

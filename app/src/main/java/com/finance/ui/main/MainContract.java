@@ -57,6 +57,8 @@ public interface MainContract {
 
         IssueEntity getIssue(int productId, String issue);
 
+//        IssueEntity getCountDownIssue();
+
         void setShowOrder(int productId, String issueName);
 //        void openIndex(OpenIndexEntity entity, String msg);
     }

@@ -39,7 +39,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
     protected MainContract.View mView;
     protected MainContract.Presenter mPresenter;
     protected XAxis mXAxis;
-    protected CombinedData combinedData;
+    //    protected CombinedData combinedData;
     protected ArrayList<T> mChartDatas;//推送的指数数据
     protected int dpPxRight;//开奖线距离右边标签间距
     protected int mChartWidth;
@@ -77,7 +77,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
                 mChart.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-        combinedData = new CombinedData();
+//        combinedData = new CombinedData();
         onInit();
         EventDistribution.getInstance().addPurchase(this);
     }
@@ -149,7 +149,6 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
 //        //不会绘制的X轴条数
 //        int addItems = (int) (dpPxRight / itemWidth);
 //        mXAxis.setAxisMaximum(trimL + addItems);
-
 ////        //绘制完成回调
 //        float X = getEntry(issueEntity.getBonusTime()).getX();//数据总条数
 //        float labelX = mChart.getFixedPosition();
@@ -202,35 +201,11 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             xentitys.add(en);
         }
         ((XAxisValueFormatter) f).setStartTimer(xentitys);
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(openTimer);
-//
-//
-//        ArrayList<XEntity> xentitys = new ArrayList<>();
-//        for (long i = openTimer; i >= startTimer; i -= 60000) {
-//            XEntity en = new XEntity();
-//            en.setMaxIndex(getXIndex(i + 60000));
-//            en.setMinIndex(getXIndex(i));
-//            en.setValue(TimerUtil.getHourMin(i));
-//            xentitys.add(en);
-//        }
-//        if (openTimer + 60000 < startTimer + mXAxis.getAxisMaximum() * 500) {
-//            XEntity en = new XEntity();
-//            en.setMaxIndex(getXIndex(openTimer + 60000 * 2));
-//            en.setMinIndex(getXIndex(openTimer + 60000));
-//            en.setValue(TimerUtil.getHourMin(openTimer + 60000));
-//            xentitys.add(en);
-//        }
-//        ((XAxisValueFormatter) f).setStartTimer(xentitys);
-
-//        long totalTimer = startTimer + ((int) mXAxis.getAxisMaximum() * 500);
-//        Log.d("123", "setAxisMaximum: " + totalTimer);
-//        Log.d("123", "setAxisMaximum: " + (totalTimer - startTimer) / 1000);
     }
 
     //刷新走势图
     protected void invalidateChart() {
-        combinedData.notifyDataChanged();
+//        combinedData.notifyDataChanged();
         mChart.notifyDataSetChanged();
         mChart.invalidate();
     }
@@ -243,16 +218,26 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
             mChartDatas.addAll(entitys);
             setAxisMaximum();//刷新X周显示条数
         }
-        dataMinCount = entitys.size();//保存基础数据条数
-        if (combinedData == null) {
-            combinedData = new CombinedData();
-            combinedData.setData(getLineData());
-            mChart.setData(combinedData);
-        } else {
-            invalidateChart();
-        }
+//        if (combinedData == null) {
+//            combinedData = new CombinedData();
+//            combinedData.setData(getLineData());
+//            mChart.setData(combinedData);
+//        } else {
+//            combinedData.setData(getLineData());
+//            invalidateChart();
+//        }
+        CombinedData combinedData = new CombinedData();
+        combinedData.setData(getLineData());
+        mChart.setData(combinedData);
         stopAddAnimation();
         isAnimation = false;
+//        invalidateChart();
+//        HandlerUtil.runOnUiThreadDelay(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }, 20);
     }
 
     private void removeBasicData() {//去掉部分基础数据

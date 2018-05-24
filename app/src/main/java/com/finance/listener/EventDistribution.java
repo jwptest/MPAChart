@@ -1,7 +1,5 @@
 package com.finance.listener;
 
-import com.finance.model.ben.IssueEntity;
-import com.finance.model.ben.ProductEntity;
 import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
@@ -13,14 +11,14 @@ public class EventDistribution {
 
     private ArrayList<IChartDraw> mChartDraws;
     private ArrayList<IPurchase> mPurchase;
-    private ArrayList<IProductChecked> mProductCheckeds;
-    private ArrayList<IIssueChecked> mIssueCheckeds;
+//    private ArrayList<IProductChecked> mProductCheckeds;
+//    private ArrayList<IIssueChecked> mIssueCheckeds;
 
     private EventDistribution() {
         mChartDraws = new ArrayList<>(2);
         mPurchase = new ArrayList<>(2);
-        mProductCheckeds = new ArrayList<>(2);
-        mIssueCheckeds = new ArrayList<>(2);
+//        mProductCheckeds = new ArrayList<>(2);
+//        mIssueCheckeds = new ArrayList<>(2);
     }
 
     private static class EventDistributionInstance {
@@ -64,33 +62,33 @@ public class EventDistribution {
         }
     }
 
-    public void removeProduct(IProductChecked purchase) {
-        mProductCheckeds.remove(purchase);
-    }
+//    public void removeProduct(IProductChecked purchase) {
+//        mProductCheckeds.remove(purchase);
+//    }
+//
+//    public void addProduct(IProductChecked purchase) {
+//        mProductCheckeds.add(purchase);
+//    }
+//
+//    public void product(ProductEntity entity) {
+//        for (IProductChecked product : mProductCheckeds) {
+//            product.productChecked(entity);
+//        }
+//}
 
-    public void addProduct(IProductChecked purchase) {
-        mProductCheckeds.add(purchase);
-    }
-
-    public void product(ProductEntity entity) {
-        for (IProductChecked product : mProductCheckeds) {
-            product.productChecked(entity);
-        }
-    }
-
-    public void removeIssue(IIssueChecked purchase) {
-        mIssueCheckeds.remove(purchase);
-    }
-
-    public void addIssue(IIssueChecked purchase) {
-        mIssueCheckeds.add(purchase);
-    }
-
-    public void issue(IssueEntity entity) {
-        for (IIssueChecked issue : mIssueCheckeds) {
-            issue.issueChecked(entity);
-        }
-    }
+//    public void removeIssue(IIssueChecked purchase) {
+//        mIssueCheckeds.remove(purchase);
+//    }
+//
+//    public void addIssue(IIssueChecked purchase) {
+//        mIssueCheckeds.add(purchase);
+//    }
+//
+//    public void issue(IssueEntity entity) {
+//        for (IIssueChecked issue : mIssueCheckeds) {
+//            issue.issueChecked(entity);
+//        }
+//    }
 
     public interface IChartDraw {
         //走势图绘制完成回调方法
@@ -105,13 +103,13 @@ public class EventDistribution {
         void openPrize(boolean isOrder);
     }
 
-    //产品改变
-    public interface IProductChecked {
-        void productChecked(ProductEntity entity);
-    }
-
-    public interface IIssueChecked {
-        void issueChecked(IssueEntity entity);
-    }
+//    //产品改变
+//    public interface IProductChecked {
+//        void productChecked(ProductEntity entity);
+//    }
+//
+//    public interface IIssueChecked {
+//        void issueChecked(IssueEntity entity);
+//    }
 
 }

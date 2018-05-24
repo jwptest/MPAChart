@@ -2,13 +2,14 @@ package com.finance.linechartdata;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.finance.App;
+import com.finance.BuildConfig;
 import com.finance.common.Constants;
 import com.finance.event.ChartDataUpdateEvent;
 import com.finance.event.DataRefreshEvent;
 import com.finance.event.EventBus;
-import com.finance.listener.EventDistribution;
 import com.finance.model.ben.IndexMarkEntity;
 import com.finance.model.http.HttpConnection;
 import com.finance.model.https.ApiCache;
@@ -34,7 +35,8 @@ import static com.finance.utils.TimerUtil.timerToLong;
  */
 public class LineChartData1 extends BaseChartData<Entry> {
 
-    private LineData lineData;//显示数据
+    //    private LineData lineData;//显示数据
+//    private LineDataSet set;
     private HttpConnection /*mHttpConnection0,*/ mHttpConnection1;
     private Callback mCallback;//时时数据回调接口
     private IndexUtil mIndexUtil;//指数解析工具类
@@ -100,19 +102,26 @@ public class LineChartData1 extends BaseChartData<Entry> {
 
     @Override
     protected void onInit() {
-        LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
-        lineData = new LineData(set);
-        combinedData.setData(lineData);
-        mChart.setData(combinedData);
+//        if (set == null) {
+//            set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+//        }
+//        LineData lineData = new LineData(set);
+//        combinedData.setData(lineData);
+//        mChart.setData(combinedData);
     }
 
     @Override
     public LineData getLineData() {
-        if (lineData == null) {
-            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
-            lineData = new LineData(set);
-        }
-        return lineData;
+//        if (lineData == null) {
+//            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+//            lineData = new LineData(set);
+//        }
+//        return lineData;
+//        if (set == null) {
+//            LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+//        }
+        LineDataSet set = ViewUtil.createLineDataSet(mContext, mChartDatas);
+        return new LineData(set);
     }
 
 //    @Override
@@ -128,13 +137,14 @@ public class LineChartData1 extends BaseChartData<Entry> {
     @Override
     public void onResume(int type) {
         if (currentChartType == type) return;
-        if (lineData != null) {
+        if (mChart != null) {
+            if (mChart.getLineData() == null) return;
             if (type == Constants.CHART_LINEFILL) {
-                LineDataSet set = ((LineDataSet) lineData.getDataSetByIndex(0));
+                LineDataSet set = ((LineDataSet) mChart.getLineData().getDataSetByIndex(0));
                 set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
                 set.setDrawFilled(true);
             } else if (type == Constants.CHART_LINE) {
-                LineDataSet set = ((LineDataSet) lineData.getDataSetByIndex(0));
+                LineDataSet set = ((LineDataSet) mChart.getLineData().getDataSetByIndex(0));
                 set.setMode(LineDataSet.Mode.LINEAR);
                 set.setDrawFilled(false);
             }
@@ -223,7 +233,7 @@ public class LineChartData1 extends BaseChartData<Entry> {
         super.stopAddAnimation();
         //添加数据动画执行完成
 //        addAlwaysDatas(mChartDatas);
-        invalidateChart();//刷新数据
+//        invalidateChart();//刷新数据
         //发送事件
         EventBus.post(new DataRefreshEvent(true));
         //走势图数据查询事件
@@ -435,7 +445,6 @@ public class LineChartData1 extends BaseChartData<Entry> {
             if (isStop) {//断开链接
                 return;
             }
-            if (mChartData.lineData == null) return;
 //            if (!mChartData.isTimer) {//不可以转换指数
 ////                indexStrs.add(jsonElement.getAsString());
 //                return;
@@ -468,6 +477,8 @@ public class LineChartData1 extends BaseChartData<Entry> {
             if (isDiscarded) {
                 return;
             }
+            if (BuildConfig.DEBUG)
+                Log.d("123", "返回数据: " + data);
             ArrayList<String> issues = new Gson().fromJson(data, new TypeToken<ArrayList<String>>() {
             }.getType());
             if (issues == null || issues.isEmpty()) {

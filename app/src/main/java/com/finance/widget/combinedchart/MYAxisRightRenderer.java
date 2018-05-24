@@ -13,7 +13,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
  * 重写右边框绘制类
  */
 public class MYAxisRightRenderer extends YAxisRenderer {
-
+    //YAxisRendererRadarChart
     private float fixedPosition;
     private String measureText = "";
 

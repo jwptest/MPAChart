@@ -138,8 +138,9 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setDrawGridLines(true);
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
-        rightAxis.setLabelCount(10, true);
-        //        rightAxis.setAxisMinimum(0f); //
+        rightAxis.setLabelCount(4, true);
+//        rightAxis.setSpaceBottom(0);
+                rightAxis.setAxisMinimum(0f); //
 //        rightAxis.setAxisMaximum(10f); //
 //        rightAxis.setDrawLimitLinesBehindData(true);
         //标签颜色
@@ -169,6 +170,7 @@ public class LineChartSetting implements IChartSetting {
         xAxis.setDrawLabels(true);//需要绘制标签
         xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
         xAxis.setTextColor(getColor(R.color.form_value_color));
+//        xAxis.setSpaceMin(mActivity.getResources().getDimension(R.dimen.dp_20));
 //        xAxis.setGranularity(10);
 //        xAxis.setSpaceMax(10);
     }

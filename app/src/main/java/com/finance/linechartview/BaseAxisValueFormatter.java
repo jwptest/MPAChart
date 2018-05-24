@@ -22,6 +22,9 @@ public class BaseAxisValueFormatter implements IAxisValueFormatter {
     public String getFormattedValue(float value, AxisBase axis) {
         lasTwo = lasOne;
         lasOne = value;
+        if (format == null) {
+            return value + "";
+        }
         return format.format(value);
     }
 

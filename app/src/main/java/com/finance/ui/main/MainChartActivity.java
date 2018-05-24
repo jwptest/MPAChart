@@ -36,7 +36,6 @@ import com.finance.linechartdata.LineChartData1;
 import com.finance.linechartview.BaseAxisValueFormatter;
 import com.finance.linechartview.LineChartSetting;
 import com.finance.linechartview.XAxisValueFormatter;
-import com.finance.listener.EventDistribution;
 import com.finance.listener.LineChartListener;
 import com.finance.model.ben.HistoryIssueEntity;
 import com.finance.model.ben.IndexMarkEntity;
@@ -67,7 +66,7 @@ import butterknife.OnClick;
 /**
  * 首页
  */
-public class MainChartActivity extends BaseActivity implements MainContract.View, IRightMenu, ICentreMenu{
+public class MainChartActivity extends BaseActivity implements MainContract.View, IPurchase, ICentreMenu {
 
     @BindView(R.id.rlTitleBar)
     View rlTitleBar;
@@ -158,7 +157,8 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 //    LinearLayout llFall;
     //    private ILineChartSetting chartSetting;
     private IChartListener chartListener;
-    private IViewHandler leftMenu, rightMenu, centreMenu;
+    private IViewHandler leftMenu, centreMenu;
+    private IRightMenu rightMenu;
     private MainContract.Presenter mMainPresenter;
     private boolean isNetWork = true;//是否有网络连接
 
@@ -332,7 +332,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         chartListener.setOtherIssue(issuesSelectIndex == 0);
         chartListener.updateProductIssue(currentProduct, currentIssue, currentIssues.get(0));//更新产品和期号
         dataSetting.updateIssue(currentProduct, currentIssue);//更新产品和期号
-        EventDistribution.getInstance().issue(currentIssue);
+        rightMenu.updateProductIssue(currentProduct, currentIssue);
     }
 
     private void initLayoutParam() {
@@ -508,7 +508,6 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         tvMoneyType.setText(entity.getProductName());
         tvBFB.setText(entity.getExpects() + "%");
         currentProduct = entity;
-        EventDistribution.getInstance().product(entity);
         if (mIssueEntities == null || checkProductUpdateIssue) {
             refreshIessue();//刷新期号
         } else {
@@ -663,6 +662,11 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
         return mMainPresenter.getIssue(productId, issue, mIssueEntities);
     }
 
+//    @Override
+//    public IssueEntity getCountDownIssue() {
+//        return null;
+//    }
+
     @Override
     public void setShowOrder(int productId, String issueName) {
         chartListener.setShowOrder(productId, issueName);
@@ -710,7 +714,7 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
                     animation = AnimationUtils.loadAnimation(mActivity, R.anim.animation_refresh_userinfo);
                 }
                 ivRefresh.startAnimation(animation);
-                onEvent(new UpdateUserInfoEvent(false, true));
+                onEvent(new UpdateUserInfoEvent(true, true, "刷新成功！"));
                 break;
         }
     }
