@@ -18,8 +18,8 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 public class LineChartSetting implements IChartSetting {
 
     private Activity mActivity;
-    private YAxis leftAxis, rightAxis;
-    private XAxis xAxis;
+//    private YAxis leftAxis, rightAxis;
+//    private XAxis xAxis;
     private IAxisValueFormatter mXIAxisValueFormatter;//X轴标签显示格式化
     private IAxisValueFormatter mRightIAxisValueFormatter;//右边轴标签显示格式化
 
@@ -101,7 +101,7 @@ public class LineChartSetting implements IChartSetting {
     /***************************初始化线******************************/
 
     private void initLeftAxis(BarLineChartBase mChart) {
-        leftAxis = mChart.getAxisLeft();
+        YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setEnabled(false);
 //        leftAxis.setAxisLineWidth(1f);//边框的宽度
 //        leftAxis.setDrawAxisLine(false);//是否绘制轴线
@@ -130,7 +130,7 @@ public class LineChartSetting implements IChartSetting {
     }
 
     private void initRightAxis(BarLineChartBase mChart) {
-        rightAxis = mChart.getAxisRight();
+        YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(true);
         rightAxis.setDrawAxisLine(false);
         rightAxis.setAxisLineWidth(1f);//边框的宽度
@@ -153,7 +153,7 @@ public class LineChartSetting implements IChartSetting {
     }
 
     private void initXAxis(BarLineChartBase mChart) {
-        xAxis = mChart.getXAxis();
+        XAxis xAxis = mChart.getXAxis();
         //禁用x轴，设置为false后该轴任何部分都不会绘制,所以即使再设置xAxis.setDrawAxisLine(true);也不会被绘制
         xAxis.setEnabled(true);//是否绘制X轴线
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);//设置x轴位置，有四个属性。
