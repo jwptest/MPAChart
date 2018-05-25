@@ -180,7 +180,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         //标签计算
         long totalTimer = startTimer + ((int) mXAxis.getAxisMaximum() * 500);
         int lableCount = (int) (totalTimer - startTimer) / 1000 / 60;
-        mXAxis.setLabelCount(lableCount + 1, true);//设置x轴显示的标签个数
+        mXAxis.setLabelCount(lableCount + 1,true);//设置x轴显示的标签个数
         //计算X轴标签显示值
         IAxisValueFormatter f = mXAxis.getValueFormatter();
         if (!(f instanceof XAxisValueFormatter)) {
@@ -231,6 +231,7 @@ public abstract class BaseChartData<T extends Entry> implements IChartData, Even
         mChartDatas.addAll(entitys);
         combinedData.setData(getLineData());
         mChart.setData(combinedData);
+        mChart.notifyDataSetChanged();
         mChart.invalidate();
         setAxisMaximum();//刷新X周显示条数
         stopAddAnimation();

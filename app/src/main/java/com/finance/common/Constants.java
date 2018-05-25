@@ -1,11 +1,5 @@
 package com.finance.common;
 
-import android.util.Log;
-
-import com.finance.model.ben.IndexMarkEntity;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * 公共常量
  */

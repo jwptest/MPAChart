@@ -434,6 +434,9 @@ public class MainChartActivity extends BaseActivity implements MainContract.View
 
     @Subscribe
     public void onEvent(NetWorkStateEvent event) {
+        if (!App.getInstance().isTopActivity("MainChartActivity")) {
+            return;
+        }
         if (event == null) return;
         if (this.isNetWork == event.isNetWork()) {
             return;

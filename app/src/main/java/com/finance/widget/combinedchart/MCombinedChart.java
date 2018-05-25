@@ -85,6 +85,8 @@ public class MCombinedChart extends BarLineChartBase<CombinedData> implements Co
         mRenderer = mMCombinedChartRenderer;
         //提现X轴绘制类
         mXAxisRenderer = new MXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer);
+
+        mChartTouchListener = new MBarLineChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
     }
 
     @Override

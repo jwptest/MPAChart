@@ -72,7 +72,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
         if (entity.getHexIndex() == 0) {
             OrderEntity.BonusIndexMarkEntity markEntity = entity.getIndexMark();
             if (markEntity != null) {
-                entity.setHexIndex(markEntity.getBidPrice());
+                entity.setHexIndex(markEntity.getRealtimePrice());
             } else {
                 entity.setHexIndex(1.000000f);
             }
@@ -107,7 +107,7 @@ public class OrderAdapter extends StickyBaseAdapter<OrderEntity> implements Stic
 //                }
                 OrderEntity.BonusIndexMarkEntity markEntity = entity.getBonusIndexMark();
                 if (markEntity != null) {
-                    entity.setBonusHexIndex(markEntity.getSellPrice());
+                    entity.setBonusHexIndex(markEntity.getRealtimePrice());
                 } else {
                     entity.setBonusHexIndex(0);
                 }

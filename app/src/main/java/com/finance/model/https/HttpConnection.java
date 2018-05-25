@@ -1,7 +1,5 @@
 package com.finance.model.https;
 
-import android.util.Log;
-
 import com.finance.BuildConfig;
 import com.finance.common.Constants;
 import com.finance.utils.HandlerUtil;
@@ -48,7 +46,7 @@ public class HttpConnection {
     private Connection connection;
 
     private void stopConnection() {
-        Log.d("123", "request: 断开连接");
+//        Log.d("123", "request: 断开连接");
         if (connection != null) {
             try {
                 connection.stop();
@@ -86,7 +84,7 @@ public class HttpConnection {
                         if (connection.getState() == ConnectionState.Connected) {
                             return;
                         }
-                        Log.d("123", "stateChanged: 断开连接");
+//                        Log.d("123", "stateChanged: 断开连接");
                         ApiCache.clearRequest();
                         stopConnection();
                     }
@@ -110,7 +108,7 @@ public class HttpConnection {
         }).onError(new ErrorCallback() {
             @Override
             public void onError(Throwable throwable) {
-                Log.d("123", "onError: 断开连接");
+//                Log.d("123", "onError: 断开连接");
                 HandlerUtil.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -186,10 +184,10 @@ public class HttpConnection {
 //                }
 //                ArrayList<IssueEntity> issues = entity == null ? null : entity.getIssueInfo();
 //                EventBus.post(new PushIssuesEvent(issues));
-                Log.v(backEndMessage + "——期号推送", String.valueOf(noIndexObject));
+//                Log.v(backEndMessage + "——期号推送", String.valueOf(noIndexObject));
                 break;
             default:
-                Log.v(backEndMessage + "——其他推送", String.valueOf(noIndexObject));
+//                Log.v(backEndMessage + "——其他推送", String.valueOf(noIndexObject));
         }
     }
 
@@ -200,18 +198,18 @@ public class HttpConnection {
             return;
         }
         if (connection == null) {
-            Log.d("123", "request: 第一次请求网络");
+//            Log.d("123", "request: 第一次请求网络");
             startConnection();//连接网络
             mArrayList.add(new RequestEntity(params, callback3));
         } else if (connection.getState() != ConnectionState.Connected) {
-            Log.d("123", "request: 网络未连接" + isConnectionIn);
+//            Log.d("123", "request: 网络未连接" + isConnectionIn);
             if (!isConnectionIn) {//已经断开
                 stopConnection();
                 startConnection();
             }
             mArrayList.add(new RequestEntity(params, callback3));
         } else {
-            Log.d("123", "request: 已经连接成功");
+//            Log.d("123", "request: 已经连接成功");
             //已经连接成功
             send(params, callback3);
         }

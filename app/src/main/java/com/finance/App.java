@@ -1,12 +1,16 @@
 package com.finance;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Looper;
+import android.text.TextUtils;
 
-import com.bugtags.library.Bugtags;
-import com.bugtags.library.BugtagsOptions;
 import com.finance.utils.HandlerUtil;
 import com.finance.widget.ToastView;
+
+import java.util.List;
 
 /**
  *
@@ -59,5 +63,19 @@ public class App extends Application {
         });
     }
 
+    /**
+     * 判断activityName是不是最顶层Activity
+     */
+    public boolean isTopActivity(String activityName) {
+        boolean isTop = false;
+        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        if (am != null && am.getRunningTasks(1) != null && am.getRunningTasks(1).size() > 0) {
+            ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+            if (cn != null && cn.getClassName().contains(activityName)) {
+                isTop = true;
+            }
+        }
+        return isTop;
+    }
 
 }

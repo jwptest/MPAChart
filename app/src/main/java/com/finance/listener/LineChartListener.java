@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -38,6 +40,8 @@ import com.finance.widget.combinedchart.OnDrawCompletion;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.MPPointD;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -83,7 +87,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
     private ProductEntity mProductEntity;//当前产品
     //当前期号
     private IssueEntity oneIssueEntity, mCurrentIssueEntity;
-//    private int productId;//需要显示的产品id
+    //    private int productId;//需要显示的产品id
 //    private String issueName;//需要显示的期号名称
 //    private boolean isOtherIssue;//是否判断其他条件
     //显示数据
@@ -165,6 +169,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
                 initViewHight();
             }
         });
+
 //        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
 //            @Override
 //            public void onValueSelected(Entry e, Highlight h) {
@@ -178,47 +183,49 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //
 //            }
 //        });
-//        mChart.setOnChartGestureListener(new OnChartGestureListener() {
-//            @Override
-//            public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-//                //开始手势
-//            }
-//
-//            @Override
-//            public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-//                //手势结束
-//            }
-//
-//            @Override
-//            public void onChartLongPressed(MotionEvent me) {
-//                //长按
-//            }
-//
-//            @Override
-//            public void onChartDoubleTapped(MotionEvent me) {
-//                //双击
-//            }
-//
-//            @Override
-//            public void onChartSingleTapped(MotionEvent me) {
-//                //单击
-//            }
-//
-//            @Override
-//            public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
-//                //快速滑动
-//            }
-//
-//            @Override
-//            public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
-//                //手势放缩
-//            }
-//
-//            @Override
-//            public void onChartTranslate(MotionEvent me, float dX, float dY) {
-//                //手势滑动
-//            }
-//        });
+
+        mChart.setOnChartGestureListener(new OnChartGestureListener() {
+            @Override
+            public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+                //开始手势
+            }
+
+            @Override
+            public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+                //手势结束
+            }
+
+            @Override
+            public void onChartLongPressed(MotionEvent me) {
+                //长按
+            }
+
+            @Override
+            public void onChartDoubleTapped(MotionEvent me) {
+                //双击
+            }
+
+            @Override
+            public void onChartSingleTapped(MotionEvent me) {
+                //单击
+            }
+
+            @Override
+            public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
+                //快速滑动
+            }
+
+            @Override
+            public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
+                //手势放缩
+                Log.d("123", "scaleX: " + scaleX + ",scaleY:" + scaleY);
+            }
+
+            @Override
+            public void onChartTranslate(MotionEvent me, float dX, float dY) {
+                //手势滑动
+            }
+        });
         mChart.setOnDrawCompletion(this);
         return this;
     }
@@ -676,7 +683,7 @@ public class LineChartListener implements IChartListener, OnDrawCompletion {
 //            mYAxis.setAxisMinimum(yAxisMin);
         } else if (yAxisMax != mYAxis.getAxisMaximum()) {
             isRefreshLocation = true;
-            yAxisMax = mYAxis.getAxisMinimum();
+            yAxisMax = mYAxis.getAxisMaximum();
         } else {
             isRefreshLocation = false;
         }

@@ -1,5 +1,6 @@
 package com.finance.linechartview;
 
+import com.finance.common.Constants;
 import com.finance.utils.IndexFormatUtil;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
@@ -15,7 +16,7 @@ public class BaseAxisValueFormatter implements IAxisValueFormatter {
     protected IndexFormatUtil format;
 
     public BaseAxisValueFormatter() {
-
+        setDigit(Constants.INDEXDIGIT);
     }
 
     @Override
@@ -23,7 +24,7 @@ public class BaseAxisValueFormatter implements IAxisValueFormatter {
         lasTwo = lasOne;
         lasOne = value;
         if (format == null) {
-            return value + "";
+            return "";
         }
         return format.format(value);
     }

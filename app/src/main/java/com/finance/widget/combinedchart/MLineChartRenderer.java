@@ -2,7 +2,6 @@ package com.finance.widget.combinedchart;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.data.Entry;
@@ -24,7 +23,7 @@ public class MLineChartRenderer extends LineChartRenderer {
     @Override
     protected void drawCubicBezier(ILineDataSet dataSet) {
 
-        float phaseX = Math.max(0.f, Math.min(1.f, mAnimator.getPhaseX()));
+//        float phaseX = Math.max(0.f, Math.min(1.f, mAnimator.getPhaseX()));
         float phaseY = mAnimator.getPhaseY();
 
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
@@ -60,15 +59,30 @@ public class MLineChartRenderer extends LineChartRenderer {
 
             // let the spline start
             cubicPath.moveTo(cur.getX(), cur.getY() * phaseY);
-
-            for (int j = mXBounds.min + 1; j <= mXBounds.range + mXBounds.min; j++) {
-
+            int count = mXBounds.range + mXBounds.min;
+            int size;
+            for (int j = mXBounds.min + 1; j <= count; j++) {
+                count = mXBounds.range + mXBounds.min;
                 prevPrev = prev;
                 prev = cur;
                 cur = nextIndex == j ? next : dataSet.getEntryForIndex(j);
-
-                nextIndex = j + 1 < dataSet.getEntryCount() ? j + 1 : j;
+                size = dataSet.getEntryCount();
+                nextIndex = j + 1 < size ? j + 1 : j;
                 next = dataSet.getEntryForIndex(nextIndex);
+
+                if (prev.getX() == cur.getX() && nextIndex < count) {
+                    continue;
+                }
+
+//                if (cur.getX() == next.getX()) {
+//                    if (nextIndex == count - 1) {
+//                        if (size - 1 == count) next = dataSet.getEntryForIndex(size - 1);
+//                        else next = dataSet.getEntryForIndex(count + 1);
+//                        j = count + 1;
+//                    } else {
+//                        continue;
+//                    }
+//                }
 
                 prevDx = (cur.getX() - prevPrev.getX()) * intensity;
                 prevDy = (cur.getY() - prevPrev.getY()) * intensity;

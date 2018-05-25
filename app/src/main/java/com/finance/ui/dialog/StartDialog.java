@@ -102,7 +102,8 @@ public class StartDialog extends Dialog {
 
     @Subscribe
     public void onEvent(DataRefreshEvent event) {
-        isData = true;
+        if (event == null) return;
+        isData = event.isRefresh();
         toMainActivity();
     }
 

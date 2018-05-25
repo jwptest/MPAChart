@@ -28,7 +28,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static com.finance.utils.TimerUtil.timerToLong;
 
 /**
@@ -340,6 +339,7 @@ public class LineChartData1 extends BaseChartData<Entry> {
         currentPoint = entity.copy();
         previou = currentPoint;
 //        Log.d("123", "更新时时数据: " + previou.getX());
+//        Log.d("123", "cu: " + (size - 1) + ",pr:" + (size - 2));
         mPointAnimation.updateParam(mChartDatas.get(size - 1), mChartDatas.get(size - 2));
         mPointAnimation.stopAnimation();
         mPointAnimation.startAnimation();

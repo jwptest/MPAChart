@@ -17,7 +17,7 @@ public class IndexFormatUtil {
 
     public IndexFormatUtil(int digit) {
         if (digit < 2) digit = 2;
-        StringBuilder sb = new StringBuilder(".");
+        StringBuilder sb = new StringBuilder("0.");
         for (int i = 0; i < digit; i++) {
             sb.append("0");
         }

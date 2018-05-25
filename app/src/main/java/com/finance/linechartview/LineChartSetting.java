@@ -50,10 +50,10 @@ public class LineChartSetting implements IChartSetting {
         mChart.getDescription().setEnabled(true);//描述文本
         mChart.getDescription().setText("");//设置描述文本
         mChart.setNoDataText("");//没有数据显示的文本
-        mChart.setTouchEnabled(false);//允许手势触摸
-        mChart.setDragEnabled(false);//手势拖动走势图
+        mChart.setTouchEnabled(true);//允许手势触摸
+        mChart.setDragEnabled(true);//手势拖动走势图
         mChart.setScaleEnabled(false);//拖动放缩
-        mChart.setScaleXEnabled(false);
+        mChart.setScaleXEnabled(true);
         mChart.setScaleYEnabled(false);
 //        mChart.setScaleX(1f);
         //缩放第二种方式
@@ -140,7 +140,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setGridLineWidth(1f);
         rightAxis.setLabelCount(8, true);
 //        rightAxis.setSpaceBottom(0);
-        rightAxis.setAxisMinimum(0f); //
+//        rightAxis.setAxisMinimum(0f); //
 //        rightAxis.setAxisMaximum(10f); //
 //        rightAxis.setDrawLimitLinesBehindData(true);
         //标签颜色
@@ -168,7 +168,7 @@ public class LineChartSetting implements IChartSetting {
         //轴线颜色
         xAxis.setAxisLineColor(getColor(R.color.transparent));
         xAxis.setDrawLabels(true);//需要绘制标签
-        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
+        xAxis.setLabelCount(6, false);//设置x轴显示的标签个数
         xAxis.setTextColor(getColor(R.color.form_value_color));
 //        xAxis.setSpaceMin(mActivity.getResources().getDimension(R.dimen.dp_20));
 //        xAxis.setGranularity(10);
