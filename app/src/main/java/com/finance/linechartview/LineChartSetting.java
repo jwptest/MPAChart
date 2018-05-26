@@ -168,7 +168,7 @@ public class LineChartSetting implements IChartSetting {
         //轴线颜色
         xAxis.setAxisLineColor(getColor(R.color.transparent));
         xAxis.setDrawLabels(true);//需要绘制标签
-        xAxis.setLabelCount(6, false);//设置x轴显示的标签个数
+        xAxis.setLabelCount(6, true);//设置x轴显示的标签个数
         xAxis.setTextColor(getColor(R.color.form_value_color));
 //        xAxis.setSpaceMin(mActivity.getResources().getDimension(R.dimen.dp_20));
 //        xAxis.setGranularity(10);

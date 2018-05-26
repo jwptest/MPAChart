@@ -70,20 +70,12 @@ public class MLineChartRenderer extends LineChartRenderer {
                 nextIndex = j + 1 < size ? j + 1 : j;
                 next = dataSet.getEntryForIndex(nextIndex);
 
-                if (prev.getX() == cur.getX() && nextIndex < count) {
-                    continue;
-                }
-
-//                if (cur.getX() == next.getX()) {
-//                    if (nextIndex == count - 1) {
-//                        if (size - 1 == count) next = dataSet.getEntryForIndex(size - 1);
-//                        else next = dataSet.getEntryForIndex(count + 1);
-//                        j = count + 1;
-//                    } else {
-//                        continue;
-//                    }
+//                if (prev.getX() == cur.getX() && nextIndex < count) {
+//                    continue;
 //                }
-
+//                if (prev.getX() == cur.getX()) {
+//                    continue;
+//                }
                 prevDx = (cur.getX() - prevPrev.getX()) * intensity;
                 prevDy = (cur.getY() - prevPrev.getY()) * intensity;
                 curDx = (next.getX() - prev.getX()) * intensity;
