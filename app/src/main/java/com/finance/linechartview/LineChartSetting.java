@@ -18,7 +18,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 public class LineChartSetting implements IChartSetting {
 
     private Activity mActivity;
-//    private YAxis leftAxis, rightAxis;
+    //    private YAxis leftAxis, rightAxis;
 //    private XAxis xAxis;
     private IAxisValueFormatter mXIAxisValueFormatter;//X轴标签显示格式化
     private IAxisValueFormatter mRightIAxisValueFormatter;//右边轴标签显示格式化
@@ -82,10 +82,10 @@ public class LineChartSetting implements IChartSetting {
         //设置折线的描述的样式
         l.setForm(Legend.LegendForm.NONE);
         //图标描述文字颜色
-        l.setTextColor(mActivity.getResources().getColor(R.color.transparent));
-        initLeftAxis(mChart);//初始化左轴
-        initRightAxis(mChart);//初始化右轴
-        initXAxis(mChart);//初始化X轴
+        l.setTextColor(getColor(R.color.transparent));
+        initLeftAxis(mChart.getAxisLeft());//初始化左轴
+        initRightAxis(mChart.getAxisRight());//初始化右轴
+        initXAxis(mChart.getXAxis());//初始化X轴
         initMarkerView();//初始化MarkerView
         return this;
     }
@@ -100,8 +100,7 @@ public class LineChartSetting implements IChartSetting {
 
     /***************************初始化线******************************/
 
-    private void initLeftAxis(BarLineChartBase mChart) {
-        YAxis leftAxis = mChart.getAxisLeft();
+    private void initLeftAxis(YAxis leftAxis) {
         leftAxis.setEnabled(false);
 //        leftAxis.setAxisLineWidth(1f);//边框的宽度
 //        leftAxis.setDrawAxisLine(false);//是否绘制轴线
@@ -129,8 +128,7 @@ public class LineChartSetting implements IChartSetting {
 //        leftAxis.resetAxisMinimum();//最大值重置
     }
 
-    private void initRightAxis(BarLineChartBase mChart) {
-        YAxis rightAxis = mChart.getAxisRight();
+    private void initRightAxis(YAxis rightAxis) {
         rightAxis.setEnabled(true);
         rightAxis.setDrawAxisLine(false);
         rightAxis.setAxisLineWidth(1f);//边框的宽度
@@ -138,8 +136,8 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setDrawGridLines(true);
         rightAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         rightAxis.setGridLineWidth(1f);
-        rightAxis.setLabelCount(8, true);
-//        rightAxis.setSpaceBottom(0);
+        rightAxis.setLabelCount(8, false);
+        rightAxis.setSpaceBottom(-10f);
 //        rightAxis.setAxisMinimum(0f); //
 //        rightAxis.setAxisMaximum(10f); //
 //        rightAxis.setDrawLimitLinesBehindData(true);
@@ -152,8 +150,7 @@ public class LineChartSetting implements IChartSetting {
         rightAxis.setAxisLineColor(getColor(R.color.transparent));
     }
 
-    private void initXAxis(BarLineChartBase mChart) {
-        XAxis xAxis = mChart.getXAxis();
+    private void initXAxis(XAxis xAxis) {
         //禁用x轴，设置为false后该轴任何部分都不会绘制,所以即使再设置xAxis.setDrawAxisLine(true);也不会被绘制
         xAxis.setEnabled(true);//是否绘制X轴线
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);//设置x轴位置，有四个属性。

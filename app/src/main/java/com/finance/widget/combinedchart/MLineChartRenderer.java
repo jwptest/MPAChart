@@ -73,9 +73,9 @@ public class MLineChartRenderer extends LineChartRenderer {
 //                if (prev.getX() == cur.getX() && nextIndex < count) {
 //                    continue;
 //                }
-//                if (prev.getX() == cur.getX()) {
-//                    continue;
-//                }
+                if (prev.getX() == cur.getX()) {
+                    continue;
+                }
                 prevDx = (cur.getX() - prevPrev.getX()) * intensity;
                 prevDy = (cur.getY() - prevPrev.getY()) * intensity;
                 curDx = (next.getX() - prev.getX()) * intensity;
